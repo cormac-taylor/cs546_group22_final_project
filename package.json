@@ -1,0 +1,17 @@
+{
+  "name": "cs546_group22_final_project",
+  "version": "1.0.0",
+  "description": "board game sharing/review app",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Cormac Taylor 20014003, Vraj Patel, Marcel Castillo, & Yash Yagnik",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1",
+    "express-handlebars": "^8.0.1",
+    "mongodb": "^6.10.0"
+  }
+}
