@@ -1,10 +1,12 @@
 // import exampleRoutes from './example.js';
+import homeRoutes from "./home.js";
 
 const constructorMethod = (app) => {
-//   app.use('/example', exampleRoutes);
+  //   app.use('/example', exampleRoutes);
+  app.use("/", homeRoutes);
 
-  app.use('*', (_, res) => {
-    res.status(404).json({error: 'Route Not found'});
+  app.use("*", (_, res) => {
+    res.redirect("/");
   });
 };
 

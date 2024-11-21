@@ -5,7 +5,12 @@ const isValidBoolean = (bool) => {
 };
 
 const isValidInteger = (num) => {
-  return typeof num === "number" && !isNaN(num) && isFinite(num) && Number.isInteger(num);
+  return (
+    typeof num === "number" &&
+    !isNaN(num) &&
+    isFinite(num) &&
+    Number.isInteger(num)
+  );
 };
 
 let isValidString = (str) => {
@@ -35,7 +40,6 @@ let isValidFunction = (func) => {
 const isValidObjectID = (id) => {
   return isValidString(id) && ObjectId.isValid(id.trim());
 };
-
 
 export {
   isValidBoolean,
