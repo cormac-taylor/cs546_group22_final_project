@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb";
-import { isEmail } from 'validator';
+import validator from 'validator';
 import { valid as isValidGeoJson } from "geojson-validation";
-import { validateDate as isValidDate } from "validate-date";
 
 export const validateBoolean = (bool) => {
   if (typeof bool !== "boolean") throw "must be a boolean!";
@@ -66,20 +65,13 @@ export const validateObjectID = (id) => {
 
 export const validateEmail = (email) => {
   const res = validateString(email).toLowerCase();
-  if (!isEmail(res)) throw "must be an email address!"
+  if (!validator.isEmail(res)) throw "must be an email address!"
   return res;
 };
 
 export const validateGeoJson = (geoJson) => {
   if (!isValidGeoJson(geoJson)) throw "must be a GeoJson!"
   return geoJson;
-};
-
-export const validateDate = (date) => {
-  const res = validateString(date);
-  if (!isValidDate(res, responseType="boolean", dateFormat="mm/dd/yyyy")) throw "must be a real date!"
-  if (date[2] !== '/' || date[5] !== '/') throw "must be of form mm/dd/yyyy!"
-  return res;
 };
 
 export const validateRating = (rating) => {
