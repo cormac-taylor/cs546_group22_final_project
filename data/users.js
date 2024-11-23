@@ -1,10 +1,9 @@
-import { users } from "../config/mongoCollections.js";
+import { userReviews, users } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
 import {
   validateObjectID,
   validateEmail,
   validateGeoJson,
-  validateNumber,
   validateString,
   validateNonEmptyObject,
 } from "../utilities/validation.js";
@@ -14,15 +13,15 @@ export const createUser = async (
   lastName,
   email,
   hashedPassword,
-  location,
-  averageRating
+  location
 ) => {
   firstName = validateString(firstName);
   lastName = validateString(lastName);
   email = validateEmail(email);
   hashedPassword = validateString(hashedPassword);
   location = validateGeoJson(location);
-  averageRating = validateNumber(averageRating);
+  averageRating = undefined;
+  numReviews = 0;
 
   const newUser = {
     firstName,
@@ -31,16 +30,23 @@ export const createUser = async (
     hashedPassword,
     location,
     averageRating,
+    numReviews,
   };
 
   const usersCollection = await users();
-  const insertInfo = await usersCollection.insertOne(newUser);
 
+  // make sure email is unique
+  const accountWithEmail = await usersCollection.findOne({
+    email: email,
+  });
+  if (accountWithEmail) throw "email must be unique!";
+
+  // add new user
+  const insertInfo = await usersCollection.insertOne(newUser);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw "could not add user.";
 
   const newId = insertInfo.insertedId.toString();
-
   return await getUserById(newId);
 };
 
@@ -48,11 +54,20 @@ export const removeUser = async (id) => {
   id = validateObjectID(id);
 
   const usersCollection = await users();
+
+  // delete user
   const deletionInfo = await usersCollection.findOneAndDelete({
     _id: ObjectId.createFromHexString(id),
   });
-
   if (!deletionInfo) throw `could not delete user with id: ${id}.`;
+
+  // delete reviews of that user
+  const usersReviewsCollection = await userReviews();
+  const deletionConfirmation = await usersReviewsCollection.deleteMany({
+    _id: ObjectId.createFromHexString(id),
+  });
+  if (!deletionConfirmation)
+    throw `could not delete user reviews for user id: ${id}`;
 
   return deletionInfo;
 };
@@ -72,7 +87,7 @@ export const getUserById = async (id) => {
     _id: ObjectId.createFromHexString(id),
   });
 
-  if (user === null) throw `no user with id: ${id}.`;
+  if (!user) throw `no user with id: ${id}.`;
 
   return user;
 };
@@ -83,8 +98,7 @@ export const replaceUser = async (
   lastName,
   email,
   hashedPassword,
-  location,
-  averageRating
+  location
 ) => {
   id = validateObjectID(id);
   firstName = validateString(firstName);
@@ -92,7 +106,6 @@ export const replaceUser = async (
   email = validateEmail(email);
   hashedPassword = validateString(hashedPassword);
   location = validateGeoJson(location);
-  averageRating = validateNumber(averageRating);
 
   const updatedUser = {
     firstName,
@@ -100,11 +113,19 @@ export const replaceUser = async (
     email,
     hashedPassword,
     location,
-    averageRating,
   };
 
   const usersCollection = await users();
-  const updateInfo = await usersCollection.findOneAndReplace(
+
+  // make sure the email isn't used by another user
+  const accountWithEmail = await usersCollection.findOne({
+    _id: { $ne: id },
+    email: email,
+  });
+  if (accountWithEmail) throw "email must be unique!";
+
+  // update user
+  const updateInfo = await usersCollection.findOneAndUpdate(
     { _id: ObjectId.createFromHexString(id) },
     updatedUser,
     { returnDocument: "after" }
@@ -128,10 +149,6 @@ export const patchUser = async (id, updateFeilds) => {
     patchedUser.lastName = validateString(updateFeilds.lastName);
   }
 
-  if (updateFeilds.email) {
-    patchedUser.email = validateString(updateFeilds.email);
-  }
-
   if (updateFeilds.hashedPassword) {
     patchedUser.hashedPassword = validateString(updateFeilds.hashedPassword);
   }
@@ -140,11 +157,20 @@ export const patchUser = async (id, updateFeilds) => {
     patchedUser.location = validateString(updateFeilds.location);
   }
 
-  if (updateFeilds.averageRating) {
-    patchedUser.averageRating = validateString(updateFeilds.averageRating);
+  const usersCollection = await users();
+
+  if (updateFeilds.email) {
+    patchedUser.email = validateString(updateFeilds.email);
+
+    // make sure the email isn't used by another user
+    const accountWithEmail = await usersCollection.findOne({
+      _id: { $ne: id },
+      email: email,
+    });
+    if (accountWithEmail) throw "email must be unique!";
   }
 
-  const usersCollection = await users();
+  // update user
   const updateInfo = await usersCollection.findOneAndUpdate(
     { _id: ObjectId.createFromHexString(id) },
     patchedUser,

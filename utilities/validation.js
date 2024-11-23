@@ -12,13 +12,15 @@ export const validateNumber = (num) => {
   if (typeof num !== "number") throw "must be a number!";
   if (isNaN(num)) throw "must have a value!";
   if (!isFinite(num)) throw "must be finite!";
-  return num;
+  return num.toFixed(2);
 };
 
 export const validateInteger = (int) => {
-  const num = validateNumber(int);
-  if (!Number.isInteger(num)) throw "must be an integer!";
-  return num;
+  if (typeof int !== "number") throw "must be a number!";
+  if (isNaN(int)) throw "must have a value!";
+  if (!isFinite(int)) throw "must be finite!";
+  if (!Number.isInteger(int)) throw "must be an integer!";
+  return int;
 };
 
 export const validateString = (str) => {
@@ -76,6 +78,12 @@ export const validateGeoJson = (geoJson) => {
 export const validateDate = (date) => {
   const res = validateString(date);
   if (!isValidDate(res, responseType="boolean", dateFormat="mm/dd/yyyy")) throw "must be a real date!"
-  if (date[2] !== '/' || date[5] !== '/') throw "be of form mm/dd/yyyy!"
+  if (date[2] !== '/' || date[5] !== '/') throw "must be of form mm/dd/yyyy!"
+  return res;
+};
+
+export const validateRating = (rating) => {
+  const res = validateInteger(rating);
+  if (res < 0 || 5 < res) throw "must be between 0 and 5!"
   return res;
 };
