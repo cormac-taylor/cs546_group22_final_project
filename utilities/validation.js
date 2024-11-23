@@ -1,54 +1,75 @@
 import { ObjectId } from "mongodb";
+import { isEmail } from 'validator';
+import { valid as isValidGeoJson } from "geojson-validation";
 
-const isValidBoolean = (bool) => {
-  return typeof bool === "boolean";
+
+export const validateBoolean = (bool) => {
+  if (typeof bool !== "boolean") throw "must be a boolean!";
+  return bool;
 };
 
-const isValidInteger = (num) => {
-  return (
-    typeof num === "number" &&
-    !isNaN(num) &&
-    isFinite(num) &&
-    Number.isInteger(num)
-  );
+export const validateNumber = (num) => {
+  if (typeof num !== "number") throw "must be a number!";
+  if (isNaN(num)) throw "must have a value!";
+  if (!isFinite(num)) throw "must be finite!";
+  return num;
 };
 
-let isValidString = (str) => {
-  return typeof str === "string" && str.trim();
+export const validateInteger = (int) => {
+  const num = validateNumber(int);
+  if (!Number.isInteger(num)) throw "must be an integer!";
+  return num;
 };
 
-let isValidArray = (arr) => {
-  return Array.isArray(arr);
+export const validateString = (str) => {
+  if (typeof str !== "string") throw "must be a string!";
+  let res = str.trim();
+  if (!res) throw "must have a char!";
+  return res;
 };
 
-let isValidNonEmptyArray = (arr) => {
-  return isValidArray(arr) && arr.length !== 0;
+export const validateArray = (arr) => {
+  if (!Array.isArray(arr)) throw "must be an array!";
+  return arr;
 };
 
-let isValidObject = (obj) => {
-  return !Array.isArray(obj) && typeof obj === "object";
+export const validateNonEmptyArray = (arr) => {
+  const res = validateArray(arr);
+  if (res.length === 0) throw "must be non-empty!";
+  return res;
 };
 
-let isValidNonEmptyObject = (obj) => {
-  return isValidObject(obj) && Object.keys(obj).length !== 0;
+export const validateObject = (obj) => {
+  if (typeof obj !== "object") throw "must be an object!";
+  if (Array.isArray(obj)) throw "must not be an array!";
+  return obj;
 };
 
-let isValidFunction = (func) => {
-  return typeof func === "function";
+export const validateNonEmptyObject = (obj) => {
+  const res = validateObject(obj);
+  if (Object.keys(res).length === 0) throw "must be non-empty!";
+  return res;
 };
 
-const isValidObjectID = (id) => {
-  return isValidString(id) && ObjectId.isValid(id.trim());
+export const validateFunction = (func) => {
+  if (typeof func !== "function") throw "must be a function!";
+  return func;
 };
 
-export {
-  isValidBoolean,
-  isValidInteger,
-  isValidString,
-  isValidArray,
-  isValidNonEmptyArray,
-  isValidObject,
-  isValidNonEmptyObject,
-  isValidFunction,
-  isValidObjectID,
+export const validateObjectID = (id) => {
+  const res = validateString(id);
+  if (!ObjectId.validate(res)) throw "must be an objectID!";
+  return res;
 };
+
+export const validateEmail = (email) => {
+  const res = validateString(email).toLowerCase();
+  if (!isEmail(res)) throw "must be an email address!"
+  return res;
+};
+
+export const validateGeoJson = (geoJson) => {
+  if (!isValidGeoJson(geoJson)) throw "must be a GeoJson!"
+  return geoJson;
+};
+
