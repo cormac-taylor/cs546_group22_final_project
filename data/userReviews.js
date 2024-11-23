@@ -1,49 +1,48 @@
-import { users } from "../config/mongoCollections.js";
+import { userReviews } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
 import {
+  validateDate,
+  validateInteger,
   validateObjectID,
-  validateEmail,
-  validateGeoJson,
-  validateNumber,
   validateString,
-  validateNonEmptyObject,
 } from "../utilities/validation.js";
 
-export const createUser = async (
-  firstName,
-  lastName,
-  email,
-  hashedPassword,
-  location,
-  averageRating
+export const createUserReview = async (
+  postingUser,
+  reviewedUser,
+  title,
+  date,
+  body,
+  rating
 ) => {
-  firstName = validateString(firstName);
-  lastName = validateString(lastName);
-  email = validateEmail(email);
-  hashedPassword = validateString(hashedPassword);
-  location = validateGeoJson(location);
-  averageRating = validateNumber(averageRating);
+  postingUser = validateObjectID(postingUser);
+  reviewedUser = validateObjectID(reviewedUser);
+  title = validateString(title);
+  date = validateDate(date);
+  body = validateString(body);
+  rating = validateInteger(rating);
 
-  const newUser = {
-    firstName,
-    lastName,
-    email,
-    hashedPassword,
-    location,
-    averageRating,
+  const newUserReview = {
+    postingUser,
+    reviewedUser,
+    title,
+    date,
+    body,
+    rating,
   };
 
-  const usersCollection = await users();
-  const insertInfo = await usersCollection.insertOne(newUser);
+  const userReviewsCollection = await userReviews();
+  const insertInfo = await userReviewsCollection.insertOne(newUserReview);
 
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
-    throw "could not add user.";
+    throw "could not add user review.";
 
   const newId = insertInfo.insertedId.toString();
 
   return await getUserById(newId);
 };
 
+// TO DO
 export const removeUser = async (id) => {
   id = validateObjectID(id);
 
