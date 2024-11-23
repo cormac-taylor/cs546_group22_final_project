@@ -1,6 +1,12 @@
 import { users } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
-import { isValidObjectID } from "../utilities/validation.js";
+import {
+  validateObjectID,
+  validateEmail,
+  validateGeoJson,
+  validateNumber,
+  validateString,
+} from "../utilities/validation.js";
 
 const createUser = async (
   firstName,
@@ -8,15 +14,19 @@ const createUser = async (
   email,
   hashedPassword,
   location,
-  averageRating,
+  averageRating
 ) => {
-
-// arg validation
+  firstName = validateString(firstName);
+  lastName = validateString(lastName);
+  email = validateEmail(email);
+  hashedPassword = validateString(hashedPassword);
+  location = validateGeoJson(location);
+  averageRating = validateNumber(averageRating);
 
   const newUser = {
-    firstName: firstName.trim(),
-    lastName: lastName.trim(),
-    email: email.trim(),
+    firstName,
+    lastName,
+    email,
     hashedPassword,
     location,
     averageRating,
@@ -35,18 +45,13 @@ const createUser = async (
 
 const getAllUsers = async () => {
   const usersCollection = await users();
-  let userList = await usersCollection
-    .find({});
-
+  let userList = await usersCollection.find({});
   if (!userList) throw "could not get all users.";
   return userList;
 };
 
 const getUserById = async (id) => {
-  if (!isValidObjectID(id))
-    throw "id must be a valid object ID.";
-
-  id = id.trim();
+  id = validateObjectID(id);
 
   const usersCollection = await users();
   const user = await usersCollection.findOne({
@@ -59,19 +64,16 @@ const getUserById = async (id) => {
 };
 
 const removeUser = async (id) => {
-    if (!isValidObjectID(id))
-        throw "id must be a valid object ID.";
-    
-  id = id.trim();
+  id = validateObjectID(id);
 
   const usersCollection = await users();
   const deletionInfo = await usersCollection.findOneAndDelete({
     _id: ObjectId.createFromHexString(id),
   });
 
-  if (!deletionInfo) throw `could not delete team with id: ${id}.`;
+  if (!deletionInfo) throw `could not delete user with id: ${id}.`;
 
-  return `account associated with ${deletionInfo.email} has been removed.`;
+  return deletionInfo;
 };
 
 const updateUser = async (
@@ -83,17 +85,18 @@ const updateUser = async (
   location,
   averageRating
 ) => {
-  if (!isValidObjectID(id))
-    throw "id must be a valid object ID.";
-
-// validate args
-
-  id = id.trim();
+  id = validateObjectID(id);
+  firstName = validateString(firstName);
+  lastName = validateString(lastName);
+  email = validateEmail(email);
+  hashedPassword = validateString(hashedPassword);
+  location = validateGeoJson(location);
+  averageRating = validateNumber(averageRating);
 
   const updatedUser = {
-    firstName: firstName.trim(),
-    lastName: lastName.trim(),
-    email: email.trim(),
+    firstName,
+    lastName,
+    email,
     hashedPassword,
     location,
     averageRating,
@@ -106,7 +109,7 @@ const updateUser = async (
     { returnDocument: "after" }
   );
 
-  if (!updateInfo) throw "could not update user.";
+  if (!updateInfo) throw `could not update user with id: ${id}.`;
 
   return updateInfo;
 };
