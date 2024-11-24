@@ -59,7 +59,17 @@ export const validateFunction = (func) => {
 
 export const validateObjectID = (id) => {
   const res = validateString(id);
-  if (!ObjectId.validate(res)) throw "must be an objectID!";
+  if (!ObjectId.isValid(res)) throw "must be an objectID!";
+  return res;
+};
+
+export const validateName = (name) => {
+  // https://a-tokyo.medium.com/first-and-last-name-validation-for-forms-and-databases-d3edf29ad29d
+  const NAME_REGEX = /^[a-zA-Z]+([ \-']{0,1}[a-zA-Z]+){0,2}[.]{0,1}$/;
+
+  const res = validateString(name);
+
+  if (!NAME_REGEX.test(res)) throw "must be name!"
   return res;
 };
 

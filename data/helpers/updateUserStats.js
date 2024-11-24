@@ -1,4 +1,4 @@
-const removeReviewFromUserStats = async (
+export const removeReviewFromUserStats = async (
   usersCollection,
   reviewedUserID,
   oldRating
@@ -13,7 +13,7 @@ const removeReviewFromUserStats = async (
   const newNumReviews = reviewedUserData.numReviews--;
   let newAverageRating;
   if (newNumReviews === 0) {
-    newAverageRating = undefined;
+    newAverageRating = 0;
   } else {
     newAverageRating = (
       (Math.round(
@@ -33,7 +33,7 @@ const removeReviewFromUserStats = async (
   if (!reviewedUserUpdated) throw `could not update user with id: ${id}.`;
 };
 
-const addReviewToUserStats = async (
+export const addReviewToUserStats = async (
   usersCollection,
   reviewedUserID,
   newRating

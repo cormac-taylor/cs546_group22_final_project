@@ -6,6 +6,7 @@ import {
   validateGeoJson,
   validateString,
   validateNonEmptyObject,
+  validateName,
 } from "../utilities/validation.js";
 
 export const createUser = async (
@@ -15,13 +16,13 @@ export const createUser = async (
   hashedPassword,
   location
 ) => {
-  firstName = validateString(firstName);
-  lastName = validateString(lastName);
+  firstName = validateName(firstName);
+  lastName = validateName(lastName);
   email = validateEmail(email);
   hashedPassword = validateString(hashedPassword);
   location = validateGeoJson(location);
-  averageRating = undefined;
-  numReviews = 0;
+  const averageRating = 0;
+  const numReviews = 0;
 
   const newUser = {
     firstName,
@@ -79,7 +80,7 @@ export const removeUser = async (id) => {
 
 export const getAllUsers = async () => {
   const usersCollection = await users();
-  let userList = await usersCollection.find({});
+  let userList = await usersCollection.find({}).toArray();
   if (!userList) throw "could not get all users.";
 
   return userList;
@@ -103,11 +104,11 @@ export const updateUser = async (id, updateFeilds) => {
 
   const patchedUser = {};
   if (updateFeilds.firstName) {
-    patchedUser.firstName = validateString(updateFeilds.firstName);
+    patchedUser.firstName = validateName(updateFeilds.firstName);
   }
 
   if (updateFeilds.lastName) {
-    patchedUser.lastName = validateString(updateFeilds.lastName);
+    patchedUser.lastName = validateName(updateFeilds.lastName);
   }
 
   if (updateFeilds.hashedPassword) {
@@ -115,7 +116,7 @@ export const updateUser = async (id, updateFeilds) => {
   }
 
   if (updateFeilds.location) {
-    patchedUser.location = validateString(updateFeilds.location);
+    patchedUser.location = validateGeoJson(updateFeilds.location);
   }
 
   const usersCollection = await users();
@@ -125,7 +126,7 @@ export const updateUser = async (id, updateFeilds) => {
 
     // make sure the email isn't used by another user
     const accountWithEmail = await usersCollection.findOne({
-      _id: { $ne: id },
+      _id: { $ne: ObjectId.createFromHexString(id) },
       email: patchedUser.email,
     });
     if (accountWithEmail) throw "email must be unique!";
@@ -134,7 +135,7 @@ export const updateUser = async (id, updateFeilds) => {
   // update user
   const updateInfo = await usersCollection.findOneAndUpdate(
     { _id: ObjectId.createFromHexString(id) },
-    patchedUser,
+    { $set: patchedUser },
     { returnDocument: "after" }
   );
   if (!updateInfo) throw `could not patch user with id: ${id}.`;

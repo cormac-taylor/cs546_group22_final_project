@@ -101,7 +101,7 @@ export const removeUserReview = async (id) => {
 
 export const getAllUserReviews = async () => {
   const userReviewsCollection = await userReviews();
-  let userReviewList = await userReviewsCollection.find({});
+  let userReviewList = await userReviewsCollection.find({}).toArray();;
   if (!userReviewList) throw "could not get all user reviews.";
   return userReviewList;
 };
@@ -145,7 +145,7 @@ export const updateUserReview = async (id, updateFeilds) => {
   const userReviewsCollection = await userReviews();
   const updateInfo = await userReviewsCollection.findOneAndUpdate(
     { _id: ObjectId.createFromHexString(id) },
-    patchedUserReview,
+    { $set: patchedUserReview },
     { returnDocument: "after" }
   );
   if (!updateInfo) throw `could not patch user with id: ${id}.`;
