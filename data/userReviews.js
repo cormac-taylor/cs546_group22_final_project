@@ -1,5 +1,4 @@
 import { userReviews, users } from "../config/mongoCollections.js";
-import { ObjectId } from "mongodb";
 import {
   validateObjectID,
   validateRating,
@@ -20,7 +19,7 @@ export const createUserReview = async (
   postingUser = validateObjectID(postingUser);
   reviewedUser = validateObjectID(reviewedUser);
   title = validateString(title);
-  date = new Date().toUTCString();
+  const date = new Date().toUTCString();
   body = validateString(body);
   rating = validateRating(rating);
 
@@ -33,17 +32,21 @@ export const createUserReview = async (
     rating,
   };
 
+  // make sure postingUser isn't reviewing themselves
+  if (postingUser.toString() === reviewedUser.toString())
+    throw "user cannot review themselves!";
+
   const usersCollection = await users();
 
   // make sure postingUser exits
   const postingUserData = await usersCollection.findOne({
-    _id: ObjectId.createFromHexString(postingUser),
+    _id: postingUser,
   });
   if (!postingUserData) throw "postingUser doesn't exist.";
 
   // make sure reviewedUser exits
   const reviewedUserData = await usersCollection.findOne({
-    _id: ObjectId.createFromHexString(reviewedUser),
+    _id: reviewedUser,
   });
   if (!reviewedUserData) throw "reviewedUser doesn't exist.";
 
@@ -51,8 +54,8 @@ export const createUserReview = async (
 
   // make sure postingUser hasn't reviewed reviewedUser
   const userReview = await userReviewsCollection.findOne({
-    postingUser: ObjectId.createFromHexString(postingUser),
-    reviewedUser: ObjectId.createFromHexString(reviewedUser),
+    postingUser: postingUser,
+    reviewedUser: reviewedUser,
   });
   if (userReview) throw "user review already exists!";
 
@@ -70,9 +73,10 @@ export const createUserReview = async (
   // ##################
 
   const newId = insertInfo.insertedId.toString();
-  return await getUserById(newId);
+  return await getUserReviewById(newId);
 };
 
+// ################################################################################################################################################
 export const removeUserReview = async (id) => {
   id = validateObjectID(id);
 
@@ -82,7 +86,7 @@ export const removeUserReview = async (id) => {
   // delete review
   const userReviewsCollection = await userReviews();
   const deletionInfo = await userReviewsCollection.findOneAndDelete({
-    _id: ObjectId.createFromHexString(id),
+    _id: id,
   });
   if (!deletionInfo) throw `could not delete user review with id: ${id}.`;
 
@@ -101,7 +105,7 @@ export const removeUserReview = async (id) => {
 
 export const getAllUserReviews = async () => {
   const userReviewsCollection = await userReviews();
-  let userReviewList = await userReviewsCollection.find({}).toArray();;
+  let userReviewList = await userReviewsCollection.find({}).toArray();
   if (!userReviewList) throw "could not get all user reviews.";
   return userReviewList;
 };
@@ -111,7 +115,7 @@ export const getUserReviewById = async (id) => {
 
   const userReviewsCollection = await userReviews();
   const userReview = await userReviewsCollection.findOne({
-    _id: ObjectId.createFromHexString(id),
+    _id: id,
   });
   if (!userReview) throw `no user review with id: ${id}.`;
 
@@ -142,9 +146,16 @@ export const updateUserReview = async (id, updateFeilds) => {
 
   const oldReview = await getUserReviewById(id);
 
+  if (
+    patchedUserReview.reviewedUser &&
+    oldReview.postingUser.toString() ===
+      patchedUserReview.reviewedUser.toString()
+  )
+    throw "user cannot review themselves!";
+
   const userReviewsCollection = await userReviews();
   const updateInfo = await userReviewsCollection.findOneAndUpdate(
-    { _id: ObjectId.createFromHexString(id) },
+    { _id: id },
     { $set: patchedUserReview },
     { returnDocument: "after" }
   );

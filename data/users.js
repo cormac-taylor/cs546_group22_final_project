@@ -60,14 +60,14 @@ export const removeUser = async (id) => {
   // delete user
   const usersCollection = await users();
   const deletionInfo = await usersCollection.findOneAndDelete({
-    _id: ObjectId.createFromHexString(id),
+    _id: id,
   });
   if (!deletionInfo) throw `could not delete user with id: ${id}.`;
 
   // delete reviews of that user
   const usersReviewsCollection = await userReviews();
   const deletionConfirmation = await usersReviewsCollection.deleteMany({
-    _id: ObjectId.createFromHexString(id),
+    _id: id,
   });
   if (!deletionConfirmation.acknowledged)
     throw `could not delete user reviews for deleted user: ${id}`;
@@ -91,7 +91,7 @@ export const getUserById = async (id) => {
 
   const usersCollection = await users();
   const user = await usersCollection.findOne({
-    _id: ObjectId.createFromHexString(id),
+    _id: id,
   });
   if (!user) throw `no user with id: ${id}.`;
 
@@ -126,7 +126,7 @@ export const updateUser = async (id, updateFeilds) => {
 
     // make sure the email isn't used by another user
     const accountWithEmail = await usersCollection.findOne({
-      _id: { $ne: ObjectId.createFromHexString(id) },
+      _id: { $ne: id },
       email: patchedUser.email,
     });
     if (accountWithEmail) throw "email must be unique!";
@@ -134,7 +134,7 @@ export const updateUser = async (id, updateFeilds) => {
 
   // update user
   const updateInfo = await usersCollection.findOneAndUpdate(
-    { _id: ObjectId.createFromHexString(id) },
+    { _id: id },
     { $set: patchedUser },
     { returnDocument: "after" }
   );

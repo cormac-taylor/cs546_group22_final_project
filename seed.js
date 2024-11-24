@@ -5,72 +5,69 @@ import { dbConnection, closeConnection } from "./config/mongoConnection.js";
 const db = await dbConnection();
 await db.dropDatabase();
 
-let cormac;
-let vraj;
-let yash;
-let marcel;
-
+let u1;
+let u2;
+let u3;
+let u4;
 
 try {
-  cormac = await usersData.createUser(
-    "Cormac   ",
-    "   Taylor",
-    "CORMAC@GMAIL.COM   ",
-    "    goodpassword",
-    {
-      type: "Point",
-      coordinates: [-73.856077, 40.848447],
-    }
-  );
-  console.log(cormac);
+  u1 = await usersData.createUser("user", "one", "u1@acb.com", "password", {
+    type: "Point",
+    coordinates: [-73.856077, 40.848447],
+  });
 } catch (e) {
   console.log(e);
 }
 
 try {
-  vraj = await usersData.createUser(
-    "  Vraj  ",
-    "  Patel  ",
-    "vpatel@abc123.cc   ",
-    "   password ",
-    {
-      type: "Point",
-      coordinates: [-73.856077, 40.848447],
-    }
-  );
-  console.log(vraj);
+  u2 = await usersData.createUser("user", "two", "u2@acb.com", "password", {
+    type: "Point",
+    coordinates: [-73.856077, 40.848447],
+  });
 } catch (e) {
   console.log(e);
 }
 
 try {
-  yash = await usersData.createUser(
-    "  Yash  ",
-    "  Yagnik  ",
-    "noin@GMAIL.COM   ",
-    "   password ",
-    {
-      type: "Point",
-      coordinates: [-73.856077, 40.848447],
-    }
-  );
-  console.log(yash);
+  u3 = await usersData.createUser("user", "three", "u3@acb.com", "password", {
+    type: "Point",
+    coordinates: [-73.856077, 40.848447],
+  });
 } catch (e) {
   console.log(e);
 }
 
 try {
-  marcel = await usersData.createUser(
-    "  Marcel  ",
-    "  Castillo  ",
-    "ionoinn@GMAIL.COM   ",
-    "   password ",
-    {
-      type: "Point",
-      coordinates: [-73.856077, 40.848447],
-    }
+  u4 = await usersData.createUser("user", "four", "u4@acb.com", "password", {
+    type: "Point",
+    coordinates: [-73.856077, 40.848447],
+  });
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  const res = await userReviewsData.createUserReview(
+    u1._id.toString(),
+    u2._id.toString(),
+    "AWESOME",
+    "Simply hilarious.",
+    5
   );
-  console.log(marcel);
+  console.log(res);
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  const res = await userReviewsData.createUserReview(
+    u3._id.toString(),
+    u2._id.toString(),
+    "SINKS",
+    "He counts cards!",
+    0
+  );
+  console.log(res);
 } catch (e) {
   console.log(e);
 }

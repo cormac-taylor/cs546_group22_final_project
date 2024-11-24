@@ -5,12 +5,12 @@ export const removeReviewFromUserStats = async (
 ) => {
   // find reviewedUser
   const reviewedUserData = await usersCollection.findOne({
-    _id: ObjectId.createFromHexString(reviewedUserID),
+    _id: reviewedUserID,
   });
   if (!reviewedUserData) throw "reviewedUser doesn't exist.";
 
   // calculate new reviewedUser stats
-  const newNumReviews = reviewedUserData.numReviews--;
+  const newNumReviews = reviewedUserData.numReviews - 1;
   let newAverageRating;
   if (newNumReviews === 0) {
     newAverageRating = 0;
@@ -26,8 +26,8 @@ export const removeReviewFromUserStats = async (
 
   // update reviewedUser with stats
   const reviewedUserUpdated = await usersCollection.findOneAndUpdate(
-    { _id: ObjectId.createFromHexString(reviewedUserID) },
-    { averageRating: newAverageRating, numReviews: newNumReviews },
+    { _id: reviewedUserID },
+    { $set: { averageRating: newAverageRating, numReviews: newNumReviews } },
     { returnDocument: "after" }
   );
   if (!reviewedUserUpdated) throw `could not update user with id: ${id}.`;
@@ -40,12 +40,12 @@ export const addReviewToUserStats = async (
 ) => {
   // find reviewedUser
   const reviewedUserData = await usersCollection.findOne({
-    _id: ObjectId.createFromHexString(reviewedUserID),
+    _id: reviewedUserID,
   });
   if (!reviewedUserData) throw "reviewedUser doesn't exist.";
 
   // calculate new reviewedUser stats
-  const newNumReviews = reviewedUserData.numReviews++;
+  const newNumReviews = reviewedUserData.numReviews + 1;
   let newAverageRating;
   if (newNumReviews === 1) {
     newAverageRating = newRating;
@@ -61,8 +61,8 @@ export const addReviewToUserStats = async (
 
   // update reviewedUser with stats
   const reviewedUserUpdated = await usersCollection.findOneAndUpdate(
-    { _id: ObjectId.createFromHexString(reviewedUserID) },
-    { averageRating: newAverageRating, numReviews: newNumReviews },
+    { _id: reviewedUserID },
+    { $set: { averageRating: newAverageRating, numReviews: newNumReviews } },
     { returnDocument: "after" }
   );
   if (!reviewedUserUpdated) throw `could not update user with id: ${id}.`;

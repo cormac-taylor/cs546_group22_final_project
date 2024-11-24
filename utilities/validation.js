@@ -60,7 +60,7 @@ export const validateFunction = (func) => {
 export const validateObjectID = (id) => {
   const res = validateString(id);
   if (!ObjectId.isValid(res)) throw "must be an objectID!";
-  return res;
+  return ObjectId.createFromHexString(res);
 };
 
 export const validateName = (name) => {
