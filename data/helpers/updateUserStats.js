@@ -15,16 +15,14 @@ export const removeReviewFromUserStats = async (
   if (newNumReviews === 0) {
     newAverageRating = 0;
   } else {
-    newAverageRating = (
+    newAverageRating =
       (Math.round(
         reviewedUserData.averageRating * reviewedUserData.numReviews
       ) -
         oldRating) /
-      newNumReviews
-    );
-    newAverageRating = Number(newAverageRating.toFixed(2));
-
+      newNumReviews;
   }
+  newAverageRating = Number(newAverageRating.toFixed(2));
 
   // update reviewedUser with stats
   const reviewedUserUpdated = await usersCollection.findOneAndUpdate(

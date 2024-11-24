@@ -9,6 +9,10 @@ let u1;
 let u2;
 let u3;
 let u4;
+let r1;
+let r2;
+let r3;
+let r4;
 
 try {
   u1 = await usersData.createUser("user", "one", "u1@acb.com", "password", {
@@ -47,43 +51,51 @@ try {
 }
 
 try {
-  const res = await userReviewsData.createUserReview(
+  r1 = await userReviewsData.createUserReview(
     u1._id.toString(),
     u2._id.toString(),
     "AWESOME",
     "Simply hilarious.",
     5
   );
-  console.log(res);
 } catch (e) {
   console.log(e);
 }
 
 try {
-  const res = await userReviewsData.createUserReview(
+  r2 = await userReviewsData.createUserReview(
     u3._id.toString(),
     u2._id.toString(),
     "SINKS",
     "He counts cards!",
     0
   );
-  console.log(res);
 } catch (e) {
   console.log(e);
 }
 
 try {
-    const res = await userReviewsData.createUserReview(
-      u4._id.toString(),
-      u2._id.toString(),
-      "Solid",
-      "Solid player.",
-      3
-    );
-    console.log(res);
-  } catch (e) {
-    console.log(e);
-  }
-  
+  r3 = await userReviewsData.createUserReview(
+    u4._id.toString(),
+    u2._id.toString(),
+    "Solid",
+    "Solid player.",
+    3
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  r4 = await userReviewsData.createUserReview(
+    u2._id.toString(),
+    u3._id.toString(),
+    "Fake News",
+    "Stright cap. Kids just bad.",
+    0
+  );
+} catch (e) {
+  console.log(e);
+}
 
 await closeConnection();

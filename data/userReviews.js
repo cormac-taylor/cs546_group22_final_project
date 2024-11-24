@@ -1,5 +1,6 @@
 import { userReviews, users } from "../config/mongoCollections.js";
 import {
+  validateNonEmptyObject,
   validateObjectID,
   validateRating,
   validateString,
@@ -76,7 +77,6 @@ export const createUserReview = async (
   return await getUserReviewById(newId);
 };
 
-// ################################################################################################################################################
 export const removeUserReview = async (id) => {
   id = validateObjectID(id);
 
@@ -90,9 +90,8 @@ export const removeUserReview = async (id) => {
   });
   if (!deletionInfo) throw `could not delete user review with id: ${id}.`;
 
-  const usersCollection = await users();
-  removeReviewFromUserStats(
-    usersCollection,
+  await removeReviewFromUserStats(
+    await users(),
     deletionInfo.reviewedUser,
     deletionInfo.rating
   );
@@ -130,7 +129,7 @@ export const updateUserReview = async (id, updateFeilds) => {
   patchedUserReview.date = new Date().toUTCString();
 
   if (updateFeilds.reviewedUser)
-    patchedUserReview.reviewedUser = validateString(updateFeilds.reviewedUser);
+    patchedUserReview.reviewedUser = validateObjectID(updateFeilds.reviewedUser);
 
   if (updateFeilds.title)
     patchedUserReview.title = validateString(updateFeilds.title);
@@ -138,14 +137,15 @@ export const updateUserReview = async (id, updateFeilds) => {
   if (updateFeilds.body)
     patchedUserReview.body = validateString(updateFeilds.body);
 
-  if (updateFeilds.rating)
-    patchedUserReview.rating = validateString(updateFeilds.rating);
+  if (updateFeilds.rating || updateFeilds.rating === 0)
+    patchedUserReview.rating = validateRating(updateFeilds.rating);
 
   // ##################
   // MAKE TRANSACTION
 
-  const oldReview = await getUserReviewById(id);
+  const oldReview = await getUserReviewById(id.toString());
 
+  // user cannot review themselves
   if (
     patchedUserReview.reviewedUser &&
     oldReview.postingUser.toString() ===
@@ -153,6 +153,7 @@ export const updateUserReview = async (id, updateFeilds) => {
   )
     throw "user cannot review themselves!";
 
+  // update review
   const userReviewsCollection = await userReviews();
   const updateInfo = await userReviewsCollection.findOneAndUpdate(
     { _id: id },
@@ -161,8 +162,9 @@ export const updateUserReview = async (id, updateFeilds) => {
   );
   if (!updateInfo) throw `could not patch user with id: ${id}.`;
 
-  const usersCollection = await users();
-  if (patchedUserReview.reviewedUser && patchedUserReview.rating) {
+  // update user stats
+  if (patchedUserReview.reviewedUser && (patchedUserReview.rating || patchedUserReview.rating === 0)) {
+    const usersCollection = await users();
     await removeReviewFromUserStats(
       usersCollection,
       oldReview.reviewedUser,
@@ -174,6 +176,7 @@ export const updateUserReview = async (id, updateFeilds) => {
       updateInfo.rating
     );
   } else if (patchedUserReview.reviewedUser) {
+    const usersCollection = await users();
     await removeReviewFromUserStats(
       usersCollection,
       oldReview.reviewedUser,
@@ -184,7 +187,8 @@ export const updateUserReview = async (id, updateFeilds) => {
       updateInfo.reviewedUser,
       oldReview.rating
     );
-  } else if (patchedUserReview.rating) {
+  } else if (patchedUserReview.rating || patchedUserReview.rating === 0) {
+    const usersCollection = await users();
     await removeReviewFromUserStats(
       usersCollection,
       oldReview.reviewedUser,

@@ -1,5 +1,4 @@
 import { userReviews, users } from "../config/mongoCollections.js";
-import { ObjectId } from "mongodb";
 import {
   validateObjectID,
   validateEmail,
@@ -64,10 +63,11 @@ export const removeUser = async (id) => {
   });
   if (!deletionInfo) throw `could not delete user with id: ${id}.`;
 
-  // delete reviews of that user
+  // delete all reviews about deleted user
+  // https://reputationamerica.org/does-deleting-a-google-account-delete-your-reviews/
   const usersReviewsCollection = await userReviews();
   const deletionConfirmation = await usersReviewsCollection.deleteMany({
-    _id: id,
+    reviewedUser: id,
   });
   if (!deletionConfirmation.acknowledged)
     throw `could not delete user reviews for deleted user: ${id}`;
