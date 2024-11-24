@@ -55,7 +55,6 @@ export const removeUser = async (id) => {
 
   // ##################
   // MAKE TRANSACTION
-  // ##################
 
   // delete user
   const usersCollection = await users();
@@ -71,6 +70,9 @@ export const removeUser = async (id) => {
   });
   if (!deletionConfirmation.acknowledged)
     throw `could not delete user reviews for deleted user: ${id}`;
+
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
 
   return deletionInfo;
 };

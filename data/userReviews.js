@@ -6,6 +6,10 @@ import {
   validateString,
 } from "../utilities/validation.js";
 import { getTimeStamp } from "../utilities/timeStamp.js";
+import {
+  removeReviewFromUserStats,
+  addReviewToUserStats,
+} from "../utilities/updateUserStats.js";
 
 export const createUserReview = async (
   postingUser,
@@ -55,35 +59,17 @@ export const createUserReview = async (
 
   // ##################
   // MAKE TRANSACTION
-  // ##################
+
 
   // insert review
   const insertInfo = await userReviewsCollection.insertOne(newUserReview);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw "could not add user review.";
 
-  // calculate new reviewedUser stats
-  const newNumReviews = reviewedUserData.numReviews++;
-  let newAverageRating;
-  if (newNumReviews === 1) {
-    newAverageRating = rating;
-  } else {
-    newAverageRating = (
-      (Math.round(
-        reviewedUserData.averageRating * reviewedUserData.numReviews
-      ) +
-        rating) /
-      newNumReviews
-    ).toFixed(2);
-  }
+  await addReviewToUserStats(usersCollection, reviewedUser, rating);
 
-  // update reviewedUser with stats
-  const reviewedUserUpdated = await usersCollection.findOneAndUpdate(
-    { _id: ObjectId.createFromHexString(reviewedUser) },
-    { averageRating: newAverageRating, numReviews: newNumReviews },
-    { returnDocument: "after" }
-  );
-  if (!reviewedUserUpdated) throw `could not update user with id: ${id}.`;
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
 
   const newId = insertInfo.insertedId.toString();
   return await getUserById(newId);
@@ -94,7 +80,7 @@ export const removeUserReview = async (id) => {
 
   // ##################
   // MAKE TRANSACTION
-  // ##################
+
 
   // delete review
   const userReviewsCollection = await userReviews();
@@ -104,35 +90,14 @@ export const removeUserReview = async (id) => {
   if (!deletionInfo) throw `could not delete user review with id: ${id}.`;
 
   const usersCollection = await users();
-
-  // find reviewedUser
-  const reviewedUserData = await usersCollection.findOne({
-    _id: ObjectId.createFromHexString(deletionInfo.reviewedUser),
-  });
-  if (!reviewedUserData) throw "reviewedUser doesn't exist.";
-
-  // calculate new reviewedUser stats
-  const newNumReviews = reviewedUserData.numReviews--;
-  let newAverageRating;
-  if (newNumReviews === 0) {
-    newAverageRating = undefined;
-  } else {
-    newAverageRating = (
-      (Math.round(
-        reviewedUserData.averageRating * reviewedUserData.numReviews
-      ) -
-        deletionInfo.rating) /
-      newNumReviews
-    ).toFixed(2);
-  }
-
-  // update reviewedUser with stats
-  const reviewedUserUpdated = await usersCollection.findOneAndUpdate(
-    { _id: ObjectId.createFromHexString(deletionInfo.reviewedUser) },
-    { averageRating: newAverageRating, numReviews: newNumReviews },
-    { returnDocument: "after" }
+  removeReviewFromUserStats(
+    usersCollection,
+    deletionInfo.reviewedUser,
+    deletionInfo.rating
   );
-  if (!reviewedUserUpdated) throw `could not update user with id: ${id}.`;
+
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
 
   return deletionInfo;
 };
@@ -177,7 +142,8 @@ export const updateUserReview = async (id, updateFeilds) => {
 
   // ##################
   // MAKE TRANSACTION
-  // ##################
+
+  const oldReview = await getUserReviewById(id);
 
   const userReviewsCollection = await userReviews();
   const updateInfo = await userReviewsCollection.findOneAndUpdate(
@@ -187,15 +153,45 @@ export const updateUserReview = async (id, updateFeilds) => {
   );
   if (!updateInfo) throw `could not patch user with id: ${id}.`;
 
+  const usersCollection = await users();
   if (patchedUserReview.reviewedUser && patchedUserReview.rating) {
-    // undo old reviewed user with old review
-    // update new reviewed user with new review
+    await removeReviewFromUserStats(
+      usersCollection,
+      oldReview.reviewedUser,
+      oldReview.rating
+    );
+    await addReviewToUserStats(
+      usersCollection,
+      updateInfo.reviewedUser,
+      updateInfo.rating
+    );
   } else if (patchedUserReview.reviewedUser) {
-    // undo old reviewed user with old review
-    // update new reviewed user with old review
+    await removeReviewFromUserStats(
+      usersCollection,
+      oldReview.reviewedUser,
+      oldReview.rating
+    );
+    await addReviewToUserStats(
+      usersCollection,
+      updateInfo.reviewedUser,
+      oldReview.rating
+    );
   } else if (patchedUserReview.rating) {
-    // update reviewed user stats with new rating
+    await removeReviewFromUserStats(
+      usersCollection,
+      oldReview.reviewedUser,
+      oldReview.rating
+    );
+    await addReviewToUserStats(
+      usersCollection,
+      oldReview.reviewedUser,
+      updateInfo.rating
+    );
   }
+  
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
+
 
   return updateInfo;
 };
