@@ -53,9 +53,12 @@ export const createUser = async (
 export const removeUser = async (id) => {
   id = validateObjectID(id);
 
-  const usersCollection = await users();
+  // ##################
+  // MAKE TRANSACTION
+  // ##################
 
   // delete user
+  const usersCollection = await users();
   const deletionInfo = await usersCollection.findOneAndDelete({
     _id: ObjectId.createFromHexString(id),
   });
@@ -66,8 +69,8 @@ export const removeUser = async (id) => {
   const deletionConfirmation = await usersReviewsCollection.deleteMany({
     _id: ObjectId.createFromHexString(id),
   });
-  if (!deletionConfirmation)
-    throw `could not delete user reviews for user id: ${id}`;
+  if (!deletionConfirmation.acknowledged)
+    throw `could not delete user reviews for deleted user: ${id}`;
 
   return deletionInfo;
 };
@@ -76,6 +79,7 @@ export const getAllUsers = async () => {
   const usersCollection = await users();
   let userList = await usersCollection.find({});
   if (!userList) throw "could not get all users.";
+
   return userList;
 };
 
@@ -86,57 +90,12 @@ export const getUserById = async (id) => {
   const user = await usersCollection.findOne({
     _id: ObjectId.createFromHexString(id),
   });
-
   if (!user) throw `no user with id: ${id}.`;
 
   return user;
 };
 
-export const replaceUser = async (
-  id,
-  firstName,
-  lastName,
-  email,
-  hashedPassword,
-  location
-) => {
-  id = validateObjectID(id);
-  firstName = validateString(firstName);
-  lastName = validateString(lastName);
-  email = validateEmail(email);
-  hashedPassword = validateString(hashedPassword);
-  location = validateGeoJson(location);
-
-  const updatedUser = {
-    firstName,
-    lastName,
-    email,
-    hashedPassword,
-    location,
-  };
-
-  const usersCollection = await users();
-
-  // make sure the email isn't used by another user
-  const accountWithEmail = await usersCollection.findOne({
-    _id: { $ne: id },
-    email: email,
-  });
-  if (accountWithEmail) throw "email must be unique!";
-
-  // update user
-  const updateInfo = await usersCollection.findOneAndUpdate(
-    { _id: ObjectId.createFromHexString(id) },
-    updatedUser,
-    { returnDocument: "after" }
-  );
-
-  if (!updateInfo) throw `could not update user with id: ${id}.`;
-
-  return updateInfo;
-};
-
-export const patchUser = async (id, updateFeilds) => {
+export const updateUser = async (id, updateFeilds) => {
   id = validateObjectID(id);
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
@@ -165,7 +124,7 @@ export const patchUser = async (id, updateFeilds) => {
     // make sure the email isn't used by another user
     const accountWithEmail = await usersCollection.findOne({
       _id: { $ne: id },
-      email: email,
+      email: patchedUser.email,
     });
     if (accountWithEmail) throw "email must be unique!";
   }
@@ -176,7 +135,6 @@ export const patchUser = async (id, updateFeilds) => {
     patchedUser,
     { returnDocument: "after" }
   );
-
   if (!updateInfo) throw `could not patch user with id: ${id}.`;
 
   return updateInfo;

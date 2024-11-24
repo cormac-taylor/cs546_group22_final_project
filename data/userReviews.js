@@ -30,8 +30,9 @@ export const createUserReview = async (
     rating,
   };
 
-  // make sure postingUser exits
   const usersCollection = await users();
+
+  // make sure postingUser exits
   const postingUserData = await usersCollection.findOne({
     _id: ObjectId.createFromHexString(postingUser),
   });
@@ -52,12 +53,14 @@ export const createUserReview = async (
   });
   if (userReview) throw "user review already exists!";
 
+  // ##################
+  // MAKE TRANSACTION
+  // ##################
+
   // insert review
   const insertInfo = await userReviewsCollection.insertOne(newUserReview);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw "could not add user review.";
-
-  const newId = insertInfo.insertedId.toString();
 
   // calculate new reviewedUser stats
   const newNumReviews = reviewedUserData.numReviews++;
@@ -82,11 +85,16 @@ export const createUserReview = async (
   );
   if (!reviewedUserUpdated) throw `could not update user with id: ${id}.`;
 
+  const newId = insertInfo.insertedId.toString();
   return await getUserById(newId);
 };
 
 export const removeUserReview = async (id) => {
   id = validateObjectID(id);
+
+  // ##################
+  // MAKE TRANSACTION
+  // ##################
 
   // delete review
   const userReviewsCollection = await userReviews();
@@ -95,8 +103,9 @@ export const removeUserReview = async (id) => {
   });
   if (!deletionInfo) throw `could not delete user review with id: ${id}.`;
 
-  // find reviewedUser
   const usersCollection = await users();
+
+  // find reviewedUser
   const reviewedUserData = await usersCollection.findOne({
     _id: ObjectId.createFromHexString(deletionInfo.reviewedUser),
   });
@@ -142,72 +151,33 @@ export const getUserReviewById = async (id) => {
   const userReview = await userReviewsCollection.findOne({
     _id: ObjectId.createFromHexString(id),
   });
-
   if (!userReview) throw `no user review with id: ${id}.`;
 
   return userReview;
 };
 
-export const replaceUserReview = async (
-  id,
-  reviewedUser,
-  title,
-  body,
-  rating
-) => {
-  id = validateObjectID(id);
-  reviewedUser = validateObjectID(reviewedUser);
-  title = validateString(title);
-  date = getTimeStamp();
-  body = validateString(body);
-  rating = validateRating(rating);
-
-  const updatedUserReview = {
-    reviewedUser,
-    title,
-    date,
-    body,
-    rating,
-  };
-
-  // update review
-  const userReviewsCollection = await userReviews();
-  const updateInfo = await userReviewsCollection.findOneAndUpdate(
-    { _id: ObjectId.createFromHexString(id) },
-    updatedUserReview,
-    { returnDocument: "after" }
-  );
-  if (!updateInfo) throw `could not update user review with id: ${id}.`;
-
-  // TO DO: update user stats
-
-  return updateInfo;
-};
-
-export const patchUserReview = async (id, updateFeilds) => {
+export const updateUserReview = async (id, updateFeilds) => {
   id = validateObjectID(id);
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
   const patchedUserReview = {};
   patchedUserReview.date = getTimeStamp();
 
-  if (updateFeilds.reviewedUser) {
+  if (updateFeilds.reviewedUser)
     patchedUserReview.reviewedUser = validateString(updateFeilds.reviewedUser);
-    // TO DO: update user stats
-  }
 
-  if (updateFeilds.title) {
+  if (updateFeilds.title)
     patchedUserReview.title = validateString(updateFeilds.title);
-  }
 
-  if (updateFeilds.body) {
+  if (updateFeilds.body)
     patchedUserReview.body = validateString(updateFeilds.body);
-  }
 
-  if (updateFeilds.rating) {
+  if (updateFeilds.rating)
     patchedUserReview.rating = validateString(updateFeilds.rating);
-    // TO DO: update user stats
-  }
+
+  // ##################
+  // MAKE TRANSACTION
+  // ##################
 
   const userReviewsCollection = await userReviews();
   const updateInfo = await userReviewsCollection.findOneAndUpdate(
@@ -215,8 +185,17 @@ export const patchUserReview = async (id, updateFeilds) => {
     patchedUserReview,
     { returnDocument: "after" }
   );
-
   if (!updateInfo) throw `could not patch user with id: ${id}.`;
+
+  if (patchedUserReview.reviewedUser && patchedUserReview.rating) {
+    // undo old reviewed user with old review
+    // update new reviewed user with new review
+  } else if (patchedUserReview.reviewedUser) {
+    // undo old reviewed user with old review
+    // update new reviewed user with old review
+  } else if (patchedUserReview.rating) {
+    // update reviewed user stats with new rating
+  }
 
   return updateInfo;
 };

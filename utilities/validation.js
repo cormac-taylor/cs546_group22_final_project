@@ -7,7 +7,7 @@ export const validateBoolean = (bool) => {
   return bool;
 };
 
-export const validateNumber = (num) => {
+export const validateFloat = (num) => {
   if (typeof num !== "number") throw "must be a number!";
   if (isNaN(num)) throw "must have a value!";
   if (!isFinite(num)) throw "must be finite!";
@@ -70,8 +70,9 @@ export const validateEmail = (email) => {
 };
 
 export const validateGeoJson = (geoJson) => {
-  if (!isValidGeoJson(geoJson)) throw "must be a GeoJson!"
-  return geoJson;
+  const res = validateNonEmptyObject(geoJson);
+  if (!isValidGeoJson(res)) throw "must be a GeoJson!"
+  return res;
 };
 
 export const validateRating = (rating) => {
