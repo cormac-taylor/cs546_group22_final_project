@@ -98,11 +98,4 @@ try {
   console.log(e);
 }
 
-try {
-  const res = await usersData.removeUser(u2._id.toString());
-  console.log(res)
-} catch (e) {
-  console.log(e);
-}
-
 await closeConnection();

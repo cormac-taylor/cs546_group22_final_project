@@ -1,5 +1,4 @@
 import { userReviews, users } from "../config/mongoCollections.js";
-import { getClient } from "../config/mongoConnection.js";
 import {
   validateObjectID,
   validateEmail,
@@ -54,36 +53,29 @@ export const createUser = async (
 export const removeUser = async (id) => {
   id = validateObjectID(id);
 
-  // transaction
-  const client = getClient();
-  const session = client.startSession();
+  // ##################
+  // MAKE TRANSACTION
 
-  try {
-    session.startTransaction();
+  // delete user
+  const usersCollection = await users();
+  const deletionInfo = await usersCollection.findOneAndDelete({
+    _id: id,
+  });
+  if (!deletionInfo) throw `could not delete user with id: ${id}.`;
 
-    // delete user
-    const usersCollection = await users();
-    const deletionInfo = await usersCollection.findOneAndDelete({
-      _id: id,
-    });
-    if (!deletionInfo) throw `could not delete user with id: ${id}.`;
+  // delete all reviews about deleted user
+  // https://reputationamerica.org/does-deleting-a-google-account-delete-your-reviews/
+  const usersReviewsCollection = await userReviews();
+  const deletionConfirmation = await usersReviewsCollection.deleteMany({
+    reviewedUser: id,
+  });
+  if (!deletionConfirmation.acknowledged)
+    throw `could not delete user reviews for deleted user: ${id}`;
 
-    // delete all reviews about deleted user
-    // https://reputationamerica.org/does-deleting-a-google-account-delete-your-reviews/
-    const usersReviewsCollection = await userReviews();
-    const deletionConfirmation = await usersReviewsCollection.deleteMany({
-      reviewedUser: id,
-    });
-    if (!deletionConfirmation.acknowledged)
-      throw `could not delete user reviews for deleted user: ${id}`;
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
 
-    return deletionInfo;
-  } catch (e) {
-    await session.abortTransaction();
-    throw `Transaction failed: ${e}`;
-  } finally {
-    session.endSession();
-  }
+  return deletionInfo;
 };
 
 export const getAllUsers = async () => {
