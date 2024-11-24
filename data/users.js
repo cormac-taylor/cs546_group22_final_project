@@ -1,27 +1,27 @@
-import { users } from "../config/mongoCollections.js";
-import { ObjectId } from "mongodb";
+import { userReviews, users } from "../config/mongoCollections.js";
 import {
   validateObjectID,
   validateEmail,
   validateGeoJson,
-  validateNumber,
   validateString,
+  validateNonEmptyObject,
+  validateName,
 } from "../utilities/validation.js";
 
-const createUser = async (
+export const createUser = async (
   firstName,
   lastName,
   email,
   hashedPassword,
-  location,
-  averageRating
+  location
 ) => {
-  firstName = validateString(firstName);
-  lastName = validateString(lastName);
+  firstName = validateName(firstName);
+  lastName = validateName(lastName);
   email = validateEmail(email);
   hashedPassword = validateString(hashedPassword);
   location = validateGeoJson(location);
-  averageRating = validateNumber(averageRating);
+  const averageRating = 0;
+  const numReviews = 0;
 
   const newUser = {
     firstName,
@@ -30,88 +30,115 @@ const createUser = async (
     hashedPassword,
     location,
     averageRating,
+    numReviews,
   };
 
   const usersCollection = await users();
-  const insertInfo = await usersCollection.insertOne(newUser);
 
+  // make sure email is unique
+  const accountWithEmail = await usersCollection.findOne({
+    email: email,
+  });
+  if (accountWithEmail) throw "email must be unique!";
+
+  // add new user
+  const insertInfo = await usersCollection.insertOne(newUser);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw "could not add user.";
 
   const newId = insertInfo.insertedId.toString();
-
   return await getUserById(newId);
 };
 
-const getAllUsers = async () => {
-  const usersCollection = await users();
-  let userList = await usersCollection.find({});
-  if (!userList) throw "could not get all users.";
-  return userList;
-};
-
-const getUserById = async (id) => {
+export const removeUser = async (id) => {
   id = validateObjectID(id);
 
-  const usersCollection = await users();
-  const user = await usersCollection.findOne({
-    _id: ObjectId.createFromHexString(id),
-  });
+  // ##################
+  // MAKE TRANSACTION
 
-  if (user === null) throw `no user with id: ${id}.`;
-
-  return user;
-};
-
-const removeUser = async (id) => {
-  id = validateObjectID(id);
-
+  // delete user
   const usersCollection = await users();
   const deletionInfo = await usersCollection.findOneAndDelete({
-    _id: ObjectId.createFromHexString(id),
+    _id: id,
   });
-
   if (!deletionInfo) throw `could not delete user with id: ${id}.`;
+
+  // delete all reviews about deleted user
+  // https://reputationamerica.org/does-deleting-a-google-account-delete-your-reviews/
+  const usersReviewsCollection = await userReviews();
+  const deletionConfirmation = await usersReviewsCollection.deleteMany({
+    reviewedUser: id,
+  });
+  if (!deletionConfirmation.acknowledged)
+    throw `could not delete user reviews for deleted user: ${id}`;
+
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
 
   return deletionInfo;
 };
 
-const updateUser = async (
-  id,
-  firstName,
-  lastName,
-  email,
-  hashedPassword,
-  location,
-  averageRating
-) => {
-  id = validateObjectID(id);
-  firstName = validateString(firstName);
-  lastName = validateString(lastName);
-  email = validateEmail(email);
-  hashedPassword = validateString(hashedPassword);
-  location = validateGeoJson(location);
-  averageRating = validateNumber(averageRating);
+export const getAllUsers = async () => {
+  const usersCollection = await users();
+  let userList = await usersCollection.find({}).toArray();
+  if (!userList) throw "could not get all users.";
 
-  const updatedUser = {
-    firstName,
-    lastName,
-    email,
-    hashedPassword,
-    location,
-    averageRating,
-  };
+  return userList;
+};
+
+export const getUserById = async (id) => {
+  id = validateObjectID(id);
 
   const usersCollection = await users();
-  const updateInfo = await usersCollection.findOneAndReplace(
-    { _id: ObjectId.createFromHexString(id) },
-    updatedUser,
+  const user = await usersCollection.findOne({
+    _id: id,
+  });
+  if (!user) throw `no user with id: ${id}.`;
+
+  return user;
+};
+
+export const updateUser = async (id, updateFeilds) => {
+  id = validateObjectID(id);
+  updateFeilds = validateNonEmptyObject(updateFeilds);
+
+  const patchedUser = {};
+  if (updateFeilds.firstName) {
+    patchedUser.firstName = validateName(updateFeilds.firstName);
+  }
+
+  if (updateFeilds.lastName) {
+    patchedUser.lastName = validateName(updateFeilds.lastName);
+  }
+
+  if (updateFeilds.hashedPassword) {
+    patchedUser.hashedPassword = validateString(updateFeilds.hashedPassword);
+  }
+
+  if (updateFeilds.location) {
+    patchedUser.location = validateGeoJson(updateFeilds.location);
+  }
+
+  const usersCollection = await users();
+
+  if (updateFeilds.email) {
+    patchedUser.email = validateString(updateFeilds.email);
+
+    // make sure the email isn't used by another user
+    const accountWithEmail = await usersCollection.findOne({
+      _id: { $ne: id },
+      email: patchedUser.email,
+    });
+    if (accountWithEmail) throw "email must be unique!";
+  }
+
+  // update user
+  const updateInfo = await usersCollection.findOneAndUpdate(
+    { _id: id },
+    { $set: patchedUser },
     { returnDocument: "after" }
   );
-
-  if (!updateInfo) throw `could not update user with id: ${id}.`;
+  if (!updateInfo) throw `could not patch user with id: ${id}.`;
 
   return updateInfo;
 };
-
-export { createUser, getAllUsers, getUserById, removeUser, updateUser };
