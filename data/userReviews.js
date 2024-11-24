@@ -1,4 +1,5 @@
 import { userReviews, users } from "../config/mongoCollections.js";
+import { getClient } from "../config/mongoConnection.js";
 import {
   validateNonEmptyObject,
   validateObjectID,
@@ -60,46 +61,60 @@ export const createUserReview = async (
   });
   if (userReview) throw "user review already exists!";
 
-  // ##################
-  // MAKE TRANSACTION
+  // transaction
+  const client = getClient();
+  const session = client.startSession();
 
-  // insert review
-  const insertInfo = await userReviewsCollection.insertOne(newUserReview);
-  if (!insertInfo.acknowledged || !insertInfo.insertedId)
-    throw "could not add user review.";
+  try {
+    session.startTransaction();
 
-  await addReviewToUserStats(usersCollection, reviewedUser, rating);
+    // insert review
+    const insertInfo = await userReviewsCollection.insertOne(newUserReview);
+    if (!insertInfo.acknowledged || !insertInfo.insertedId)
+      throw "could not add user review.";
 
-  // ^^^^^^^^^^^^^^^^^^
-  // ##################
+    await addReviewToUserStats(usersCollection, reviewedUser, rating);
 
-  const newId = insertInfo.insertedId.toString();
-  return await getUserReviewById(newId);
+    const newId = insertInfo.insertedId.toString();
+    return await getUserReviewById(newId);
+  } catch (e) {
+    await session.abortTransaction();
+    throw `Transaction failed: ${e}`;
+  } finally {
+    session.endSession();
+  }
 };
 
 export const removeUserReview = async (id) => {
   id = validateObjectID(id);
 
-  // ##################
-  // MAKE TRANSACTION
+  // transaction
+  const client = getClient();
+  const session = client.startSession();
 
-  // delete review
-  const userReviewsCollection = await userReviews();
-  const deletionInfo = await userReviewsCollection.findOneAndDelete({
-    _id: id,
-  });
-  if (!deletionInfo) throw `could not delete user review with id: ${id}.`;
+  try {
+    session.startTransaction();
 
-  await removeReviewFromUserStats(
-    await users(),
-    deletionInfo.reviewedUser,
-    deletionInfo.rating
-  );
+    // delete review
+    const userReviewsCollection = await userReviews();
+    const deletionInfo = await userReviewsCollection.findOneAndDelete({
+      _id: id,
+    });
+    if (!deletionInfo) throw `could not delete user review with id: ${id}.`;
 
-  // ^^^^^^^^^^^^^^^^^^
-  // ##################
+    await removeReviewFromUserStats(
+      await users(),
+      deletionInfo.reviewedUser,
+      deletionInfo.rating
+    );
 
-  return deletionInfo;
+    return deletionInfo;
+  } catch (e) {
+    await session.abortTransaction();
+    throw `Transaction failed: ${e}`;
+  } finally {
+    session.endSession();
+  }
 };
 
 export const getAllUserReviews = async () => {
@@ -129,7 +144,9 @@ export const updateUserReview = async (id, updateFeilds) => {
   patchedUserReview.date = new Date().toUTCString();
 
   if (updateFeilds.reviewedUser)
-    patchedUserReview.reviewedUser = validateObjectID(updateFeilds.reviewedUser);
+    patchedUserReview.reviewedUser = validateObjectID(
+      updateFeilds.reviewedUser
+    );
 
   if (updateFeilds.title)
     patchedUserReview.title = validateString(updateFeilds.title);
@@ -140,69 +157,79 @@ export const updateUserReview = async (id, updateFeilds) => {
   if (updateFeilds.rating || updateFeilds.rating === 0)
     patchedUserReview.rating = validateRating(updateFeilds.rating);
 
-  // ##################
-  // MAKE TRANSACTION
+  // transaction
+  const client = getClient();
+  const session = client.startSession();
 
-  const oldReview = await getUserReviewById(id.toString());
+  try {
+    session.startTransaction();
 
-  // user cannot review themselves
-  if (
-    patchedUserReview.reviewedUser &&
-    oldReview.postingUser.toString() ===
-      patchedUserReview.reviewedUser.toString()
-  )
-    throw "user cannot review themselves!";
+    const oldReview = await getUserReviewById(id.toString());
 
-  // update review
-  const userReviewsCollection = await userReviews();
-  const updateInfo = await userReviewsCollection.findOneAndUpdate(
-    { _id: id },
-    { $set: patchedUserReview },
-    { returnDocument: "after" }
-  );
-  if (!updateInfo) throw `could not patch user with id: ${id}.`;
+    // user cannot review themselves
+    if (
+      patchedUserReview.reviewedUser &&
+      oldReview.postingUser.toString() ===
+        patchedUserReview.reviewedUser.toString()
+    )
+      throw "user cannot review themselves!";
 
-  // update user stats
-  if (patchedUserReview.reviewedUser && (patchedUserReview.rating || patchedUserReview.rating === 0)) {
-    const usersCollection = await users();
-    await removeReviewFromUserStats(
-      usersCollection,
-      oldReview.reviewedUser,
-      oldReview.rating
+    // update review
+    const userReviewsCollection = await userReviews();
+    const updateInfo = await userReviewsCollection.findOneAndUpdate(
+      { _id: id },
+      { $set: patchedUserReview },
+      { returnDocument: "after" }
     );
-    await addReviewToUserStats(
-      usersCollection,
-      updateInfo.reviewedUser,
-      updateInfo.rating
-    );
-  } else if (patchedUserReview.reviewedUser) {
-    const usersCollection = await users();
-    await removeReviewFromUserStats(
-      usersCollection,
-      oldReview.reviewedUser,
-      oldReview.rating
-    );
-    await addReviewToUserStats(
-      usersCollection,
-      updateInfo.reviewedUser,
-      oldReview.rating
-    );
-  } else if (patchedUserReview.rating || patchedUserReview.rating === 0) {
-    const usersCollection = await users();
-    await removeReviewFromUserStats(
-      usersCollection,
-      oldReview.reviewedUser,
-      oldReview.rating
-    );
-    await addReviewToUserStats(
-      usersCollection,
-      oldReview.reviewedUser,
-      updateInfo.rating
-    );
+    if (!updateInfo) throw `could not patch user with id: ${id}.`;
+
+    // update user stats
+    if (
+      patchedUserReview.reviewedUser &&
+      (patchedUserReview.rating || patchedUserReview.rating === 0)
+    ) {
+      const usersCollection = await users();
+      await removeReviewFromUserStats(
+        usersCollection,
+        oldReview.reviewedUser,
+        oldReview.rating
+      );
+      await addReviewToUserStats(
+        usersCollection,
+        updateInfo.reviewedUser,
+        updateInfo.rating
+      );
+    } else if (patchedUserReview.reviewedUser) {
+      const usersCollection = await users();
+      await removeReviewFromUserStats(
+        usersCollection,
+        oldReview.reviewedUser,
+        oldReview.rating
+      );
+      await addReviewToUserStats(
+        usersCollection,
+        updateInfo.reviewedUser,
+        oldReview.rating
+      );
+    } else if (patchedUserReview.rating || patchedUserReview.rating === 0) {
+      const usersCollection = await users();
+      await removeReviewFromUserStats(
+        usersCollection,
+        oldReview.reviewedUser,
+        oldReview.rating
+      );
+      await addReviewToUserStats(
+        usersCollection,
+        oldReview.reviewedUser,
+        updateInfo.rating
+      );
+    }
+
+    return updateInfo;
+  } catch (e) {
+    await session.abortTransaction();
+    throw `Transaction failed: ${e}`;
+  } finally {
+    session.endSession();
   }
-
-  // ^^^^^^^^^^^^^^^^^^
-  // ##################
-
-  return updateInfo;
 };

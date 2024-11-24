@@ -16,3 +16,5 @@ export const dbConnection = async () => {
 export const closeConnection = async () => {
   await _connection.close();
 };
+
+export const getClient = () => _connection;
