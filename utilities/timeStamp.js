@@ -13,8 +13,7 @@ const MONTHS = [
   "Dec.",
 ];
 
-export const getTimeStamp = () => {
-  const date = new Date();
+export const getTimeStamp = (date) => {
   return `${
     MONTHS[date.getMonth()]
   } ${date.getDate()}, ${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;

@@ -5,11 +5,10 @@ import {
   validateRating,
   validateString,
 } from "../utilities/validation.js";
-import { getTimeStamp } from "../utilities/timeStamp.js";
 import {
   removeReviewFromUserStats,
   addReviewToUserStats,
-} from "../utilities/updateUserStats.js";
+} from "./helpers/updateUserStats.js";
 
 export const createUserReview = async (
   postingUser,
@@ -21,7 +20,7 @@ export const createUserReview = async (
   postingUser = validateObjectID(postingUser);
   reviewedUser = validateObjectID(reviewedUser);
   title = validateString(title);
-  date = getTimeStamp();
+  date = new Date().toUTCString();
   body = validateString(body);
   rating = validateRating(rating);
 
@@ -60,7 +59,6 @@ export const createUserReview = async (
   // ##################
   // MAKE TRANSACTION
 
-
   // insert review
   const insertInfo = await userReviewsCollection.insertOne(newUserReview);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
@@ -80,7 +78,6 @@ export const removeUserReview = async (id) => {
 
   // ##################
   // MAKE TRANSACTION
-
 
   // delete review
   const userReviewsCollection = await userReviews();
@@ -126,7 +123,7 @@ export const updateUserReview = async (id, updateFeilds) => {
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
   const patchedUserReview = {};
-  patchedUserReview.date = getTimeStamp();
+  patchedUserReview.date = new Date().toUTCString();
 
   if (updateFeilds.reviewedUser)
     patchedUserReview.reviewedUser = validateString(updateFeilds.reviewedUser);
@@ -188,10 +185,9 @@ export const updateUserReview = async (id, updateFeilds) => {
       updateInfo.rating
     );
   }
-  
+
   // ^^^^^^^^^^^^^^^^^^
   // ##################
-
 
   return updateInfo;
 };
