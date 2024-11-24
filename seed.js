@@ -72,4 +72,18 @@ try {
   console.log(e);
 }
 
+try {
+    const res = await userReviewsData.createUserReview(
+      u4._id.toString(),
+      u2._id.toString(),
+      "Solid",
+      "Solid player.",
+      3
+    );
+    console.log(res);
+  } catch (e) {
+    console.log(e);
+  }
+  
+
 await closeConnection();

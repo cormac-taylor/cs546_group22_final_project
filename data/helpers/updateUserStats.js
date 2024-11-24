@@ -21,7 +21,9 @@ export const removeReviewFromUserStats = async (
       ) -
         oldRating) /
       newNumReviews
-    ).toFixed(2);
+    );
+    newAverageRating = Number(newAverageRating.toFixed(2));
+
   }
 
   // update reviewedUser with stats
@@ -57,7 +59,7 @@ export const addReviewToUserStats = async (
         newRating) /
       newNumReviews;
   }
-  newAverageRating.toFixed(2);
+  newAverageRating = Number(newAverageRating.toFixed(2));
 
   // update reviewedUser with stats
   const reviewedUserUpdated = await usersCollection.findOneAndUpdate(
