@@ -111,12 +111,11 @@ export const validateURL = (url) => {
   return res;
 };
 
-// HERE ########################################################################################################
 export const validateCondition = (condition) => {
-  const CONDITIONS = [""];
+  const CONDITIONS = ["new", "like-new", "used", "well-used"];
   
-  const res = validateString(condition);
-  if (res === "") throw "must be a valid url!";
+  const res = validateString(condition).toLowerCase();
+  if (!CONDITIONS.find((cond) => cond === res)) throw "must be a valid condition: new, like-new, used, or well-used";
   return res;
 };
 

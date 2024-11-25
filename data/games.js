@@ -1,4 +1,4 @@
-import { games } from "../config/mongoCollections.js";
+import { gameReviews, games } from "../config/mongoCollections.js";
 import {
   validateBody,
   validateCondition,
@@ -11,40 +11,32 @@ import {
 export const createGame = async (
   ownerID,
   location,
-  name,
+  gameTitle,
   description,
   condition,
   imgURL
 ) => {
-  // HERE ########################################################################################################
   ownerID = validateObjectID(ownerID);
   location = validateGeoJson(location);
-  name = validateTitle(name);
+  gameTitle = validateTitle(gameTitle);
   description = validateBody(description);
   condition = validateCondition(condition);
   const datePosted = new Date().toUTCString();
   imgURL = validateURL(imgURL);
 
-  const newUser = {
+  const newGame = {
     ownerID,
     location,
-    name,
+    gameTitle,
     description,
     condition,
     datePosted,
     imgURL,
   };
 
-  const usersCollection = await users();
-
-  // make sure email is unique
-  const accountWithEmail = await usersCollection.findOne({
-    email: email,
-  });
-  if (accountWithEmail) throw "email must be unique!";
-
-  // add new user
-  const insertInfo = await usersCollection.insertOne(newUser);
+  // add new game
+  const gamesCollection = await games();
+  const insertInfo = await gamesCollection.insertOne(newGame);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw "could not add user.";
 
@@ -52,24 +44,23 @@ export const createGame = async (
   return await getUserById(newId);
 };
 
-export const removeUser = async (id) => {
+export const removeGame = async (id) => {
   id = validateObjectID(id);
 
   // ##################
   // MAKE TRANSACTION
 
-  // delete user
-  const usersCollection = await users();
-  const deletionInfo = await usersCollection.findOneAndDelete({
+  // delete game
+  const gamesCollection = await games();
+  const deletionInfo = await gamesCollection.findOneAndDelete({
     _id: id,
   });
   if (!deletionInfo) throw `could not delete user with id: ${id}.`;
 
-  // delete all reviews about deleted user
-  // https://reputationamerica.org/does-deleting-a-google-account-delete-your-reviews/
-  const usersReviewsCollection = await userReviews();
-  const deletionConfirmation = await usersReviewsCollection.deleteMany({
-    reviewedUser: id,
+  // delete all reviews about deleted game
+  const gameReviewsCollection = await gameReviews();
+  const deletionConfirmation = await gameReviewsCollection.deleteMany({
+    reviewedGame: id,
   });
   if (!deletionConfirmation.acknowledged)
     throw `could not delete user reviews for deleted user: ${id}`;
@@ -80,27 +71,29 @@ export const removeUser = async (id) => {
   return deletionInfo;
 };
 
-export const getAllUsers = async () => {
-  const usersCollection = await users();
-  let userList = await usersCollection.find({}).toArray();
-  if (!userList) throw "could not get all users.";
+export const getAllGames = async () => {
+  const gamesCollection = await games();
+  let gameList = await gamesCollection.find({}).toArray();
+  if (!gameList) throw "could not get all users.";
 
-  return userList;
+  return gameList;
 };
 
-export const getUserById = async (id) => {
+export const getGameById = async (id) => {
   id = validateObjectID(id);
 
-  const usersCollection = await users();
-  const user = await usersCollection.findOne({
+  const gamesCollection = await games();
+  const game = await gamesCollection.findOne({
     _id: id,
   });
-  if (!user) throw `no user with id: ${id}.`;
+  if (!game) throw `no user with id: ${id}.`;
 
-  return user;
+  return game;
 };
 
-export const updateUser = async (id, updateFeilds) => {
+// TO DO ########################################################################################################################
+// Also helpers for user functions
+export const updateGame = async (id, updateFeilds) => {
   id = validateObjectID(id);
   updateFeilds = validateNonEmptyObject(updateFeilds);
 

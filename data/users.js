@@ -72,6 +72,10 @@ export const removeUser = async (id) => {
   if (!deletionConfirmation.acknowledged)
     throw `could not delete user reviews for deleted user: ${id}`;
 
+  // delete all games owned by deleted user
+  // TO DO
+  // for each game owned by user call remove game
+
   // ^^^^^^^^^^^^^^^^^^
   // ##################
 
