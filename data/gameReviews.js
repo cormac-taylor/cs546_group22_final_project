@@ -1,49 +1,48 @@
-import { userReviews, users } from "../config/mongoCollections.js";
+import { gameReviews, games } from "../config/mongoCollections.js";
 import {
   validateBody,
-  validateNonEmptyObject,
   validateObjectID,
   validateRating,
   validateTitle,
 } from "../utilities/validation.js";
-import {
-  removeReviewFromUserStats,
-  addReviewToUserStats,
-} from "./helpers/updateUserStats.js";
-import { getUserById } from "./users.js";
 
-export const createUserReview = async (
+export const createGameReview = async (
   postingUser,
-  reviewedUser,
+  reviewedGame,
   title,
   body,
   rating
 ) => {
   postingUser = validateObjectID(postingUser);
-  reviewedUser = validateObjectID(reviewedUser);
+  reviewedGame = validateObjectID(reviewedGame);
   title = validateTitle(title);
   const date = new Date().toUTCString();
   body = validateBody(body);
   rating = validateRating(rating);
 
-  const newUserReview = {
+  const newGameReview = {
     postingUser,
-    reviewedUser,
+    reviewedGame,
     title,
     date,
     body,
     rating,
   };
 
-  // make sure postingUser isn't reviewing themselves
-  if (postingUser.toString() === reviewedUser.toString())
-    throw "user cannot review themselves!";
+  // TO DO BELOW #########################################################################################################################
+  const usersCollection = await users();
 
   // make sure postingUser exits
-  await getUserById(postingUser.toString())
+  const postingUserData = await usersCollection.findOne({
+    _id: postingUser,
+  });
+  if (!postingUserData) throw "postingUser doesn't exist.";
 
   // make sure reviewedUser exits
-  const reviewedUserData = await getUserById(reviewedUser.toString())
+  const reviewedUserData = await usersCollection.findOne({
+    _id: reviewedUser,
+  });
+  if (!reviewedUserData) throw "reviewedUser doesn't exist.";
 
   const userReviewsCollection = await userReviews();
 
@@ -62,14 +61,13 @@ export const createUserReview = async (
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw "could not add user review.";
 
-  const usersCollection = await users();
   await addReviewToUserStats(usersCollection, reviewedUser, rating);
-
-  const newId = insertInfo.insertedId.toString();
-  return await getUserReviewById(newId);
 
   // ^^^^^^^^^^^^^^^^^^
   // ##################
+
+  const newId = insertInfo.insertedId.toString();
+  return await getUserReviewById(newId);
 };
 
 export const removeUserReview = async (id) => {
@@ -91,10 +89,10 @@ export const removeUserReview = async (id) => {
     deletionInfo.rating
   );
 
-  return deletionInfo;
-  
   // ^^^^^^^^^^^^^^^^^^
   // ##################
+
+  return deletionInfo;
 };
 
 export const getAllUserReviews = async () => {
@@ -201,8 +199,8 @@ export const updateUserReview = async (id, updateFeilds) => {
     );
   }
 
-  return updateInfo;
-
   // ^^^^^^^^^^^^^^^^^^
   // ##################
+
+  return updateInfo;
 };
