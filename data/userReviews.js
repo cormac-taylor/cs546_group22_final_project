@@ -62,8 +62,7 @@ export const createUserReview = async (
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw "could not add user review.";
 
-  const usersCollection = await users();
-  await addReviewToUserStats(usersCollection, reviewedUser, rating);
+  await addReviewToUserStats(reviewedUser, rating);
 
   const newId = insertInfo.insertedId.toString();
   return await getUserReviewById(newId);
@@ -86,7 +85,6 @@ export const removeUserReview = async (id) => {
   if (!deletionInfo) throw `could not delete user review with id: ${id}.`;
 
   await removeReviewFromUserStats(
-    await users(),
     deletionInfo.reviewedUser,
     deletionInfo.rating
   );
@@ -164,38 +162,29 @@ export const updateUserReview = async (id, updateFeilds) => {
     patchedUserReview.reviewedUser &&
     (patchedUserReview.rating || patchedUserReview.rating === 0)
   ) {
-    const usersCollection = await users();
     await removeReviewFromUserStats(
-      usersCollection,
       oldReview.reviewedUser,
       oldReview.rating
     );
     await addReviewToUserStats(
-      usersCollection,
       updateInfo.reviewedUser,
       updateInfo.rating
     );
   } else if (patchedUserReview.reviewedUser) {
-    const usersCollection = await users();
     await removeReviewFromUserStats(
-      usersCollection,
       oldReview.reviewedUser,
       oldReview.rating
     );
     await addReviewToUserStats(
-      usersCollection,
       updateInfo.reviewedUser,
       oldReview.rating
     );
   } else if (patchedUserReview.rating || patchedUserReview.rating === 0) {
-    const usersCollection = await users();
     await removeReviewFromUserStats(
-      usersCollection,
       oldReview.reviewedUser,
       oldReview.rating
     );
     await addReviewToUserStats(
-      usersCollection,
       oldReview.reviewedUser,
       updateInfo.rating
     );

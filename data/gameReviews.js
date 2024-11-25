@@ -5,6 +5,8 @@ import {
   validateRating,
   validateTitle,
 } from "../utilities/validation.js";
+import { getGameById } from "./games.js";
+import { getUserById } from "./users.js";
 
 export const createGameReview = async (
   postingUser,
@@ -29,27 +31,18 @@ export const createGameReview = async (
     rating,
   };
 
-  // TO DO BELOW #########################################################################################################################
-  const usersCollection = await users();
-
   // make sure postingUser exits
-  const postingUserData = await usersCollection.findOne({
-    _id: postingUser,
-  });
-  if (!postingUserData) throw "postingUser doesn't exist.";
+  const postingUserData = await getUserById(postingUser.toString())
 
-  // make sure reviewedUser exits
-  const reviewedUserData = await usersCollection.findOne({
-    _id: reviewedUser,
-  });
-  if (!reviewedUserData) throw "reviewedUser doesn't exist.";
+  // make sure reviewedGame exits
+  const reviewedGameData = await getGameById(reviewedGame.toString())
 
-  const userReviewsCollection = await userReviews();
+  const gameReviewsCollection = await gameReviews();
 
-  // make sure postingUser hasn't reviewed reviewedUser
-  const userReview = await userReviewsCollection.findOne({
+  // make sure postingUser hasn't reviewed reviewedGame
+  const gameReview = await gameReviewsCollection.findOne({
     postingUser: postingUser,
-    reviewedUser: reviewedUser,
+    reviewedGame: reviewedGame,
   });
   if (userReview) throw "user review already exists!";
 
@@ -57,17 +50,18 @@ export const createGameReview = async (
   // MAKE TRANSACTION
 
   // insert review
-  const insertInfo = await userReviewsCollection.insertOne(newUserReview);
+  const insertInfo = await gameReviewsCollection.insertOne(newGameReview);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw "could not add user review.";
 
-  await addReviewToUserStats(usersCollection, reviewedUser, rating);
-
-  // ^^^^^^^^^^^^^^^^^^
-  // ##################
+  // TO DO ##############################################################################################################################
+  await addReviewToGameSta(await games(), reviewedUser, rating);
 
   const newId = insertInfo.insertedId.toString();
   return await getUserReviewById(newId);
+
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
 };
 
 export const removeUserReview = async (id) => {

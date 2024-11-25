@@ -25,6 +25,8 @@ export const createGame = async (
   condition = validateCondition(condition);
   const datePosted = new Date().toUTCString();
   imgURL = validateURL(imgURL);
+  const averageRating = 0;
+  const numReviews = 0;
 
   const newGame = {
     ownerID,
@@ -34,6 +36,8 @@ export const createGame = async (
     condition,
     datePosted,
     imgURL,
+    averageRating,
+    numReviews,
   };
 
   // add new game

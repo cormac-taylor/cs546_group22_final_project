@@ -1,12 +1,13 @@
-import { users } from "../../config/mongoCollections.js";
-import { getUserById } from "../users.js";
+import { games } from "../../config/mongoCollections";
+import { getGameById } from "../games";
 
-export const removeReviewFromUserStats = async (reviewedUserID, oldRating) => {
-  const usersCollection = await users();
+export const removeReviewFromGameStats = async (reviewedGameID, oldRating) => {
+  const gamesCollection = new games();
 
-  // find reviewedUser
-  const reviewedUserData = await getUserById(reviewedUserID.toString())
+  // find reviewedGame
+  const reviewedGameData = await getGameById(reviewedGameID.toString())
 
+  // TO DO #######################################################################################################################################
   // calculate new reviewedUser stats
   const newNumReviews = reviewedUserData.numReviews - 1;
   let newAverageRating;
@@ -31,11 +32,14 @@ export const removeReviewFromUserStats = async (reviewedUserID, oldRating) => {
   if (!reviewedUserUpdated) throw `could not update user with id: ${id}.`;
 };
 
-export const addReviewToUserStats = async (reviewedUserID, newRating) => {
-  const usersCollection = await users();
+export const addReviewToGameStats = async (reviewedUserID, newRating) => {
+  const gamesCollection = new games();
 
   // find reviewedUser
-  const reviewedUserData = await getUserById(reviewedUserID.toString())
+  const reviewedUserData = await usersCollection.findOne({
+    _id: reviewedUserID,
+  });
+  if (!reviewedUserData) throw "reviewedUser doesn't exist.";
 
   // calculate new reviewedUser stats
   const newNumReviews = reviewedUserData.numReviews + 1;
