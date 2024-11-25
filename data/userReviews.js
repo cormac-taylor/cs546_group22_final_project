@@ -1,9 +1,10 @@
 import { userReviews, users } from "../config/mongoCollections.js";
 import {
+  validateBody,
   validateNonEmptyObject,
   validateObjectID,
   validateRating,
-  validateString,
+  validateTitle,
 } from "../utilities/validation.js";
 import {
   removeReviewFromUserStats,
@@ -19,9 +20,9 @@ export const createUserReview = async (
 ) => {
   postingUser = validateObjectID(postingUser);
   reviewedUser = validateObjectID(reviewedUser);
-  title = validateString(title);
+  title = validateTitle(title);
   const date = new Date().toUTCString();
-  body = validateString(body);
+  body = validateBody(body);
   rating = validateRating(rating);
 
   const newUserReview = {
@@ -129,13 +130,15 @@ export const updateUserReview = async (id, updateFeilds) => {
   patchedUserReview.date = new Date().toUTCString();
 
   if (updateFeilds.reviewedUser)
-    patchedUserReview.reviewedUser = validateObjectID(updateFeilds.reviewedUser);
+    patchedUserReview.reviewedUser = validateObjectID(
+      updateFeilds.reviewedUser
+    );
 
   if (updateFeilds.title)
-    patchedUserReview.title = validateString(updateFeilds.title);
+    patchedUserReview.title = validateTitle(updateFeilds.title);
 
   if (updateFeilds.body)
-    patchedUserReview.body = validateString(updateFeilds.body);
+    patchedUserReview.body = validateBody(updateFeilds.body);
 
   if (updateFeilds.rating || updateFeilds.rating === 0)
     patchedUserReview.rating = validateRating(updateFeilds.rating);
@@ -163,7 +166,10 @@ export const updateUserReview = async (id, updateFeilds) => {
   if (!updateInfo) throw `could not patch user with id: ${id}.`;
 
   // update user stats
-  if (patchedUserReview.reviewedUser && (patchedUserReview.rating || patchedUserReview.rating === 0)) {
+  if (
+    patchedUserReview.reviewedUser &&
+    (patchedUserReview.rating || patchedUserReview.rating === 0)
+  ) {
     const usersCollection = await users();
     await removeReviewFromUserStats(
       usersCollection,

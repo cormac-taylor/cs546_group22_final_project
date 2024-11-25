@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
-import validator from 'validator';
+import validator from "validator";
 import { valid as isValidGeoJson } from "geojson-validation";
+import isWebUri from "valid-url";
 
 export const validateBoolean = (bool) => {
   if (typeof bool !== "boolean") throw "must be a boolean!";
@@ -26,6 +27,12 @@ export const validateString = (str) => {
   if (typeof str !== "string") throw "must be a string!";
   let res = str.trim();
   if (!res) throw "must have a char!";
+  return res;
+};
+
+const validateStrOfMaxLen = (str, maxLen) => {
+  const res = validateString(str);
+  if (res.length > maxLen) throw `must be less than ${maxLen} chars!`;
   return res;
 };
 
@@ -67,26 +74,49 @@ export const validateName = (name) => {
   // https://a-tokyo.medium.com/first-and-last-name-validation-for-forms-and-databases-d3edf29ad29d
   const NAME_REGEX = /^[a-zA-Z]+([ \-']{0,1}[a-zA-Z]+){0,2}[.]{0,1}$/;
 
-  const res = validateString(name);
-
-  if (!NAME_REGEX.test(res)) throw "must be name!"
+  const res = validateStrOfMaxLen(name, 32);
+  if (!NAME_REGEX.test(res)) throw "must be name!";
   return res;
 };
 
 export const validateEmail = (email) => {
   const res = validateString(email).toLowerCase();
-  if (!validator.isEmail(res)) throw "must be an email address!"
+  if (!validator.isEmail(res)) throw "must be an email address!";
   return res;
 };
 
 export const validateGeoJson = (geoJson) => {
   const res = validateNonEmptyObject(geoJson);
-  if (!isValidGeoJson(res)) throw "must be a GeoJson!"
+  if (!isValidGeoJson(res)) throw "must be a GeoJson!";
   return res;
+};
+
+export const validateTitle = (title) => {
+  return validateStrOfMaxLen(title, 128);
+};
+
+export const validateBody = (body) => {
+  return validateStrOfMaxLen(title, 1024);
 };
 
 export const validateRating = (rating) => {
   const res = validateInteger(rating);
-  if (res < 0 || 5 < res) throw "must be between 0 and 5!"
+  if (res < 0 || 5 < res) throw "must be between 0 and 5!";
   return res;
 };
+
+export const validateURL = (url) => {
+  const res = validateString(url);
+  if (!isWebUri(res)) throw "must be a valid url!";
+  return res;
+};
+
+// HERE ########################################################################################################
+export const validateCondition = (condition) => {
+  const CONDITIONS = [""];
+  
+  const res = validateString(condition);
+  if (res === "") throw "must be a valid url!";
+  return res;
+};
+
