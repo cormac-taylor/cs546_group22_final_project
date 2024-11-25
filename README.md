@@ -4,8 +4,8 @@ Team of 4 developers take on building a full stack web appliction to help connec
 
 ## Technologies
 - Javascript
-- MongoDB
 - Express.js
+- MongoDB
 - HTML/CSS
 - Handlebars
 
