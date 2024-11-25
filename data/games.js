@@ -3,6 +3,7 @@ import {
   validateBody,
   validateCondition,
   validateGeoJson,
+  validateNonEmptyObject,
   validateObjectID,
   validateString,
   validateTitle,
@@ -42,7 +43,7 @@ export const createGame = async (
     throw "could not add game.";
 
   const newId = insertInfo.insertedId.toString();
-  return await getUserById(newId);
+  return await getGameById(newId);
 };
 
 export const removeGamesByOwnerId = async (ownerID) => {
@@ -54,8 +55,7 @@ export const removeGamesByOwnerId = async (ownerID) => {
   const deletionInfo = [];
   const games = await getGamesByOwnerID(ownerID);
   for (const game of games) {
-    ({ _id: id } = game);
-    deletionInfo.push(await removeGameById(id.toString()));
+    deletionInfo.push(await removeGameById(game._id.toString()));
   }
 
   // ^^^^^^^^^^^^^^^^^^
@@ -103,14 +103,14 @@ export const getGamesByOwnerID = async (ownerID) => {
   ownerID = validateObjectID(ownerID);
 
   const gamesCollection = await games();
-  const games = await gamesCollection
+  const gameList = await gamesCollection
     .find({
       ownerID: ownerID,
     })
     .toArray();
-  if (!games) throw `no game with ownerID: ${ownerID}.`;
+  if (!gameList) throw `no game with ownerID: ${ownerID}.`;
 
-  return games;
+  return gameList;
 };
 
 export const getGameById = async (id) => {

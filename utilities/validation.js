@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import validator from "validator";
 import { valid as isValidGeoJson } from "geojson-validation";
-import isWebUri from "valid-url";
+import { isWebUri } from "valid-url";
 
 export const validateBoolean = (bool) => {
   if (typeof bool !== "boolean") throw "must be a boolean!";
@@ -96,7 +96,7 @@ export const validateTitle = (title) => {
 };
 
 export const validateBody = (body) => {
-  return validateStrOfMaxLen(title, 1024);
+  return validateStrOfMaxLen(body, 1024);
 };
 
 export const validateRating = (rating) => {
@@ -113,9 +113,9 @@ export const validateURL = (url) => {
 
 export const validateCondition = (condition) => {
   const CONDITIONS = ["new", "like-new", "used", "well-used"];
-  
+
   const res = validateString(condition).toLowerCase();
-  if (!CONDITIONS.find((cond) => cond === res)) throw "must be a valid condition: new, like-new, used, or well-used";
+  if (!CONDITIONS.find((cond) => cond === res))
+    throw "must be a valid condition: new, like-new, used, or well-used";
   return res;
 };
-
