@@ -4,6 +4,7 @@ import {
   validateCondition,
   validateGeoJson,
   validateObjectID,
+  validateString,
   validateTitle,
   validateURL,
 } from "../utilities/validation.js";
@@ -38,13 +39,32 @@ export const createGame = async (
   const gamesCollection = await games();
   const insertInfo = await gamesCollection.insertOne(newGame);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
-    throw "could not add user.";
+    throw "could not add game.";
 
   const newId = insertInfo.insertedId.toString();
   return await getUserById(newId);
 };
 
-export const removeGame = async (id) => {
+export const removeGamesByOwnerId = async (ownerID) => {
+  ownerID = validateString(ownerID);
+
+  // ##################
+  // MAKE TRANSACTION
+
+  const deletionInfo = [];
+  const games = await getGamesByOwnerID(ownerID);
+  for (const game of games) {
+    ({ _id: id } = game);
+    deletionInfo.push(await removeGameById(id.toString()));
+  }
+
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
+
+  return deletionInfo;
+};
+
+export const removeGameById = async (id) => {
   id = validateObjectID(id);
 
   // ##################
@@ -55,7 +75,7 @@ export const removeGame = async (id) => {
   const deletionInfo = await gamesCollection.findOneAndDelete({
     _id: id,
   });
-  if (!deletionInfo) throw `could not delete user with id: ${id}.`;
+  if (!deletionInfo) throw `could not delete game with id: ${id}.`;
 
   // delete all reviews about deleted game
   const gameReviewsCollection = await gameReviews();
@@ -63,7 +83,7 @@ export const removeGame = async (id) => {
     reviewedGame: id,
   });
   if (!deletionConfirmation.acknowledged)
-    throw `could not delete user reviews for deleted user: ${id}`;
+    throw `could not delete game reviews for deleted game: ${id}`;
 
   // ^^^^^^^^^^^^^^^^^^
   // ##################
@@ -74,9 +94,23 @@ export const removeGame = async (id) => {
 export const getAllGames = async () => {
   const gamesCollection = await games();
   let gameList = await gamesCollection.find({}).toArray();
-  if (!gameList) throw "could not get all users.";
+  if (!gameList) throw "could not get all games.";
 
   return gameList;
+};
+
+export const getGamesByOwnerID = async (ownerID) => {
+  ownerID = validateObjectID(ownerID);
+
+  const gamesCollection = await games();
+  const games = await gamesCollection
+    .find({
+      ownerID: ownerID,
+    })
+    .toArray();
+  if (!games) throw `no game with ownerID: ${ownerID}.`;
+
+  return games;
 };
 
 export const getGameById = async (id) => {
@@ -86,54 +120,46 @@ export const getGameById = async (id) => {
   const game = await gamesCollection.findOne({
     _id: id,
   });
-  if (!game) throw `no user with id: ${id}.`;
+  if (!game) throw `no game with id: ${id}.`;
 
   return game;
 };
 
-// TO DO ########################################################################################################################
-// Also helpers for user functions
 export const updateGame = async (id, updateFeilds) => {
   id = validateObjectID(id);
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
-  const patchedUser = {};
-  if (updateFeilds.firstName) {
-    patchedUser.firstName = validateName(updateFeilds.firstName);
-  }
-
-  if (updateFeilds.lastName) {
-    patchedUser.lastName = validateName(updateFeilds.lastName);
-  }
-
-  if (updateFeilds.hashedPassword) {
-    patchedUser.hashedPassword = validateString(updateFeilds.hashedPassword);
-  }
+  const patchedGame = {};
+  patchedGame.datePosted = new Date().toUTCString();
 
   if (updateFeilds.location) {
-    patchedUser.location = validateGeoJson(updateFeilds.location);
+    patchedGame.location = validateGeoJson(updateFeilds.location);
   }
 
-  const usersCollection = await users();
-
-  if (updateFeilds.email) {
-    patchedUser.email = validateString(updateFeilds.email);
-
-    // make sure the email isn't used by another user
-    const accountWithEmail = await usersCollection.findOne({
-      _id: { $ne: id },
-      email: patchedUser.email,
-    });
-    if (accountWithEmail) throw "email must be unique!";
+  if (updateFeilds.gameTitle) {
+    patchedGame.gameTitle = validateTitle(updateFeilds.gameTitle);
   }
 
-  // update user
-  const updateInfo = await usersCollection.findOneAndUpdate(
+  if (updateFeilds.description) {
+    patchedGame.description = validateBody(updateFeilds.description);
+  }
+
+  if (updateFeilds.condition) {
+    patchedGame.condition = validateCondition(updateFeilds.condition);
+  }
+
+  if (updateFeilds.imgURL) {
+    patchedGame.imgURL = validateURL(updateFeilds.imgURL);
+  }
+
+  // update game
+  const gamesCollection = await games();
+  const updateInfo = await gamesCollection.findOneAndUpdate(
     { _id: id },
-    { $set: patchedUser },
+    { $set: patchedGame },
     { returnDocument: "after" }
   );
-  if (!updateInfo) throw `could not patch user with id: ${id}.`;
+  if (!updateInfo) throw `could not patch game with id: ${id}.`;
 
   return updateInfo;
 };
