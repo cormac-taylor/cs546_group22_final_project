@@ -1,4 +1,4 @@
-import { usersData, userReviewsData } from "./data/index.js";
+import { usersData, userReviewsData, gamesData } from "./data/index.js";
 import { dbConnection, closeConnection } from "./config/mongoConnection.js";
 
 //lets drop the database each time this is run
@@ -9,10 +9,18 @@ let u1;
 let u2;
 let u3;
 let u4;
-let r1;
-let r2;
-let r3;
-let r4;
+let ur1;
+let ur2;
+let ur3;
+let ur4;
+let g1;
+let g2;
+let g3;
+let g4;
+let gr1;
+let gr2;
+let gr3;
+let gr4;
 
 try {
   u1 = await usersData.createUser("user", "one", "u1@acb.com", "password", {
@@ -51,7 +59,7 @@ try {
 }
 
 try {
-  r1 = await userReviewsData.createUserReview(
+  ur1 = await userReviewsData.createUserReview(
     u1._id.toString(),
     u2._id.toString(),
     "AWESOME",
@@ -63,7 +71,7 @@ try {
 }
 
 try {
-  r2 = await userReviewsData.createUserReview(
+  ur2 = await userReviewsData.createUserReview(
     u3._id.toString(),
     u2._id.toString(),
     "SINKS",
@@ -75,7 +83,7 @@ try {
 }
 
 try {
-  r3 = await userReviewsData.createUserReview(
+  ur3 = await userReviewsData.createUserReview(
     u4._id.toString(),
     u2._id.toString(),
     "Solid",
@@ -87,12 +95,64 @@ try {
 }
 
 try {
-  r4 = await userReviewsData.createUserReview(
+  ur4 = await userReviewsData.createUserReview(
     u2._id.toString(),
     u3._id.toString(),
     "Fake News",
     "Stright cap. Kids just bad.",
     0
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  g1 = await gamesData.createGame(
+    u2._id.toString(),
+    u2.location,
+    "Risk",
+    "The ultimate game of strategy.",
+    "new",
+    "https://m.media-amazon.com/images/I/71GM6UFejTL._AC_SL1500_.jpg"
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  g2 = await gamesData.createGame(
+    u2._id.toString(),
+    u2.location,
+    "Risk",
+    "The ultimate game of strategy.",
+    "new",
+    "https://m.media-amazon.com/images/I/71GM6UFejTL._AC_SL1500_.jpg"
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  g3 = await gamesData.createGame(
+    u2._id.toString(),
+    u2.location,
+    "Monopoly",
+    "The ultimate game of greed.",
+    "used",
+    "https://m.media-amazon.com/images/I/71Tks9Tf7aL._AC_SL1000_.jpg"
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  g4 = await gamesData.createGame(
+    u1._id.toString(),
+    u1.location,
+    "Connect4",
+    "Out play your opponent.",
+    "well-used",
+    "https://m.media-amazon.com/images/I/81fEiLrmZ8L._AC_SL1500_.jpg"
   );
 } catch (e) {
   console.log(e);

@@ -7,6 +7,7 @@ import {
   validateNonEmptyObject,
   validateName,
 } from "../utilities/validation.js";
+import { removeGamesByOwnerId } from "./games.js";
 
 export const createUser = async (
   firstName,
@@ -72,6 +73,9 @@ export const removeUser = async (id) => {
   if (!deletionConfirmation.acknowledged)
     throw `could not delete user reviews for deleted user: ${id}`;
 
+  // delete all games owned by deleted user
+  await removeGamesByOwnerId(id.toString())
+  
   // ^^^^^^^^^^^^^^^^^^
   // ##################
 
