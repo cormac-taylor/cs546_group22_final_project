@@ -227,7 +227,6 @@ try {
 //   updateUserReview,
 
 // games
-//   createGame,
 //   removeGamesByOwnerId,
 //   removeGameById,
 //   getAllGames,
@@ -236,12 +235,7 @@ try {
 //   updateGame,
 
 try {
-  const res = await gameReviewsData.updateGameReview(gr1._id.toString(), {
-    reviewedGame: g1._id.toString(),
-    title: "title",
-    body: "title",
-    rating: 0
-  });
+  const res = await gamesData.removeGamesByOwnerId(u2._id.toString());
   console.log(res);
 } catch (e) {
   console.log(e);

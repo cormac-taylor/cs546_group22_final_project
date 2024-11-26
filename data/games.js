@@ -1,4 +1,4 @@
-import { gameReviews, games } from "../config/mongoCollections.js";
+import { games } from "../config/mongoCollections.js";
 import {
   validateBody,
   validateCondition,
@@ -60,6 +60,7 @@ export const removeGamesByOwnerId = async (ownerID) => {
   const deletionInfo = [];
   const games = await getGamesByOwnerID(ownerID);
   for (const game of games) {
+    console.log(game);
     deletionInfo.push(await removeGameById(game._id.toString()));
   }
 
@@ -75,15 +76,16 @@ export const removeGameById = async (id) => {
   // ##################
   // MAKE TRANSACTION
 
+  // TO DO ########################################################################################
+  // delete all reviews about deleted game
+  await removeGameReviewByReviewedGameId(id.toString());
+
   // delete game
   const gamesCollection = await games();
   const deletionInfo = await gamesCollection.findOneAndDelete({
     _id: id,
   });
   if (!deletionInfo) throw `could not delete game with id: ${id}.`;
-
-  // delete all reviews about deleted game
-  await removeGameReviewByReviewedGameId(id.toString());
 
   return deletionInfo;
 
