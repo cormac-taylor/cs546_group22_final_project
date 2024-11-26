@@ -1,4 +1,4 @@
-import { userReviews, users } from "../config/mongoCollections.js";
+import { userReviews } from "../config/mongoCollections.js";
 import {
   validateBody,
   validateNonEmptyObject,
@@ -10,6 +10,7 @@ import {
   removeReviewFromUserStats,
   addReviewToUserStats,
 } from "./helpers/updateUserStats.js";
+import { getUserById } from "./users.js";
 
 export const createUserReview = async (
   postingUser,
@@ -38,19 +39,11 @@ export const createUserReview = async (
   if (postingUser.toString() === reviewedUser.toString())
     throw "user cannot review themselves!";
 
-  const usersCollection = await users();
-
   // make sure postingUser exits
-  const postingUserData = await usersCollection.findOne({
-    _id: postingUser,
-  });
-  if (!postingUserData) throw "postingUser doesn't exist.";
+  await getUserById(postingUser.toString());
 
   // make sure reviewedUser exits
-  const reviewedUserData = await usersCollection.findOne({
-    _id: reviewedUser,
-  });
-  if (!reviewedUserData) throw "reviewedUser doesn't exist.";
+  await getUserById(reviewedUser.toString());
 
   const userReviewsCollection = await userReviews();
 
@@ -69,16 +62,26 @@ export const createUserReview = async (
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw "could not add user review.";
 
-  await addReviewToUserStats(usersCollection, reviewedUser, rating);
-
-  // ^^^^^^^^^^^^^^^^^^
-  // ##################
+  await addReviewToUserStats(reviewedUser, rating);
 
   const newId = insertInfo.insertedId.toString();
   return await getUserReviewById(newId);
+
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
+};
+export const removeUserReviewsByReviewedId = async (id) => {
+  id = validateObjectID(id);
+
+  const userReviewsCollection = await userReviews();
+  const deletionConfirmation = await userReviewsCollection.deleteMany({
+    reviewedUser: id,
+  });
+  if (!deletionConfirmation.acknowledged)
+    throw `could not delete user reviews for deleted user: ${id}`;
 };
 
-export const removeUserReview = async (id) => {
+export const removeUserReviewById = async (id) => {
   id = validateObjectID(id);
 
   // ##################
@@ -92,15 +95,14 @@ export const removeUserReview = async (id) => {
   if (!deletionInfo) throw `could not delete user review with id: ${id}.`;
 
   await removeReviewFromUserStats(
-    await users(),
     deletionInfo.reviewedUser,
     deletionInfo.rating
   );
 
+  return deletionInfo;
+
   // ^^^^^^^^^^^^^^^^^^
   // ##################
-
-  return deletionInfo;
 };
 
 export const getAllUserReviews = async () => {
@@ -170,45 +172,18 @@ export const updateUserReview = async (id, updateFeilds) => {
     patchedUserReview.reviewedUser &&
     (patchedUserReview.rating || patchedUserReview.rating === 0)
   ) {
-    const usersCollection = await users();
-    await removeReviewFromUserStats(
-      usersCollection,
-      oldReview.reviewedUser,
-      oldReview.rating
-    );
-    await addReviewToUserStats(
-      usersCollection,
-      updateInfo.reviewedUser,
-      updateInfo.rating
-    );
+    await removeReviewFromUserStats(oldReview.reviewedUser, oldReview.rating);
+    await addReviewToUserStats(updateInfo.reviewedUser, updateInfo.rating);
   } else if (patchedUserReview.reviewedUser) {
-    const usersCollection = await users();
-    await removeReviewFromUserStats(
-      usersCollection,
-      oldReview.reviewedUser,
-      oldReview.rating
-    );
-    await addReviewToUserStats(
-      usersCollection,
-      updateInfo.reviewedUser,
-      oldReview.rating
-    );
+    await removeReviewFromUserStats(oldReview.reviewedUser, oldReview.rating);
+    await addReviewToUserStats(updateInfo.reviewedUser, oldReview.rating);
   } else if (patchedUserReview.rating || patchedUserReview.rating === 0) {
-    const usersCollection = await users();
-    await removeReviewFromUserStats(
-      usersCollection,
-      oldReview.reviewedUser,
-      oldReview.rating
-    );
-    await addReviewToUserStats(
-      usersCollection,
-      oldReview.reviewedUser,
-      updateInfo.rating
-    );
+    await removeReviewFromUserStats(oldReview.reviewedUser, oldReview.rating);
+    await addReviewToUserStats(oldReview.reviewedUser, updateInfo.rating);
   }
+
+  return updateInfo;
 
   // ^^^^^^^^^^^^^^^^^^
   // ##################
-
-  return updateInfo;
 };

@@ -8,7 +8,8 @@ import {
 
 import {
   createUserReview,
-  removeUserReview,
+  removeUserReviewsByReviewedId,
+  removeUserReviewById,
   getAllUserReviews,
   getUserReviewById,
   updateUserReview,
@@ -24,6 +25,26 @@ import {
   updateGame,
 } from "./games.js";
 
+import {
+  createGameReview,
+  removeGameReviewByReviewedGameId,
+  removeGameReviewById,
+  getAllGameReviews,
+  getGameReviewsByReviewedGameId,
+  getGameReviewById,
+  updateGameReview,
+} from "./gameReviews.js";
+
+export const gameReviewsData = {
+  createGameReview,
+  removeGameReviewByReviewedGameId,
+  removeGameReviewById,
+  getAllGameReviews,
+  getGameReviewsByReviewedGameId,
+  getGameReviewById,
+  updateGameReview,
+};
+
 export const gamesData = {
   createGame,
   removeGamesByOwnerId,
@@ -36,7 +57,8 @@ export const gamesData = {
 
 export const userReviewsData = {
   createUserReview,
-  removeUserReview,
+  removeUserReviewsByReviewedId,
+  removeUserReviewById,
   getAllUserReviews,
   getUserReviewById,
   updateUserReview,
