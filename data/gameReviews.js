@@ -152,18 +152,18 @@ export const updateGameReview = async (id, updateFeilds) => {
   const patchedGameReview = {};
   patchedGameReview.date = new Date().toUTCString();
 
-  if (updateFeilds.reviewedGame)
+  if (updateFeilds.reviewedGame !== undefined)
     patchedGameReview.reviewedGame = validateObjectID(
       updateFeilds.reviewedGame
     );
 
-  if (updateFeilds.title)
+  if (updateFeilds.title !== undefined)
     patchedGameReview.title = validateTitle(updateFeilds.title);
 
-  if (updateFeilds.body)
+  if (updateFeilds.body !== undefined)
     patchedGameReview.body = validateBody(updateFeilds.body);
 
-  if (updateFeilds.rating || updateFeilds.rating === 0)
+  if (updateFeilds.rating !== undefined)
     patchedGameReview.rating = validateRating(updateFeilds.rating);
 
   // ##################

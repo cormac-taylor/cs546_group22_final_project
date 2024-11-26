@@ -103,25 +103,25 @@ export const updateUser = async (id, updateFeilds) => {
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
   const patchedUser = {};
-  if (updateFeilds.firstName) {
+  if (updateFeilds.firstName !== undefined) {
     patchedUser.firstName = validateName(updateFeilds.firstName);
   }
 
-  if (updateFeilds.lastName) {
+  if (updateFeilds.lastName !== undefined) {
     patchedUser.lastName = validateName(updateFeilds.lastName);
   }
 
-  if (updateFeilds.hashedPassword) {
+  if (updateFeilds.hashedPassword !== undefined) {
     patchedUser.hashedPassword = validateString(updateFeilds.hashedPassword);
   }
 
-  if (updateFeilds.location) {
+  if (updateFeilds.location !== undefined) {
     patchedUser.location = validateGeoJson(updateFeilds.location);
   }
 
   const usersCollection = await users();
 
-  if (updateFeilds.email) {
+  if (updateFeilds.email !== undefined) {
     patchedUser.email = validateString(updateFeilds.email);
 
     // make sure the email isn't used by another user

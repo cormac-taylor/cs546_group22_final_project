@@ -132,23 +132,23 @@ export const updateGame = async (id, updateFeilds) => {
   const patchedGame = {};
   patchedGame.datePosted = new Date().toUTCString();
 
-  if (updateFeilds.location) {
+  if (updateFeilds.location !== undefined) {
     patchedGame.location = validateGeoJson(updateFeilds.location);
   }
 
-  if (updateFeilds.gameTitle) {
+  if (updateFeilds.gameTitle !== undefined) {
     patchedGame.gameTitle = validateTitle(updateFeilds.gameTitle);
   }
 
-  if (updateFeilds.description) {
+  if (updateFeilds.description !== undefined) {
     patchedGame.description = validateBody(updateFeilds.description);
   }
 
-  if (updateFeilds.condition) {
+  if (updateFeilds.condition !== undefined) {
     patchedGame.condition = validateCondition(updateFeilds.condition);
   }
 
-  if (updateFeilds.imgURL) {
+  if (updateFeilds.imgURL !== undefined) {
     patchedGame.imgURL = validateURL(updateFeilds.imgURL);
   }
 

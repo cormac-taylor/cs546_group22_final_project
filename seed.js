@@ -235,13 +235,16 @@ try {
 //   getGameById,
 //   updateGame,
 
-// gameReviews
-//   createGameReview,
-//   removeGameReviewByReviewedGameId,
-//   removeGameReviewById,
-//   getAllGameReviews,
-//   getGameReviewsByReviewedGameId,
-//   getGameReviewById,
-//   updateGameReview,
+try {
+  const res = await gameReviewsData.updateGameReview(gr1._id.toString(), {
+    reviewedGame: g1._id.toString(),
+    title: "title",
+    body: "title",
+    rating: 0
+  });
+  console.log(res);
+} catch (e) {
+  console.log(e);
+}
 
 await closeConnection();
