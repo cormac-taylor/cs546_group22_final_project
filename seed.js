@@ -211,4 +211,37 @@ try {
   console.log(e);
 }
 
+// users
+//   createUser,
+//   removeUser,
+//   getAllUsers,
+//   getUserById,
+//   updateUser,
+
+// userReviews
+//   createUserReview,
+//   removeUserReviewsByReviewedId,
+//   removeUserReviewById,
+//   getAllUserReviews,
+//   getUserReviewById,
+//   updateUserReview,
+
+// games
+//   createGame,
+//   removeGamesByOwnerId,
+//   removeGameById,
+//   getAllGames,
+//   getGamesByOwnerID,
+//   getGameById,
+//   updateGame,
+
+// gameReviews
+//   createGameReview,
+//   removeGameReviewByReviewedGameId,
+//   removeGameReviewById,
+//   getAllGameReviews,
+//   getGameReviewsByReviewedGameId,
+//   getGameReviewById,
+//   updateGameReview,
+
 await closeConnection();
