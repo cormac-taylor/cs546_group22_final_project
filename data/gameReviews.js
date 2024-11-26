@@ -62,21 +62,30 @@ export const createGameReview = async (
   await addReviewToGameStats(reviewedGame, rating);
 
   const newId = insertInfo.insertedId.toString();
-  return await getGameById(newId);
+  return await getGameReviewById(newId);
 
   // ^^^^^^^^^^^^^^^^^^
   // ##################
 };
 
-export const removeGameReviewByReviewedGameId = async (id) => {
-  id = validateObjectID(id);
+export const removeGameReviewByReviewedGameId = async (reviewedGameId) => {
+  reviewedGameId = validateObjectID(reviewedGameId);
 
-  const gameReviewsCollection = await gameReviews();
-  const deletionConfirmation = await gameReviewsCollection.deleteMany({
-    reviewedGame: id,
-  });
-  if (!deletionConfirmation.acknowledged)
-    throw `could not delete game reviews for deleted game: ${id}`;
+  // ##################
+  // MAKE TRANSACTION
+
+  const deletionInfo = [];
+  const gameReviews = await getGameReviewsByReviewedGameId(
+    reviewedGameId.toString()
+  );
+  for (const review of gameReviews) {
+    deletionInfo.push(await removeGameReviewById(review._id.toString()));
+  }
+
+  return deletionInfo;
+
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
 };
 
 export const removeGameReviewById = async (id) => {
@@ -107,6 +116,20 @@ export const getAllGameReviews = async () => {
   const gameReviewsCollection = await gameReviews();
   let gameReviewList = await gameReviewsCollection.find({}).toArray();
   if (!gameReviewList) throw "could not get all game reviews.";
+  return gameReviewList;
+};
+
+export const getGameReviewsByReviewedGameId = async (id) => {
+  id = validateObjectID(id);
+
+  const gameReviewsCollection = await gameReviews();
+  let gameReviewList = await gameReviewsCollection
+    .find({
+      reviewedGame: id,
+    })
+    .toArray();
+  if (!gameReviewList)
+    throw `could not get game reviews for reviewedGame: ${id}.`;
   return gameReviewList;
 };
 
@@ -146,7 +169,7 @@ export const updateGameReview = async (id, updateFeilds) => {
   // ##################
   // MAKE TRANSACTION
 
-  const oldReview = await getGameById(id.toString());
+  const oldReview = await getGameReviewById(id.toString());
 
   // update review
   const gameReviewsCollection = await gameReviews();

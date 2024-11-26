@@ -30,6 +30,7 @@ import {
   removeGameReviewByReviewedGameId,
   removeGameReviewById,
   getAllGameReviews,
+  getGameReviewsByReviewedGameId,
   getGameReviewById,
   updateGameReview,
 } from "./gameReviews.js";
@@ -39,6 +40,7 @@ export const gameReviewsData = {
   removeGameReviewByReviewedGameId,
   removeGameReviewById,
   getAllGameReviews,
+  getGameReviewsByReviewedGameId,
   getGameReviewById,
   updateGameReview,
 };
