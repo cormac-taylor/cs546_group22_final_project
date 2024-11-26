@@ -1,4 +1,4 @@
-import { userReviews, users } from "../config/mongoCollections.js";
+import { userReviews } from "../config/mongoCollections.js";
 import {
   validateBody,
   validateNonEmptyObject,
@@ -40,10 +40,10 @@ export const createUserReview = async (
     throw "user cannot review themselves!";
 
   // make sure postingUser exits
-  await getUserById(postingUser.toString())
+  await getUserById(postingUser.toString());
 
   // make sure reviewedUser exits
-  const reviewedUserData = await getUserById(reviewedUser.toString())
+  await getUserById(reviewedUser.toString());
 
   const userReviewsCollection = await userReviews();
 
@@ -70,8 +70,18 @@ export const createUserReview = async (
   // ^^^^^^^^^^^^^^^^^^
   // ##################
 };
+export const removeUserReviewsByReviewedId = async (id) => {
+  id = validateObjectID(id);
 
-export const removeUserReview = async (id) => {
+  const userReviewsCollection = await userReviews();
+  const deletionConfirmation = await userReviewsCollection.deleteMany({
+    reviewedUser: id,
+  });
+  if (!deletionConfirmation.acknowledged)
+    throw `could not delete user reviews for deleted user: ${id}`;
+};
+
+export const removeUserReviewById = async (id) => {
   id = validateObjectID(id);
 
   // ##################
@@ -90,7 +100,7 @@ export const removeUserReview = async (id) => {
   );
 
   return deletionInfo;
-  
+
   // ^^^^^^^^^^^^^^^^^^
   // ##################
 };
@@ -162,32 +172,14 @@ export const updateUserReview = async (id, updateFeilds) => {
     patchedUserReview.reviewedUser &&
     (patchedUserReview.rating || patchedUserReview.rating === 0)
   ) {
-    await removeReviewFromUserStats(
-      oldReview.reviewedUser,
-      oldReview.rating
-    );
-    await addReviewToUserStats(
-      updateInfo.reviewedUser,
-      updateInfo.rating
-    );
+    await removeReviewFromUserStats(oldReview.reviewedUser, oldReview.rating);
+    await addReviewToUserStats(updateInfo.reviewedUser, updateInfo.rating);
   } else if (patchedUserReview.reviewedUser) {
-    await removeReviewFromUserStats(
-      oldReview.reviewedUser,
-      oldReview.rating
-    );
-    await addReviewToUserStats(
-      updateInfo.reviewedUser,
-      oldReview.rating
-    );
+    await removeReviewFromUserStats(oldReview.reviewedUser, oldReview.rating);
+    await addReviewToUserStats(updateInfo.reviewedUser, oldReview.rating);
   } else if (patchedUserReview.rating || patchedUserReview.rating === 0) {
-    await removeReviewFromUserStats(
-      oldReview.reviewedUser,
-      oldReview.rating
-    );
-    await addReviewToUserStats(
-      oldReview.reviewedUser,
-      updateInfo.rating
-    );
+    await removeReviewFromUserStats(oldReview.reviewedUser, oldReview.rating);
+    await addReviewToUserStats(oldReview.reviewedUser, updateInfo.rating);
   }
 
   return updateInfo;

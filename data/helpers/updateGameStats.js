@@ -1,5 +1,5 @@
-import { games } from "../../config/mongoCollections";
-import { getGameById } from "../games";
+import { games } from "../../config/mongoCollections.js";
+import { getGameById } from "../games.js";
 
 export const removeReviewFromGameStats = async (reviewedGameID, oldRating) => {
   // find reviewedGame
@@ -21,7 +21,7 @@ export const removeReviewFromGameStats = async (reviewedGameID, oldRating) => {
   newAverageRating = Number(newAverageRating.toFixed(2));
 
   // update reviewedGame with stats
-  const gamesCollection = new games();
+  const gamesCollection = await games();
   const reviewedGameUpdated = await gamesCollection.findOneAndUpdate(
     { _id: reviewedGameID },
     { $set: { averageRating: newAverageRating, numReviews: newNumReviews } },
@@ -50,7 +50,7 @@ export const addReviewToGameStats = async (reviewedGameID, newRating) => {
   newAverageRating = Number(newAverageRating.toFixed(2));
 
   // update reviewedGame with stats
-  const gamesCollection = new games();
+  const gamesCollection = await games();
   const reviewedGameUpdated = await gamesCollection.findOneAndUpdate(
     { _id: reviewedGameID },
     { $set: { averageRating: newAverageRating, numReviews: newNumReviews } },

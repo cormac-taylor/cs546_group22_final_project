@@ -1,4 +1,4 @@
-import { userReviews, users } from "../config/mongoCollections.js";
+import { users } from "../config/mongoCollections.js";
 import {
   validateObjectID,
   validateEmail,
@@ -8,6 +8,7 @@ import {
   validateName,
 } from "../utilities/validation.js";
 import { removeGamesByOwnerId } from "./games.js";
+import { removeUserReviewsByReviewedId } from "./userReviews.js";
 
 export const createUser = async (
   firstName,
@@ -66,20 +67,15 @@ export const removeUser = async (id) => {
 
   // delete all reviews about deleted user
   // https://reputationamerica.org/does-deleting-a-google-account-delete-your-reviews/
-  const usersReviewsCollection = await userReviews();
-  const deletionConfirmation = await usersReviewsCollection.deleteMany({
-    reviewedUser: id,
-  });
-  if (!deletionConfirmation.acknowledged)
-    throw `could not delete user reviews for deleted user: ${id}`;
+  await removeUserReviewsByReviewedId(id.toString());
 
   // delete all games owned by deleted user
-  await removeGamesByOwnerId(id.toString())
-  
-  // ^^^^^^^^^^^^^^^^^^
-  // ##################
+  await removeGamesByOwnerId(id.toString());
 
   return deletionInfo;
+
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
 };
 
 export const getAllUsers = async () => {

@@ -9,6 +9,7 @@ import {
   validateTitle,
   validateURL,
 } from "../utilities/validation.js";
+import { removeGameReviewByReviewedGameId } from "./gameReviews.js";
 
 export const createGame = async (
   ownerID,
@@ -62,10 +63,10 @@ export const removeGamesByOwnerId = async (ownerID) => {
     deletionInfo.push(await removeGameById(game._id.toString()));
   }
 
+  return deletionInfo;
+
   // ^^^^^^^^^^^^^^^^^^
   // ##################
-
-  return deletionInfo;
 };
 
 export const removeGameById = async (id) => {
@@ -82,17 +83,12 @@ export const removeGameById = async (id) => {
   if (!deletionInfo) throw `could not delete game with id: ${id}.`;
 
   // delete all reviews about deleted game
-  const gameReviewsCollection = await gameReviews();
-  const deletionConfirmation = await gameReviewsCollection.deleteMany({
-    reviewedGame: id,
-  });
-  if (!deletionConfirmation.acknowledged)
-    throw `could not delete game reviews for deleted game: ${id}`;
+  await removeGameReviewByReviewedGameId(id.toString());
+
+  return deletionInfo;
 
   // ^^^^^^^^^^^^^^^^^^
   // ##################
-
-  return deletionInfo;
 };
 
 export const getAllGames = async () => {

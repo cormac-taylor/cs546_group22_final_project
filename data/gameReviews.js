@@ -1,6 +1,7 @@
-import { gameReviews, games } from "../config/mongoCollections.js";
+import { gameReviews } from "../config/mongoCollections.js";
 import {
   validateBody,
+  validateNonEmptyObject,
   validateObjectID,
   validateRating,
   validateTitle,
@@ -36,10 +37,10 @@ export const createGameReview = async (
   };
 
   // make sure postingUser exits
-  const postingUserData = await getUserById(postingUser.toString());
+  await getUserById(postingUser.toString());
 
   // make sure reviewedGame exits
-  const reviewedGameData = await getGameById(reviewedGame.toString());
+  await getGameById(reviewedGame.toString());
 
   const gameReviewsCollection = await gameReviews();
 
@@ -67,7 +68,18 @@ export const createGameReview = async (
   // ##################
 };
 
-export const removeGameReview = async (id) => {
+export const removeGameReviewByReviewedGameId = async (id) => {
+  id = validateObjectID(id);
+
+  const gameReviewsCollection = await gameReviews();
+  const deletionConfirmation = await gameReviewsCollection.deleteMany({
+    reviewedGame: id,
+  });
+  if (!deletionConfirmation.acknowledged)
+    throw `could not delete game reviews for deleted game: ${id}`;
+};
+
+export const removeGameReviewById = async (id) => {
   id = validateObjectID(id);
 
   // ##################
@@ -81,7 +93,7 @@ export const removeGameReview = async (id) => {
   if (!deletionInfo) throw `could not delete game review with id: ${id}.`;
 
   await removeReviewFromGameStats(
-    deletionInfo.reviewedUser,
+    deletionInfo.reviewedGame,
     deletionInfo.rating
   );
 
@@ -110,94 +122,58 @@ export const getGameReviewById = async (id) => {
   return gameReview;
 };
 
-// TO DO ######################################################################################################################################
-export const updateUserReview = async (id, updateFeilds) => {
+export const updateGameReview = async (id, updateFeilds) => {
   id = validateObjectID(id);
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
-  const patchedUserReview = {};
-  patchedUserReview.date = new Date().toUTCString();
+  const patchedGameReview = {};
+  patchedGameReview.date = new Date().toUTCString();
 
-  if (updateFeilds.reviewedUser)
-    patchedUserReview.reviewedUser = validateObjectID(
-      updateFeilds.reviewedUser
+  if (updateFeilds.reviewedGame)
+    patchedGameReview.reviewedGame = validateObjectID(
+      updateFeilds.reviewedGame
     );
 
   if (updateFeilds.title)
-    patchedUserReview.title = validateTitle(updateFeilds.title);
+    patchedGameReview.title = validateTitle(updateFeilds.title);
 
   if (updateFeilds.body)
-    patchedUserReview.body = validateBody(updateFeilds.body);
+    patchedGameReview.body = validateBody(updateFeilds.body);
 
   if (updateFeilds.rating || updateFeilds.rating === 0)
-    patchedUserReview.rating = validateRating(updateFeilds.rating);
+    patchedGameReview.rating = validateRating(updateFeilds.rating);
 
   // ##################
   // MAKE TRANSACTION
 
-  const oldReview = await getUserReviewById(id.toString());
-
-  // user cannot review themselves
-  if (
-    patchedUserReview.reviewedUser &&
-    oldReview.postingUser.toString() ===
-      patchedUserReview.reviewedUser.toString()
-  )
-    throw "user cannot review themselves!";
+  const oldReview = await getGameById(id.toString());
 
   // update review
-  const userReviewsCollection = await userReviews();
-  const updateInfo = await userReviewsCollection.findOneAndUpdate(
+  const gameReviewsCollection = await gameReviews();
+  const updateInfo = await gameReviewsCollection.findOneAndUpdate(
     { _id: id },
-    { $set: patchedUserReview },
+    { $set: patchedGameReview },
     { returnDocument: "after" }
   );
   if (!updateInfo) throw `could not patch user with id: ${id}.`;
 
   // update user stats
   if (
-    patchedUserReview.reviewedUser &&
-    (patchedUserReview.rating || patchedUserReview.rating === 0)
+    patchedGameReview.reviewedGame &&
+    (patchedGameReview.rating || patchedGameReview.rating === 0)
   ) {
-    const usersCollection = await users();
-    await removeReviewFromUserStats(
-      usersCollection,
-      oldReview.reviewedUser,
-      oldReview.rating
-    );
-    await addReviewToUserStats(
-      usersCollection,
-      updateInfo.reviewedUser,
-      updateInfo.rating
-    );
-  } else if (patchedUserReview.reviewedUser) {
-    const usersCollection = await users();
-    await removeReviewFromUserStats(
-      usersCollection,
-      oldReview.reviewedUser,
-      oldReview.rating
-    );
-    await addReviewToUserStats(
-      usersCollection,
-      updateInfo.reviewedUser,
-      oldReview.rating
-    );
-  } else if (patchedUserReview.rating || patchedUserReview.rating === 0) {
-    const usersCollection = await users();
-    await removeReviewFromUserStats(
-      usersCollection,
-      oldReview.reviewedUser,
-      oldReview.rating
-    );
-    await addReviewToUserStats(
-      usersCollection,
-      oldReview.reviewedUser,
-      updateInfo.rating
-    );
+    await removeReviewFromGameStats(oldReview.reviewedGame, oldReview.rating);
+    await addReviewToGameStats(updateInfo.reviewedGame, updateInfo.rating);
+  } else if (patchedGameReview.reviewedGame) {
+    await removeReviewFromGameStats(oldReview.reviewedGame, oldReview.rating);
+    await addReviewToGameStats(updateInfo.reviewedGame, oldReview.rating);
+  } else if (patchedGameReview.rating || patchedGameReview.rating === 0) {
+    await removeReviewFromGameStats(oldReview.reviewedGame, oldReview.rating);
+    await addReviewToGameStats(oldReview.reviewedGame, updateInfo.rating);
   }
+
+  return updateInfo;
 
   // ^^^^^^^^^^^^^^^^^^
   // ##################
-
-  return updateInfo;
 };

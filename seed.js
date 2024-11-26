@@ -1,4 +1,9 @@
-import { usersData, userReviewsData, gamesData } from "./data/index.js";
+import {
+  usersData,
+  userReviewsData,
+  gamesData,
+  gameReviewsData,
+} from "./data/index.js";
 import { dbConnection, closeConnection } from "./config/mongoConnection.js";
 
 //lets drop the database each time this is run
@@ -153,6 +158,54 @@ try {
     "Out play your opponent.",
     "well-used",
     "https://m.media-amazon.com/images/I/81fEiLrmZ8L._AC_SL1500_.jpg"
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr1 = await gameReviewsData.createGameReview(
+    u2._id.toString(),
+    g1._id.toString(),
+    "Fun",
+    "Risk is fun.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr2 = await gameReviewsData.createGameReview(
+    u2._id.toString(),
+    g2._id.toString(),
+    "Not fun",
+    "This risk is not fun.",
+    0
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr3 = await gameReviewsData.createGameReview(
+    u2._id.toString(),
+    g3._id.toString(),
+    "Riches",
+    "I am rich now.",
+    3
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr4 = await gameReviewsData.createGameReview(
+    u1._id.toString(),
+    g1._id.toString(),
+    "Sucks",
+    "Missing peices.",
+    0
   );
 } catch (e) {
   console.log(e);
