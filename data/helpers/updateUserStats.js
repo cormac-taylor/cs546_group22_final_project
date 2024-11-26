@@ -2,10 +2,8 @@ import { users } from "../../config/mongoCollections.js";
 import { getUserById } from "../users.js";
 
 export const removeReviewFromUserStats = async (reviewedUserID, oldRating) => {
-  const usersCollection = await users();
-
   // find reviewedUser
-  const reviewedUserData = await getUserById(reviewedUserID.toString())
+  const reviewedUserData = await getUserById(reviewedUserID.toString());
 
   // calculate new reviewedUser stats
   const newNumReviews = reviewedUserData.numReviews - 1;
@@ -23,6 +21,7 @@ export const removeReviewFromUserStats = async (reviewedUserID, oldRating) => {
   newAverageRating = Number(newAverageRating.toFixed(2));
 
   // update reviewedUser with stats
+  const usersCollection = await users();
   const reviewedUserUpdated = await usersCollection.findOneAndUpdate(
     { _id: reviewedUserID },
     { $set: { averageRating: newAverageRating, numReviews: newNumReviews } },
@@ -32,10 +31,8 @@ export const removeReviewFromUserStats = async (reviewedUserID, oldRating) => {
 };
 
 export const addReviewToUserStats = async (reviewedUserID, newRating) => {
-  const usersCollection = await users();
-
   // find reviewedUser
-  const reviewedUserData = await getUserById(reviewedUserID.toString())
+  const reviewedUserData = await getUserById(reviewedUserID.toString());
 
   // calculate new reviewedUser stats
   const newNumReviews = reviewedUserData.numReviews + 1;
@@ -53,6 +50,7 @@ export const addReviewToUserStats = async (reviewedUserID, newRating) => {
   newAverageRating = Number(newAverageRating.toFixed(2));
 
   // update reviewedUser with stats
+  const usersCollection = await users();
   const reviewedUserUpdated = await usersCollection.findOneAndUpdate(
     { _id: reviewedUserID },
     { $set: { averageRating: newAverageRating, numReviews: newNumReviews } },

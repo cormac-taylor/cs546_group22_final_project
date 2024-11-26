@@ -6,6 +6,10 @@ import {
   validateTitle,
 } from "../utilities/validation.js";
 import { getGameById } from "./games.js";
+import {
+  addReviewToGameStats,
+  removeReviewFromGameStats,
+} from "./helpers/updateGameStats.js";
 import { getUserById } from "./users.js";
 
 export const createGameReview = async (
@@ -32,10 +36,10 @@ export const createGameReview = async (
   };
 
   // make sure postingUser exits
-  const postingUserData = await getUserById(postingUser.toString())
+  const postingUserData = await getUserById(postingUser.toString());
 
   // make sure reviewedGame exits
-  const reviewedGameData = await getGameById(reviewedGame.toString())
+  const reviewedGameData = await getGameById(reviewedGame.toString());
 
   const gameReviewsCollection = await gameReviews();
 
@@ -44,7 +48,7 @@ export const createGameReview = async (
     postingUser: postingUser,
     reviewedGame: reviewedGame,
   });
-  if (userReview) throw "user review already exists!";
+  if (gameReview) throw "game review already exists!";
 
   // ##################
   // MAKE TRANSACTION
@@ -52,62 +56,61 @@ export const createGameReview = async (
   // insert review
   const insertInfo = await gameReviewsCollection.insertOne(newGameReview);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
-    throw "could not add user review.";
+    throw "could not add game review.";
 
-  // TO DO ##############################################################################################################################
-  await addReviewToGameSta(await games(), reviewedUser, rating);
+  await addReviewToGameStats(reviewedGame, rating);
 
   const newId = insertInfo.insertedId.toString();
-  return await getUserReviewById(newId);
+  return await getGameById(newId);
 
   // ^^^^^^^^^^^^^^^^^^
   // ##################
 };
 
-export const removeUserReview = async (id) => {
+export const removeGameReview = async (id) => {
   id = validateObjectID(id);
 
   // ##################
   // MAKE TRANSACTION
 
   // delete review
-  const userReviewsCollection = await userReviews();
-  const deletionInfo = await userReviewsCollection.findOneAndDelete({
+  const gameReviewsCollection = await gameReviews();
+  const deletionInfo = await gameReviewsCollection.findOneAndDelete({
     _id: id,
   });
-  if (!deletionInfo) throw `could not delete user review with id: ${id}.`;
+  if (!deletionInfo) throw `could not delete game review with id: ${id}.`;
 
-  await removeReviewFromUserStats(
-    await users(),
+  await removeReviewFromGameStats(
     deletionInfo.reviewedUser,
     deletionInfo.rating
   );
 
+  return deletionInfo;
+
   // ^^^^^^^^^^^^^^^^^^
   // ##################
-
-  return deletionInfo;
 };
 
-export const getAllUserReviews = async () => {
-  const userReviewsCollection = await userReviews();
-  let userReviewList = await userReviewsCollection.find({}).toArray();
-  if (!userReviewList) throw "could not get all user reviews.";
-  return userReviewList;
+export const getAllGameReviews = async () => {
+  const gameReviewsCollection = await gameReviews();
+  let gameReviewList = await gameReviewsCollection.find({}).toArray();
+  if (!gameReviewList) throw "could not get all game reviews.";
+  return gameReviewList;
 };
 
-export const getUserReviewById = async (id) => {
+export const getGameReviewById = async (id) => {
   id = validateObjectID(id);
 
-  const userReviewsCollection = await userReviews();
-  const userReview = await userReviewsCollection.findOne({
+  const gameReviewsCollection = await gameReviews();
+  const gameReview = await gameReviewsCollection.findOne({
     _id: id,
   });
-  if (!userReview) throw `no user review with id: ${id}.`;
+  if (!gameReview) throw `no game review with id: ${id}.`;
 
-  return userReview;
+  return gameReview;
 };
 
+// TO DO ######################################################################################################################################
 export const updateUserReview = async (id, updateFeilds) => {
   id = validateObjectID(id);
   updateFeilds = validateNonEmptyObject(updateFeilds);

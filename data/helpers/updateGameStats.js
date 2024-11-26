@@ -2,65 +2,59 @@ import { games } from "../../config/mongoCollections";
 import { getGameById } from "../games";
 
 export const removeReviewFromGameStats = async (reviewedGameID, oldRating) => {
-  const gamesCollection = new games();
-
   // find reviewedGame
-  const reviewedGameData = await getGameById(reviewedGameID.toString())
+  const reviewedGameData = await getGameById(reviewedGameID.toString());
 
-  // TO DO #######################################################################################################################################
-  // calculate new reviewedUser stats
-  const newNumReviews = reviewedUserData.numReviews - 1;
+  // calculate new reviewedGame stats
+  const newNumReviews = reviewedGameData.numReviews - 1;
   let newAverageRating;
   if (newNumReviews === 0) {
     newAverageRating = 0;
   } else {
     newAverageRating =
       (Math.round(
-        reviewedUserData.averageRating * reviewedUserData.numReviews
+        reviewedGameData.averageRating * reviewedGameData.numReviews
       ) -
         oldRating) /
       newNumReviews;
   }
   newAverageRating = Number(newAverageRating.toFixed(2));
 
-  // update reviewedUser with stats
-  const reviewedUserUpdated = await usersCollection.findOneAndUpdate(
-    { _id: reviewedUserID },
+  // update reviewedGame with stats
+  const gamesCollection = new games();
+  const reviewedGameUpdated = await gamesCollection.findOneAndUpdate(
+    { _id: reviewedGameID },
     { $set: { averageRating: newAverageRating, numReviews: newNumReviews } },
     { returnDocument: "after" }
   );
-  if (!reviewedUserUpdated) throw `could not update user with id: ${id}.`;
+  if (!reviewedGameUpdated) throw `could not update game with id: ${id}.`;
 };
 
-export const addReviewToGameStats = async (reviewedUserID, newRating) => {
-  const gamesCollection = new games();
+export const addReviewToGameStats = async (reviewedGameID, newRating) => {
+  // find reviewedGame
+  const reviewedGameData = await getGameById(reviewedGameID.toString());
 
-  // find reviewedUser
-  const reviewedUserData = await usersCollection.findOne({
-    _id: reviewedUserID,
-  });
-  if (!reviewedUserData) throw "reviewedUser doesn't exist.";
-
-  // calculate new reviewedUser stats
-  const newNumReviews = reviewedUserData.numReviews + 1;
+  // calculate new reviewedGame stats
+  const newNumReviews = reviewedGameData.numReviews + 1;
   let newAverageRating;
   if (newNumReviews === 1) {
     newAverageRating = newRating;
   } else {
     newAverageRating =
       (Math.round(
-        reviewedUserData.averageRating * reviewedUserData.numReviews
+        reviewedGameData.averageRating * reviewedGameData.numReviews
       ) +
         newRating) /
       newNumReviews;
   }
   newAverageRating = Number(newAverageRating.toFixed(2));
 
-  // update reviewedUser with stats
-  const reviewedUserUpdated = await usersCollection.findOneAndUpdate(
-    { _id: reviewedUserID },
+  // update reviewedGame with stats
+  const gamesCollection = new games();
+  const reviewedGameUpdated = await gamesCollection.findOneAndUpdate(
+    { _id: reviewedGameID },
     { $set: { averageRating: newAverageRating, numReviews: newNumReviews } },
     { returnDocument: "after" }
   );
-  if (!reviewedUserUpdated) throw `could not update user with id: ${id}.`;
+  if (!reviewedGameUpdated) throw `could not update game with id: ${id}.`;
 };
