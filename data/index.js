@@ -11,6 +11,7 @@ import {
   removeUserReviewsByReviewedId,
   removeUserReviewById,
   getAllUserReviews,
+  getUserReviewsByReviewedUserId,
   getUserReviewById,
   updateUserReview,
 } from "./userReviews.js";
@@ -60,6 +61,7 @@ export const userReviewsData = {
   removeUserReviewsByReviewedId,
   removeUserReviewById,
   getAllUserReviews,
+  getUserReviewsByReviewedUserId,
   getUserReviewById,
   updateUserReview,
 };

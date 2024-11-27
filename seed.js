@@ -79,7 +79,7 @@ try {
   ur2 = await userReviewsData.createUserReview(
     u3._id.toString(),
     u2._id.toString(),
-    "SINKS",
+    "STINKS",
     "He counts cards!",
     0
   );
@@ -207,34 +207,6 @@ try {
     "Missing peices.",
     0
   );
-} catch (e) {
-  console.log(e);
-}
-
-// users
-//   createUser,
-//   removeUser,
-//   getAllUsers,
-//   getUserById,
-//   updateUser,
-
-// userReviews
-//   createUserReview,
-//   removeUserReviewsByReviewedId,
-//   removeUserReviewById,
-//   getAllUserReviews,
-//   getUserReviewById,
-//   updateUserReview,
-
-try {
-  const res = await gamesData.updateGame(g1._id.toString(),{
-    location: { type: 'Point', coordinates: [ 73.856077, -40.848447 ] },
-    gameTitle: 'jnejkej',
-    description: 'jnejkejjnejkejjnejkejjnejkejjnejkej jnejkejjnejkej .',
-    condition: 'used',
-    imgURL: 'https://m.media-amazon.com/images/I/71GM6UFejTL._AC_SL2500_.jpg',
-  });
-  console.log(res);
 } catch (e) {
   console.log(e);
 }

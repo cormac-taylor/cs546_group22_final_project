@@ -10,6 +10,9 @@ import {
 import { removeGamesByOwnerId } from "./games.js";
 import { removeUserReviewsByReviewedId } from "./userReviews.js";
 
+// TO DO ############################################################################################################
+// Make sure reviews of deleted users/games have enought info
+// Add transactions
 export const createUser = async (
   firstName,
   lastName,
@@ -58,19 +61,19 @@ export const removeUser = async (id) => {
   // ##################
   // MAKE TRANSACTION
 
-  // delete user
-  const usersCollection = await users();
-  const deletionInfo = await usersCollection.findOneAndDelete({
-    _id: id,
-  });
-  if (!deletionInfo) throw `could not delete user with id: ${id}.`;
-
   // delete all reviews about deleted user
   // https://reputationamerica.org/does-deleting-a-google-account-delete-your-reviews/
   await removeUserReviewsByReviewedId(id.toString());
 
   // delete all games owned by deleted user
   await removeGamesByOwnerId(id.toString());
+
+  // delete user
+  const usersCollection = await users();
+  const deletionInfo = await usersCollection.findOneAndDelete({
+    _id: id,
+  });
+  if (!deletionInfo) throw `could not delete user with id: ${id}.`;
 
   return deletionInfo;
 

@@ -70,16 +70,26 @@ export const createUserReview = async (
   // ^^^^^^^^^^^^^^^^^^
   // ##################
 };
-// TO DO delete game ################################################################################################################################################
+
 export const removeUserReviewsByReviewedId = async (id) => {
   id = validateObjectID(id);
 
-  const userReviewsCollection = await userReviews();
-  const deletionConfirmation = await userReviewsCollection.deleteMany({
-    reviewedUser: id,
-  });
-  if (!deletionConfirmation.acknowledged)
-    throw `could not delete user reviews for deleted user: ${id}`;
+  // make sure reviewedUser exits
+  await getUserById(id.toString());
+
+  // ##################
+  // MAKE TRANSACTION
+
+  const deletionInfo = [];
+  const userReviewList = await getUserReviewsByReviewedUserId(id.toString());
+  for (const review of userReviewList) {
+    deletionInfo.push(await removeUserReviewById(review._id.toString()));
+  }
+
+  return deletionInfo;
+
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
 };
 
 export const removeUserReviewById = async (id) => {
@@ -113,6 +123,20 @@ export const getAllUserReviews = async () => {
   return userReviewList;
 };
 
+export const getUserReviewsByReviewedUserId = async (id) => {
+  id = validateObjectID(id);
+
+  const userReviewsCollection = await userReviews();
+  let userReviewList = await userReviewsCollection
+    .find({
+      reviewedUser: id,
+    })
+    .toArray();
+  if (!userReviewList)
+    throw `could not get game reviews for reviewedGame: ${id}.`;
+  return userReviewList;
+};
+
 export const getUserReviewById = async (id) => {
   id = validateObjectID(id);
 
@@ -132,10 +156,14 @@ export const updateUserReview = async (id, updateFeilds) => {
   const patchedUserReview = {};
   patchedUserReview.date = new Date().toUTCString();
 
-  if (updateFeilds.reviewedUser !== undefined)
-    patchedUserReview.reviewedUser = validateObjectID(
-      updateFeilds.reviewedUser
-    );
+  if (updateFeilds.reviewedUser !== undefined) {
+    const reviewedUser = validateObjectID(updateFeilds.reviewedUser);
+
+    // make sure reviewedUser exits
+    await getUserById(reviewedUser.toString());
+
+    patchedUserReview.reviewedUser = reviewedUser;
+  }
 
   if (updateFeilds.title !== undefined)
     patchedUserReview.title = validateTitle(updateFeilds.title);
@@ -153,7 +181,7 @@ export const updateUserReview = async (id, updateFeilds) => {
 
   // user cannot review themselves
   if (
-    patchedUserReview.reviewedUser &&
+    patchedUserReview.reviewedUser !== undefined &&
     oldReview.postingUser.toString() ===
       patchedUserReview.reviewedUser.toString()
   )
@@ -170,15 +198,15 @@ export const updateUserReview = async (id, updateFeilds) => {
 
   // update user stats
   if (
-    patchedUserReview.reviewedUser &&
-    (patchedUserReview.rating || patchedUserReview.rating === 0)
+    patchedUserReview.reviewedUser !== undefined &&
+    patchedUserReview.rating !== undefined
   ) {
     await removeReviewFromUserStats(oldReview.reviewedUser, oldReview.rating);
     await addReviewToUserStats(updateInfo.reviewedUser, updateInfo.rating);
-  } else if (patchedUserReview.reviewedUser) {
+  } else if (patchedUserReview.reviewedUser !== undefined) {
     await removeReviewFromUserStats(oldReview.reviewedUser, oldReview.rating);
     await addReviewToUserStats(updateInfo.reviewedUser, oldReview.rating);
-  } else if (patchedUserReview.rating || patchedUserReview.rating === 0) {
+  } else if (patchedUserReview.rating !== undefined) {
     await removeReviewFromUserStats(oldReview.reviewedUser, oldReview.rating);
     await addReviewToUserStats(oldReview.reviewedUser, updateInfo.rating);
   }
