@@ -8,6 +8,10 @@ import {
   validateName,
 } from "../utilities/validation.js";
 import { removeGamesByOwnerId } from "./games.js";
+import {
+  updateFirstName,
+  updateLastName,
+} from "./helpers/updatePostingUserName.js";
 import { removeUserReviewsByReviewedId } from "./userReviews.js";
 
 // TO DO ############################################################################################################
@@ -25,6 +29,7 @@ export const createUser = async (
   email = validateEmail(email);
   hashedPassword = validateString(hashedPassword);
   location = validateGeoJson(location);
+  const date = new Date().toUTCString();
   const averageRating = 0;
   const numReviews = 0;
 
@@ -34,6 +39,7 @@ export const createUser = async (
     email,
     hashedPassword,
     location,
+    date,
     averageRating,
     numReviews,
   };
@@ -106,14 +112,7 @@ export const updateUser = async (id, updateFeilds) => {
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
   const patchedUser = {};
-  if (updateFeilds.firstName !== undefined) {
-    patchedUser.firstName = validateName(updateFeilds.firstName);
-  }
-
-  if (updateFeilds.lastName !== undefined) {
-    patchedUser.lastName = validateName(updateFeilds.lastName);
-  }
-
+  patchedUser.date = new Date().toUTCString();
   if (updateFeilds.hashedPassword !== undefined) {
     patchedUser.hashedPassword = validateString(updateFeilds.hashedPassword);
   }
@@ -135,6 +134,21 @@ export const updateUser = async (id, updateFeilds) => {
     if (accountWithEmail) throw "email must be unique!";
   }
 
+  // ##################
+  // MAKE TRANSACTION
+
+  if (updateFeilds.firstName !== undefined) {
+    const firstName = validateName(updateFeilds.firstName);
+    updateFirstName(id, firstName);
+    patchedUser.firstName = firstName;
+  }
+
+  if (updateFeilds.lastName !== undefined) {
+    const lastName = validateName(updateFeilds.lastName);
+    updateLastName(id, lastName);
+    patchedUser.lastName = validateName(lastName);
+  }
+
   // update user
   const updateInfo = await usersCollection.findOneAndUpdate(
     { _id: id },
@@ -144,4 +158,7 @@ export const updateUser = async (id, updateFeilds) => {
   if (!updateInfo) throw `could not patch user with id: ${id}.`;
 
   return updateInfo;
+
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
 };

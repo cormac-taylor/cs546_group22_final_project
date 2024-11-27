@@ -26,9 +26,17 @@ export const createUserReview = async (
   body = validateBody(body);
   rating = validateRating(rating);
 
+  // make sure postingUser exits
+  const postingUserData = await getUserById(postingUser.toString());
+
+  const firstName = postingUserData.firstName;
+  const lastName = postingUserData.lastName;
+
   const newUserReview = {
     postingUser,
     reviewedUser,
+    firstName,
+    lastName,
     title,
     date,
     body,
@@ -38,9 +46,6 @@ export const createUserReview = async (
   // make sure postingUser isn't reviewing themselves
   if (postingUser.toString() === reviewedUser.toString())
     throw "user cannot review themselves!";
-
-  // make sure postingUser exits
-  await getUserById(postingUser.toString());
 
   // make sure reviewedUser exits
   await getUserById(reviewedUser.toString());
@@ -130,6 +135,20 @@ export const getUserReviewsByReviewedUserId = async (id) => {
   let userReviewList = await userReviewsCollection
     .find({
       reviewedUser: id,
+    })
+    .toArray();
+  if (!userReviewList)
+    throw `could not get game reviews for reviewedGame: ${id}.`;
+  return userReviewList;
+};
+
+export const getUserReviewsByPostingUserId = async (id) => {
+  id = validateObjectID(id);
+
+  const userReviewsCollection = await userReviews();
+  let userReviewList = await userReviewsCollection
+    .find({
+      postingUser: id,
     })
     .toArray();
   if (!userReviewList)

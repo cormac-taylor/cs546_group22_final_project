@@ -55,16 +55,16 @@ export const createGame = async (
   return await getGameById(newId);
 };
 
-export const removeGamesByOwnerId = async (ownerID) => {
-  ownerID = validateString(ownerID);
+export const removeGamesByOwnerId = async (id) => {
+  id = validateString(ownerID);
 
-  await getUserById(ownerID.toString());
+  await getUserById(id.toString());
 
   // ##################
   // MAKE TRANSACTION
 
   const deletionInfo = [];
-  const games = await getGamesByOwnerID(ownerID);
+  const games = await getGamesByOwnerID(id);
   for (const game of games) {
     deletionInfo.push(await removeGameById(game._id.toString()));
   }
@@ -105,16 +105,16 @@ export const getAllGames = async () => {
   return gameList;
 };
 
-export const getGamesByOwnerID = async (ownerID) => {
-  ownerID = validateObjectID(ownerID);
+export const getGamesByOwnerID = async (id) => {
+  id = validateObjectID(id);
 
   const gamesCollection = await games();
   const gameList = await gamesCollection
     .find({
-      ownerID: ownerID,
+      ownerID: id,
     })
     .toArray();
-  if (!gameList) throw `no game with ownerID: ${ownerID}.`;
+  if (!gameList) throw `no game with ownerID: ${id}.`;
 
   return gameList;
 };

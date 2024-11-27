@@ -27,17 +27,22 @@ export const createGameReview = async (
   body = validateBody(body);
   rating = validateRating(rating);
 
+  // make sure postingUser exits
+  const postingUserData = await getUserById(postingUser.toString());
+
+  const firstName = postingUserData.firstName;
+  const lastName = postingUserData.lastName;
+
   const newGameReview = {
     postingUser,
     reviewedGame,
+    firstName,
+    lastName,
     title,
     date,
     body,
     rating,
   };
-
-  // make sure postingUser exits
-  await getUserById(postingUser.toString());
 
   // make sure reviewedGame exits
   const gameData = await getGameById(reviewedGame.toString());
@@ -72,19 +77,17 @@ export const createGameReview = async (
   // ##################
 };
 
-export const removeGameReviewsByReviewedGameId = async (reviewedGameId) => {
-  reviewedGameId = validateObjectID(reviewedGameId);
+export const removeGameReviewsByReviewedGameId = async (id) => {
+  id = validateObjectID(id);
 
   // make sure reviewedGame exits
-  await getGameById(reviewedGameId.toString());
+  await getGameById(id.toString());
 
   // ##################
   // MAKE TRANSACTION
 
   const deletionInfo = [];
-  const gameReviews = await getGameReviewsByReviewedGameId(
-    reviewedGameId.toString()
-  );
+  const gameReviews = await getGameReviewsByReviewedGameId(id.toString());
   for (const review of gameReviews) {
     deletionInfo.push(await removeGameReviewById(review._id.toString()));
   }
@@ -123,6 +126,20 @@ export const getAllGameReviews = async () => {
   const gameReviewsCollection = await gameReviews();
   let gameReviewList = await gameReviewsCollection.find({}).toArray();
   if (!gameReviewList) throw "could not get all game reviews.";
+  return gameReviewList;
+};
+
+export const getGameReviewsByPostingUserId = async (id) => {
+  id = validateObjectID(id);
+
+  const gameReviewsCollection = await gameReviews();
+  let gameReviewList = await gameReviewsCollection
+    .find({
+      postingUser: id,
+    })
+    .toArray();
+  if (!gameReviewList)
+    throw `could not get game reviews for postingUser: ${id}.`;
   return gameReviewList;
 };
 
