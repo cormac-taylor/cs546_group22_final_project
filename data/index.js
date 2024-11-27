@@ -11,6 +11,8 @@ import {
   removeUserReviewsByReviewedId,
   removeUserReviewById,
   getAllUserReviews,
+  getUserReviewsByPostingUserId,
+  getUserReviewsByReviewedUserId,
   getUserReviewById,
   updateUserReview,
 } from "./userReviews.js";
@@ -27,9 +29,10 @@ import {
 
 import {
   createGameReview,
-  removeGameReviewByReviewedGameId,
+  removeGameReviewsByReviewedGameId,
   removeGameReviewById,
   getAllGameReviews,
+  getGameReviewsByPostingUserId,
   getGameReviewsByReviewedGameId,
   getGameReviewById,
   updateGameReview,
@@ -37,9 +40,10 @@ import {
 
 export const gameReviewsData = {
   createGameReview,
-  removeGameReviewByReviewedGameId,
+  removeGameReviewsByReviewedGameId,
   removeGameReviewById,
   getAllGameReviews,
+  getGameReviewsByPostingUserId,
   getGameReviewsByReviewedGameId,
   getGameReviewById,
   updateGameReview,
@@ -60,6 +64,8 @@ export const userReviewsData = {
   removeUserReviewsByReviewedId,
   removeUserReviewById,
   getAllUserReviews,
+  getUserReviewsByPostingUserId,
+  getUserReviewsByReviewedUserId,
   getUserReviewById,
   updateUserReview,
 };

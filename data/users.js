@@ -8,6 +8,10 @@ import {
   validateName,
 } from "../utilities/validation.js";
 import { removeGamesByOwnerId } from "./games.js";
+import {
+  updateFirstName,
+  updateLastName,
+} from "./helpers/updatePostingUserName.js";
 import { removeUserReviewsByReviewedId } from "./userReviews.js";
 
 export const createUser = async (
@@ -22,6 +26,7 @@ export const createUser = async (
   email = validateEmail(email);
   hashedPassword = validateString(hashedPassword);
   location = validateGeoJson(location);
+  const date = new Date().toUTCString();
   const averageRating = 0;
   const numReviews = 0;
 
@@ -31,6 +36,7 @@ export const createUser = async (
     email,
     hashedPassword,
     location,
+    date,
     averageRating,
     numReviews,
   };
@@ -58,19 +64,19 @@ export const removeUser = async (id) => {
   // ##################
   // MAKE TRANSACTION
 
-  // delete user
-  const usersCollection = await users();
-  const deletionInfo = await usersCollection.findOneAndDelete({
-    _id: id,
-  });
-  if (!deletionInfo) throw `could not delete user with id: ${id}.`;
-
   // delete all reviews about deleted user
   // https://reputationamerica.org/does-deleting-a-google-account-delete-your-reviews/
   await removeUserReviewsByReviewedId(id.toString());
 
   // delete all games owned by deleted user
   await removeGamesByOwnerId(id.toString());
+
+  // delete user
+  const usersCollection = await users();
+  const deletionInfo = await usersCollection.findOneAndDelete({
+    _id: id,
+  });
+  if (!deletionInfo) throw `could not delete user with id: ${id}.`;
 
   return deletionInfo;
 
@@ -103,25 +109,21 @@ export const updateUser = async (id, updateFeilds) => {
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
   const patchedUser = {};
-  if (updateFeilds.firstName) {
-    patchedUser.firstName = validateName(updateFeilds.firstName);
-  }
-
-  if (updateFeilds.lastName) {
-    patchedUser.lastName = validateName(updateFeilds.lastName);
-  }
-
-  if (updateFeilds.hashedPassword) {
+  let updated = false;
+  patchedUser.date = new Date().toUTCString();
+  if (updateFeilds.hashedPassword !== undefined) {
     patchedUser.hashedPassword = validateString(updateFeilds.hashedPassword);
+    updated = true;
   }
 
-  if (updateFeilds.location) {
+  if (updateFeilds.location !== undefined) {
     patchedUser.location = validateGeoJson(updateFeilds.location);
+    updated = true;
   }
 
   const usersCollection = await users();
 
-  if (updateFeilds.email) {
+  if (updateFeilds.email !== undefined) {
     patchedUser.email = validateString(updateFeilds.email);
 
     // make sure the email isn't used by another user
@@ -130,8 +132,27 @@ export const updateUser = async (id, updateFeilds) => {
       email: patchedUser.email,
     });
     if (accountWithEmail) throw "email must be unique!";
+    updated = true;
   }
 
+  // ##################
+  // MAKE TRANSACTION
+
+  if (updateFeilds.firstName !== undefined) {
+    const firstName = validateName(updateFeilds.firstName);
+    await updateFirstName(id, firstName);
+    patchedUser.firstName = firstName;
+    updated = true;
+  }
+
+  if (updateFeilds.lastName !== undefined) {
+    const lastName = validateName(updateFeilds.lastName);
+    await updateLastName(id, lastName);
+    patchedUser.lastName = validateName(lastName);
+    updated = true;
+  }
+
+  if (!updated) throw "must update a field";
   // update user
   const updateInfo = await usersCollection.findOneAndUpdate(
     { _id: id },
@@ -141,4 +162,7 @@ export const updateUser = async (id, updateFeilds) => {
   if (!updateInfo) throw `could not patch user with id: ${id}.`;
 
   return updateInfo;
+
+  // ^^^^^^^^^^^^^^^^^^
+  // ##################
 };

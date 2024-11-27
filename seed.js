@@ -79,7 +79,7 @@ try {
   ur2 = await userReviewsData.createUserReview(
     u3._id.toString(),
     u2._id.toString(),
-    "SINKS",
+    "STINKS",
     "He counts cards!",
     0
   );
@@ -101,7 +101,7 @@ try {
 
 try {
   ur4 = await userReviewsData.createUserReview(
-    u2._id.toString(),
+    u1._id.toString(),
     u3._id.toString(),
     "Fake News",
     "Stright cap. Kids just bad.",
@@ -166,7 +166,7 @@ try {
 try {
   gr1 = await gameReviewsData.createGameReview(
     u2._id.toString(),
-    g1._id.toString(),
+    g4._id.toString(),
     "Fun",
     "Risk is fun.",
     5
@@ -177,7 +177,7 @@ try {
 
 try {
   gr2 = await gameReviewsData.createGameReview(
-    u2._id.toString(),
+    u3._id.toString(),
     g2._id.toString(),
     "Not fun",
     "This risk is not fun.",
@@ -189,7 +189,7 @@ try {
 
 try {
   gr3 = await gameReviewsData.createGameReview(
-    u2._id.toString(),
+    u1._id.toString(),
     g3._id.toString(),
     "Riches",
     "I am rich now.",
@@ -210,5 +210,8 @@ try {
 } catch (e) {
   console.log(e);
 }
+
+// TO DO ############################################################################################################
+// Add transactions
 
 await closeConnection();

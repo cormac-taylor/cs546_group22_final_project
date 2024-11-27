@@ -1,4 +1,4 @@
-import { gameReviews, games } from "../config/mongoCollections.js";
+import { games } from "../config/mongoCollections.js";
 import {
   validateBody,
   validateCondition,
@@ -9,7 +9,8 @@ import {
   validateTitle,
   validateURL,
 } from "../utilities/validation.js";
-import { removeGameReviewByReviewedGameId } from "./gameReviews.js";
+import { removeGameReviewsByReviewedGameId } from "./gameReviews.js";
+import { getUserById } from "./users.js";
 
 export const createGame = async (
   ownerID,
@@ -41,6 +42,9 @@ export const createGame = async (
     numReviews,
   };
 
+  // make sure postingUser exits
+  await getUserById(ownerID.toString());
+
   // add new game
   const gamesCollection = await games();
   const insertInfo = await gamesCollection.insertOne(newGame);
@@ -51,14 +55,16 @@ export const createGame = async (
   return await getGameById(newId);
 };
 
-export const removeGamesByOwnerId = async (ownerID) => {
-  ownerID = validateString(ownerID);
+export const removeGamesByOwnerId = async (id) => {
+  id = validateString(ownerID);
+
+  await getUserById(id.toString());
 
   // ##################
   // MAKE TRANSACTION
 
   const deletionInfo = [];
-  const games = await getGamesByOwnerID(ownerID);
+  const games = await getGamesByOwnerID(id);
   for (const game of games) {
     deletionInfo.push(await removeGameById(game._id.toString()));
   }
@@ -75,15 +81,15 @@ export const removeGameById = async (id) => {
   // ##################
   // MAKE TRANSACTION
 
+  // delete all reviews about deleted game
+  await removeGameReviewsByReviewedGameId(id.toString());
+
   // delete game
   const gamesCollection = await games();
   const deletionInfo = await gamesCollection.findOneAndDelete({
     _id: id,
   });
   if (!deletionInfo) throw `could not delete game with id: ${id}.`;
-
-  // delete all reviews about deleted game
-  await removeGameReviewByReviewedGameId(id.toString());
 
   return deletionInfo;
 
@@ -99,16 +105,16 @@ export const getAllGames = async () => {
   return gameList;
 };
 
-export const getGamesByOwnerID = async (ownerID) => {
-  ownerID = validateObjectID(ownerID);
+export const getGamesByOwnerID = async (id) => {
+  id = validateObjectID(id);
 
   const gamesCollection = await games();
   const gameList = await gamesCollection
     .find({
-      ownerID: ownerID,
+      ownerID: id,
     })
     .toArray();
-  if (!gameList) throw `no game with ownerID: ${ownerID}.`;
+  if (!gameList) throw `no game with ownerID: ${id}.`;
 
   return gameList;
 };
@@ -130,27 +136,35 @@ export const updateGame = async (id, updateFeilds) => {
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
   const patchedGame = {};
+  let updated = false;
   patchedGame.datePosted = new Date().toUTCString();
 
-  if (updateFeilds.location) {
+  if (updateFeilds.location !== undefined) {
     patchedGame.location = validateGeoJson(updateFeilds.location);
+    updated = true;
   }
 
-  if (updateFeilds.gameTitle) {
+  if (updateFeilds.gameTitle !== undefined) {
     patchedGame.gameTitle = validateTitle(updateFeilds.gameTitle);
+    updated = true;
   }
 
-  if (updateFeilds.description) {
+  if (updateFeilds.description !== undefined) {
     patchedGame.description = validateBody(updateFeilds.description);
+    updated = true;
   }
 
-  if (updateFeilds.condition) {
+  if (updateFeilds.condition !== undefined) {
     patchedGame.condition = validateCondition(updateFeilds.condition);
+    updated = true;
   }
 
-  if (updateFeilds.imgURL) {
+  if (updateFeilds.imgURL !== undefined) {
     patchedGame.imgURL = validateURL(updateFeilds.imgURL);
+    updated = true;
   }
+
+  if (!updated) throw "must update a field";
 
   // update game
   const gamesCollection = await games();
