@@ -1,60 +1,77 @@
 # Data API
 
     Note:
-    - All functions throw an error if something goes wrong (invalid input, DB error, etc.) and return on success.
+    - All functions throw an error if something goes wrong (invalid input, DB error, etc.) and returns on success.
     - All functions abide by the schema defined in the DB proposal (it has changed).
 
 ## ./users.js (5 functions)
 
 ### createUser(firstName, lastName, email, hashedPassword, location)
 
-    To_Do
+    Creates a user only if the email address is unique across existing users.
+    Returns the inserted user
 
 ### removeUser(id)
 
-    To_Do
+    Removes the user matching the id which is a user _id.
+    Returns the removed user
 
 ### getAllUsers()
 
-    To_Do
+    Gets all the users.
+    Returns an array of all the users
 
 ### getUserById(id)
 
-    To_Do
+    Gets the user matching the id which is a user _id.
+    Returns the matching user
 
 ### updateUser(id, updateFeilds)
 
-    To_Do
+    Updates the user matching the id which is a user _id. updateFeilds is an object whose keys are any of the following: firstName, lastName, email, hashedPassword, or location. Note updateFeilds must not be empty but can contain any number of these fields. 
+    Returns the updated user
 
-## ./userReviews.js (7 functions)
+## ./userReviews.js (8 functions)
 
 ### createUserReview(postingUser, reviewedUser, title, body, rating)
 
-    To_Do
+    Creates a user review only if both postingUser and reviewedUser exist and are different.
+    Returns the created user review
 
 ### removeUserReviewsByReviewedId(id)
 
-    To_Do
+    Removes all user reviews whose reviewedUser attribute matches id.
+    Returns an array of all removed user reviews
 
 ### removeUserReviewById(id)
 
-    To_Do
+    Removes the user review whose _id attribute matches id.
+    Returns the removed user review
 
 ### getAllUserReviews()
 
-    To_Do
+    Gets all the user reviews.
+    Returns an array of all the user reviews
+
+### getUserReviewsByPostingUserId(id)
+
+    Gets all the user reviews whose postingUser matches id.
+    Returns an array of all the user reviews
 
 ### getUserReviewsByReviewedUserId(id)
 
-    To_Do
+    Gets all the user reviews whose reviewedUser matches id.
+    Returns an array of all the user reviews
 
 ### getUserReviewById(id)
 
-    To_Do
+    Gets the user review whose _id matches id.
+    Returns a user review
 
 ### updateUserReview(id, updateFeilds)
 
-    To_Do
+    Updates the user review matching the id which is a user review _id. updateFeilds is an object whose keys are any of the following: reviewedUser, title, body, rating. Note updateFeilds must not be empty but can contain any number of these fields. 
+    Returns the updated user review
 
 ## ./games.js (7 functions)
 
@@ -86,7 +103,7 @@
 
     To_Do
 
-## ./gameReviews.js (7 functions)
+## ./gameReviews.js (8 functions)
 
 ### createGameReview(postingUser, reviewedGame, title, body, rating)
 
@@ -101,6 +118,10 @@
     To_Do
 
 ### getAllGameReviews()
+
+    To_Do
+
+### getGameReviewsByPostingUserId(id)
 
     To_Do
 
