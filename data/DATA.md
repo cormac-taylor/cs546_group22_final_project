@@ -28,7 +28,7 @@
 
 ### updateUser(id, updateFeilds)
 
-    Updates the user matching the id which is a user _id. updateFeilds is an object whose keys are any of the following: firstName, lastName, email, hashedPassword, or location. Note updateFeilds must not be empty but can contain any number of these fields. 
+    Updates the user matching the id which is a user _id. updateFeilds is an object whose keys are any of the following: firstName, lastName, email, hashedPassword, or location. Note updateFeilds must not be empty but can contain any number of these fields.
     Returns the updated user
 
 ## ./userReviews.js (8 functions)
@@ -70,69 +70,84 @@
 
 ### updateUserReview(id, updateFeilds)
 
-    Updates the user review matching the id which is a user review _id. updateFeilds is an object whose keys are any of the following: reviewedUser, title, body, rating. Note updateFeilds must not be empty but can contain any number of these fields. 
+    Updates the user review matching the id which is a user review _id. updateFeilds is an object whose keys are any of the following: reviewedUser, title, body, or rating. Note updateFeilds must not be empty but can contain any number of these fields.
     Returns the updated user review
 
 ## ./games.js (7 functions)
 
 ### createGame(ownerID, location, gameTitle, description, condition, imgURL)
 
-    To_Do
+    Creates a game only if the ownerID exists.
+    Returns the inserted game
 
 ### removeGamesByOwnerId(id)
 
-    To_Do
+    Removes all games whose ownerId attribute matches id.
+    Returns an array of all removed games
 
 ### removeGameById(id)
 
-    To_Do
+    Removes the game matching the id which is a game _id.
+    Returns the removed game
 
 ### getAllGames()
 
-    To_Do
+    Gets all the games.
+    Returns an array of all the games
 
 ### getGamesByOwnerID(id)
 
-    To_Do
+    Gets all the games whose ownerId matches id.
+    Returns an array of all the games
 
 ### getGameById(id)
 
-    To_Do
+    Gets the game matching the id which is a game _id.
+    Returns the matching game
 
 ### updateGame(id, updateFeilds)
 
-    To_Do
+    Updates the game matching the id which is a game _id. updateFeilds is an object whose keys are any of the following: location, gameTitle, description, condition, or imgURL. Note updateFeilds must not be empty but can contain any number of these fields.
+    Returns the updated game
 
 ## ./gameReviews.js (8 functions)
 
 ### createGameReview(postingUser, reviewedGame, title, body, rating)
 
-    To_Do
+    Creates a game review only if both postingUser and reviewedGame exist and postingUser doesn't own reviewedGame.
+    Returns the created game review
 
 ### removeGameReviewsByReviewedGameId(id)
 
-    To_Do
+    Removes all game reviews whose reviewedGame attribute matches id.
+    Returns an array of all removed game reviews
 
 ### removeGameReviewById(id)
 
-    To_Do
+    Removes the game review whose _id attribute matches id.
+    Returns the removed game review
 
 ### getAllGameReviews()
 
-    To_Do
+    Gets all the game reviews.
+    Returns an array of all the game reviews
 
 ### getGameReviewsByPostingUserId(id)
 
-    To_Do
+    Gets all the game reviews whose postingUser matches id.
+    Returns an array of all the game reviews
 
 ### getGameReviewsByReviewedGameId(id)
 
-    To_Do
+    Gets all the game reviews whose reviewedGame matches id.
+    Returns an array of all the game reviews
 
 ### getGameReviewById(id)
 
-    To_Do
+    Gets the game review whose _id matches id.
+    Returns a game review
 
 ### updateGameReview(id, updateFeilds)
 
-    To_Do
+    Updates the game review matching the id which is a game review _id. updateFeilds is an object whose keys are any of the following: reviewedGame, title, body, or rating. Note updateFeilds must not be empty but can contain any number of these fields.
+    Returns the updated game review

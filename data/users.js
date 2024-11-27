@@ -109,13 +109,16 @@ export const updateUser = async (id, updateFeilds) => {
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
   const patchedUser = {};
+  let updated = false;
   patchedUser.date = new Date().toUTCString();
   if (updateFeilds.hashedPassword !== undefined) {
     patchedUser.hashedPassword = validateString(updateFeilds.hashedPassword);
+    updated = true;
   }
 
   if (updateFeilds.location !== undefined) {
     patchedUser.location = validateGeoJson(updateFeilds.location);
+    updated = true;
   }
 
   const usersCollection = await users();
@@ -129,6 +132,7 @@ export const updateUser = async (id, updateFeilds) => {
       email: patchedUser.email,
     });
     if (accountWithEmail) throw "email must be unique!";
+    updated = true;
   }
 
   // ##################
@@ -138,14 +142,17 @@ export const updateUser = async (id, updateFeilds) => {
     const firstName = validateName(updateFeilds.firstName);
     await updateFirstName(id, firstName);
     patchedUser.firstName = firstName;
+    updated = true;
   }
 
   if (updateFeilds.lastName !== undefined) {
     const lastName = validateName(updateFeilds.lastName);
     await updateLastName(id, lastName);
     patchedUser.lastName = validateName(lastName);
+    updated = true;
   }
 
+  if (!updated) throw "must update a field";
   // update user
   const updateInfo = await usersCollection.findOneAndUpdate(
     { _id: id },

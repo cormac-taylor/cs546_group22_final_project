@@ -174,6 +174,7 @@ export const updateGameReview = async (id, updateFeilds) => {
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
   const patchedGameReview = {};
+  let updated = false;
   patchedGameReview.date = new Date().toUTCString();
 
   if (updateFeilds.reviewedGame !== undefined) {
@@ -192,16 +193,25 @@ export const updateGameReview = async (id, updateFeilds) => {
       throw "owner cannot review their own game!";
 
     patchedGameReview.reviewedGame = reviewedGame;
+    updated = true;
   }
 
-  if (updateFeilds.title !== undefined)
+  if (updateFeilds.title !== undefined) {
     patchedGameReview.title = validateTitle(updateFeilds.title);
+    updated = true;
+  }
 
-  if (updateFeilds.body !== undefined)
+  if (updateFeilds.body !== undefined) {
     patchedGameReview.body = validateBody(updateFeilds.body);
+    updated = true;
+  }
 
-  if (updateFeilds.rating !== undefined)
+  if (updateFeilds.rating !== undefined) {
     patchedGameReview.rating = validateRating(updateFeilds.rating);
+    updated = true;
+  }
+
+  if (!updated) throw "must update a field";
 
   const oldReview = await getGameReviewById(id.toString());
 

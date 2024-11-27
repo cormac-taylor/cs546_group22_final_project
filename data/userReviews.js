@@ -173,6 +173,7 @@ export const updateUserReview = async (id, updateFeilds) => {
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
   const patchedUserReview = {};
+  let updated = false;
   patchedUserReview.date = new Date().toUTCString();
 
   if (updateFeilds.reviewedUser !== undefined) {
@@ -182,17 +183,25 @@ export const updateUserReview = async (id, updateFeilds) => {
     await getUserById(reviewedUser.toString());
 
     patchedUserReview.reviewedUser = reviewedUser;
+    updated = true;
   }
 
-  if (updateFeilds.title !== undefined)
+  if (updateFeilds.title !== undefined) {
     patchedUserReview.title = validateTitle(updateFeilds.title);
+    updated = true;
+  }
 
-  if (updateFeilds.body !== undefined)
+  if (updateFeilds.body !== undefined) {
     patchedUserReview.body = validateBody(updateFeilds.body);
+    updated = true;
+  }
 
-  if (updateFeilds.rating !== undefined)
+  if (updateFeilds.rating !== undefined) {
     patchedUserReview.rating = validateRating(updateFeilds.rating);
+    updated = true;
+  }
 
+  if (!updated) throw "must update a field";
   // ##################
   // MAKE TRANSACTION
 
