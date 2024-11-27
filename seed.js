@@ -101,7 +101,7 @@ try {
 
 try {
   ur4 = await userReviewsData.createUserReview(
-    u2._id.toString(),
+    u1._id.toString(),
     u3._id.toString(),
     "Fake News",
     "Stright cap. Kids just bad.",
@@ -210,5 +210,8 @@ try {
 } catch (e) {
   console.log(e);
 }
+
+// TO DO ############################################################################################################
+// Add transactions
 
 await closeConnection();

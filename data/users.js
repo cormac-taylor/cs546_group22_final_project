@@ -14,9 +14,6 @@ import {
 } from "./helpers/updatePostingUserName.js";
 import { removeUserReviewsByReviewedId } from "./userReviews.js";
 
-// TO DO ############################################################################################################
-// Make sure reviews of deleted users/games have enought info
-// Add transactions
 export const createUser = async (
   firstName,
   lastName,
@@ -139,13 +136,13 @@ export const updateUser = async (id, updateFeilds) => {
 
   if (updateFeilds.firstName !== undefined) {
     const firstName = validateName(updateFeilds.firstName);
-    updateFirstName(id, firstName);
+    await updateFirstName(id, firstName);
     patchedUser.firstName = firstName;
   }
 
   if (updateFeilds.lastName !== undefined) {
     const lastName = validateName(updateFeilds.lastName);
-    updateLastName(id, lastName);
+    await updateLastName(id, lastName);
     patchedUser.lastName = validateName(lastName);
   }
 
