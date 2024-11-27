@@ -226,16 +226,14 @@ try {
 //   getUserReviewById,
 //   updateUserReview,
 
-// games
-//   removeGamesByOwnerId,
-//   removeGameById,
-//   getAllGames,
-//   getGamesByOwnerID,
-//   getGameById,
-//   updateGame,
-
 try {
-  const res = await gameReviewsData.updateGameReview(gr2._id.toString(), { reviewedGame: g3._id.toString()});
+  const res = await gamesData.updateGame(g1._id.toString(),{
+    location: { type: 'Point', coordinates: [ 73.856077, -40.848447 ] },
+    gameTitle: 'jnejkej',
+    description: 'jnejkejjnejkejjnejkejjnejkejjnejkej jnejkejjnejkej .',
+    condition: 'used',
+    imgURL: 'https://m.media-amazon.com/images/I/71GM6UFejTL._AC_SL2500_.jpg',
+  });
   console.log(res);
 } catch (e) {
   console.log(e);

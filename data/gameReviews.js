@@ -75,6 +75,9 @@ export const createGameReview = async (
 export const removeGameReviewsByReviewedGameId = async (reviewedGameId) => {
   reviewedGameId = validateObjectID(reviewedGameId);
 
+  // make sure reviewedGame exits
+  await getGameById(reviewedGameId.toString());
+
   // ##################
   // MAKE TRANSACTION
 

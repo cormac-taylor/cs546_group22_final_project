@@ -9,7 +9,8 @@ import {
   validateTitle,
   validateURL,
 } from "../utilities/validation.js";
-import { removeGameReviewByReviewedGameId } from "./gameReviews.js";
+import { removeGameReviewsByReviewedGameId } from "./gameReviews.js";
+import { getUserById } from "./users.js";
 
 export const createGame = async (
   ownerID,
@@ -41,6 +42,9 @@ export const createGame = async (
     numReviews,
   };
 
+  // make sure postingUser exits
+  await getUserById(ownerID.toString());
+
   // add new game
   const gamesCollection = await games();
   const insertInfo = await gamesCollection.insertOne(newGame);
@@ -54,13 +58,14 @@ export const createGame = async (
 export const removeGamesByOwnerId = async (ownerID) => {
   ownerID = validateString(ownerID);
 
+  await getUserById(ownerID.toString());
+
   // ##################
   // MAKE TRANSACTION
 
   const deletionInfo = [];
   const games = await getGamesByOwnerID(ownerID);
   for (const game of games) {
-    console.log(game);
     deletionInfo.push(await removeGameById(game._id.toString()));
   }
 
@@ -76,9 +81,8 @@ export const removeGameById = async (id) => {
   // ##################
   // MAKE TRANSACTION
 
-  // TO DO ########################################################################################
   // delete all reviews about deleted game
-  await removeGameReviewByReviewedGameId(id.toString());
+  await removeGameReviewsByReviewedGameId(id.toString());
 
   // delete game
   const gamesCollection = await games();
