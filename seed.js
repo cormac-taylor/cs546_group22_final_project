@@ -166,7 +166,7 @@ try {
 try {
   gr1 = await gameReviewsData.createGameReview(
     u2._id.toString(),
-    g1._id.toString(),
+    g4._id.toString(),
     "Fun",
     "Risk is fun.",
     5
@@ -177,7 +177,7 @@ try {
 
 try {
   gr2 = await gameReviewsData.createGameReview(
-    u2._id.toString(),
+    u3._id.toString(),
     g2._id.toString(),
     "Not fun",
     "This risk is not fun.",
@@ -189,7 +189,7 @@ try {
 
 try {
   gr3 = await gameReviewsData.createGameReview(
-    u2._id.toString(),
+    u1._id.toString(),
     g3._id.toString(),
     "Riches",
     "I am rich now.",
@@ -235,7 +235,7 @@ try {
 //   updateGame,
 
 try {
-  const res = await gamesData.removeGamesByOwnerId(u2._id.toString());
+  const res = await gameReviewsData.updateGameReview(gr2._id.toString(), { reviewedGame: g3._id.toString()});
   console.log(res);
 } catch (e) {
   console.log(e);

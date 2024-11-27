@@ -40,7 +40,11 @@ export const createGameReview = async (
   await getUserById(postingUser.toString());
 
   // make sure reviewedGame exits
-  await getGameById(reviewedGame.toString());
+  const gameData = await getGameById(reviewedGame.toString());
+
+  // make sure owner isn't reviewing their game
+  if (gameData.ownerID.toString() === postingUser.toString())
+    throw "owner cannot review their own game!";
 
   const gameReviewsCollection = await gameReviews();
 
@@ -59,7 +63,7 @@ export const createGameReview = async (
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw "could not add game review.";
 
-  await addReviewToGameStats(reviewedGame, rating);
+  await addReviewToGameStats(newGameReview.reviewedGame, newGameReview.rating);
 
   const newId = insertInfo.insertedId.toString();
   return await getGameReviewById(newId);
@@ -68,7 +72,7 @@ export const createGameReview = async (
   // ##################
 };
 
-export const removeGameReviewByReviewedGameId = async (reviewedGameId) => {
+export const removeGameReviewsByReviewedGameId = async (reviewedGameId) => {
   reviewedGameId = validateObjectID(reviewedGameId);
 
   // ##################
@@ -152,10 +156,23 @@ export const updateGameReview = async (id, updateFeilds) => {
   const patchedGameReview = {};
   patchedGameReview.date = new Date().toUTCString();
 
-  if (updateFeilds.reviewedGame !== undefined)
-    patchedGameReview.reviewedGame = validateObjectID(
-      updateFeilds.reviewedGame
-    );
+  if (updateFeilds.reviewedGame !== undefined) {
+    const reviewedGame = validateObjectID(updateFeilds.reviewedGame);
+
+    // get old review data
+    const oldGameReviewData = await getGameReviewById(id.toString());
+
+    // make sure reviewedGame exits
+    const gameData = await getGameById(reviewedGame.toString());
+
+    // make sure owner isn't reviewing their game
+    if (
+      gameData.ownerID.toString() === oldGameReviewData.postingUser.toString()
+    )
+      throw "owner cannot review their own game!";
+
+    patchedGameReview.reviewedGame = reviewedGame;
+  }
 
   if (updateFeilds.title !== undefined)
     patchedGameReview.title = validateTitle(updateFeilds.title);
@@ -166,10 +183,10 @@ export const updateGameReview = async (id, updateFeilds) => {
   if (updateFeilds.rating !== undefined)
     patchedGameReview.rating = validateRating(updateFeilds.rating);
 
+  const oldReview = await getGameReviewById(id.toString());
+
   // ##################
   // MAKE TRANSACTION
-
-  const oldReview = await getGameReviewById(id.toString());
 
   // update review
   const gameReviewsCollection = await gameReviews();
@@ -182,15 +199,15 @@ export const updateGameReview = async (id, updateFeilds) => {
 
   // update user stats
   if (
-    patchedGameReview.reviewedGame &&
-    (patchedGameReview.rating || patchedGameReview.rating === 0)
+    patchedGameReview.reviewedGame !== undefined &&
+    patchedGameReview.rating !== undefined
   ) {
     await removeReviewFromGameStats(oldReview.reviewedGame, oldReview.rating);
     await addReviewToGameStats(updateInfo.reviewedGame, updateInfo.rating);
-  } else if (patchedGameReview.reviewedGame) {
+  } else if (patchedGameReview.reviewedGame !== undefined) {
     await removeReviewFromGameStats(oldReview.reviewedGame, oldReview.rating);
     await addReviewToGameStats(updateInfo.reviewedGame, oldReview.rating);
-  } else if (patchedGameReview.rating || patchedGameReview.rating === 0) {
+  } else if (patchedGameReview.rating !== undefined) {
     await removeReviewFromGameStats(oldReview.reviewedGame, oldReview.rating);
     await addReviewToGameStats(oldReview.reviewedGame, updateInfo.rating);
   }

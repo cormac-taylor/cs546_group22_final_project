@@ -27,7 +27,7 @@ import {
 
 import {
   createGameReview,
-  removeGameReviewByReviewedGameId,
+  removeGameReviewsByReviewedGameId,
   removeGameReviewById,
   getAllGameReviews,
   getGameReviewsByReviewedGameId,
@@ -37,7 +37,7 @@ import {
 
 export const gameReviewsData = {
   createGameReview,
-  removeGameReviewByReviewedGameId,
+  removeGameReviewsByReviewedGameId,
   removeGameReviewById,
   getAllGameReviews,
   getGameReviewsByReviewedGameId,
