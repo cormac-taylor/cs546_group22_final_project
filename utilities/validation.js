@@ -82,11 +82,11 @@ export const validateName = (name) => {
 
 export const validateUsername = (username) => {
   // https://stackoverflow.com/questions/9628879/javascript-regex-username-validation
-  const USERNAME_REGEX = /^[a-zA-Z0-9_\.]+$/;
+  const USERNAME_REGEX = /^[a-z0-9_\.]+$/;
 
-  const res = validateStrOfLen(username, 2, 32);
+  const res = validateStrOfLen(username, 2, 32).toLowerCase();
   if (!USERNAME_REGEX.test(res))
-    throw "must be username (a-z, A-Z, _, or . and >=8 chars)!";
+    throw "must be username (a-z, 0-9, _, or . and >=8 chars)!";
   return res;
 };
 
