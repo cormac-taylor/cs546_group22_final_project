@@ -64,12 +64,13 @@ export const createUserReview = async (
   // ##################
   // MAKE TRANSACTION
 
+  // update dependencies
+  await addReviewToUserStats(reviewedUser, rating);
+
   // insert review
   const insertInfo = await userReviewsCollection.insertOne(newUserReview);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw "could not add user review.";
-
-  await addReviewToUserStats(reviewedUser, rating);
 
   const newId = insertInfo.insertedId.toString();
   return await getUserReviewById(newId);
@@ -112,6 +113,7 @@ export const removeUserReviewById = async (id) => {
   });
   if (!deletionInfo) throw `could not delete user review with id: ${id}.`;
 
+  // update dependencies
   await removeReviewFromUserStats(
     deletionInfo.reviewedUser,
     deletionInfo.rating
@@ -127,6 +129,7 @@ export const getAllUserReviews = async () => {
   const userReviewsCollection = await userReviews();
   let userReviewList = await userReviewsCollection.find({}).toArray();
   if (!userReviewList) throw "could not get all user reviews.";
+
   return userReviewList;
 };
 
@@ -141,6 +144,7 @@ export const getUserReviewsByReviewedUserId = async (id) => {
     .toArray();
   if (!userReviewList)
     throw `could not get game reviews for reviewedGame: ${id}.`;
+
   return userReviewList;
 };
 
@@ -155,6 +159,7 @@ export const getUserReviewsByPostingUserId = async (id) => {
     .toArray();
   if (!userReviewList)
     throw `could not get game reviews for reviewedGame: ${id}.`;
+
   return userReviewList;
 };
 
@@ -204,8 +209,6 @@ export const updateUserReview = async (id, updateFeilds) => {
   }
 
   if (!updated) throw "must update a field";
-  // ##################
-  // MAKE TRANSACTION
 
   const oldReview = await getUserReviewById(id.toString());
 
@@ -216,6 +219,9 @@ export const updateUserReview = async (id, updateFeilds) => {
       patchedUserReview.reviewedUser.toString()
   )
     throw "user cannot review themselves!";
+
+  // ##################
+  // MAKE TRANSACTION
 
   // update review
   const userReviewsCollection = await userReviews();

@@ -239,15 +239,4 @@ try {
   console.log(e);
 }
 
-try {
-  const res = await usersData.updateUser(u1._id.toString(), {
-    firstName: "firstName",
-    lastName: "lastName",
-    username: "__username__",
-  });
-  console.log(res);
-} catch (e) {
-  console.log(e);
-}
-
 await closeConnection();
