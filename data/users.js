@@ -146,26 +146,30 @@ export const updateUser = async (id, updateFeilds) => {
   const usersCollection = await users();
 
   if (updateFeilds.username !== undefined) {
-    patchedUser.username = validateUsername(updateFeilds.username);
+    const username = validateUsername(updateFeilds.username);
 
     // make sure the email isn't used by another user
     const accountWithUsername = await usersCollection.findOne({
       _id: { $ne: id },
-      username: patchedUser.username,
+      username: username,
     });
     if (accountWithUsername) throw "username must be unique!";
+
+    patchedUser.username = username;
     updated = true;
   }
 
   if (updateFeilds.email !== undefined) {
-    patchedUser.email = validateString(updateFeilds.email);
+    const email = validateString(updateFeilds.email);
 
     // make sure the email isn't used by another user
     const accountWithEmail = await usersCollection.findOne({
       _id: { $ne: id },
-      email: patchedUser.email,
+      email: email,
     });
     if (accountWithEmail) throw "email must be unique!";
+
+    patchedUser.email = email;
     updated = true;
   }
 
