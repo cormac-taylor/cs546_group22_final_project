@@ -31,12 +31,14 @@ export const createUserReview = async (
 
   const firstName = postingUserData.firstName;
   const lastName = postingUserData.lastName;
+  const username = postingUserData.username;
 
   const newUserReview = {
     postingUser,
     reviewedUser,
     firstName,
     lastName,
+    username,
     title,
     date,
     body,

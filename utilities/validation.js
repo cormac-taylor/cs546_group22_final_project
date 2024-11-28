@@ -30,9 +30,10 @@ export const validateString = (str) => {
   return res;
 };
 
-const validateStrOfMaxLen = (str, maxLen) => {
+const validateStrOfLen = (str, minLen, maxLen) => {
   const res = validateString(str);
-  if (res.length > maxLen) throw `must be less than ${maxLen} chars!`;
+  if (res.length < minLen) throw `must be at least ${minLen} chars!`;
+  if (res.length > maxLen) throw `must be at most ${maxLen} chars!`;
   return res;
 };
 
@@ -74,8 +75,18 @@ export const validateName = (name) => {
   // https://a-tokyo.medium.com/first-and-last-name-validation-for-forms-and-databases-d3edf29ad29d
   const NAME_REGEX = /^[a-zA-Z]+([ \-']{0,1}[a-zA-Z]+){0,2}[.]{0,1}$/;
 
-  const res = validateStrOfMaxLen(name, 32);
+  const res = validateStrOfLen(name, 2, 32);
   if (!NAME_REGEX.test(res)) throw "must be name!";
+  return res;
+};
+
+export const validateUsername = (username) => {
+  // https://stackoverflow.com/questions/9628879/javascript-regex-username-validation
+  const USERNAME_REGEX = /^[a-zA-Z0-9_\.]+$/;
+
+  const res = validateStrOfLen(username, 2, 32);
+  if (!USERNAME_REGEX.test(res))
+    throw "must be username (a-z, A-Z, _, or . and >=8 chars)!";
   return res;
 };
 
@@ -92,11 +103,11 @@ export const validateGeoJson = (geoJson) => {
 };
 
 export const validateTitle = (title) => {
-  return validateStrOfMaxLen(title, 128);
+  return validateStrOfLen(title, 1, 64);
 };
 
 export const validateBody = (body) => {
-  return validateStrOfMaxLen(body, 1024);
+  return validateStrOfLen(body, 16, 512);
 };
 
 export const validateRating = (rating) => {

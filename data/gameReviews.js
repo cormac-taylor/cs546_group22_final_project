@@ -32,12 +32,14 @@ export const createGameReview = async (
 
   const firstName = postingUserData.firstName;
   const lastName = postingUserData.lastName;
+  const username = postingUserData.username;
 
   const newGameReview = {
     postingUser,
     reviewedGame,
     firstName,
     lastName,
+    username,
     title,
     date,
     body,
