@@ -11,6 +11,7 @@
   "author": "Cormac Taylor 20014003, Vraj Patel, Marcel Castillo, & Yash Yagnik",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "express": "^4.21.1",
     "express-handlebars": "^8.0.1",
     "geojson-validation": "^1.0.2",
