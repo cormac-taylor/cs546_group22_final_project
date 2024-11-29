@@ -1,5 +1,6 @@
 import {Router} from 'express';
-import {usersData, validation} from '../data/index.js';
+import {usersData} from '../data/index.js';
+import * as validation from "../utilities/validation.js"
 import bcrypt from 'bcrypt';
 
 const router = Router();
