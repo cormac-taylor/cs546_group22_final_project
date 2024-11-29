@@ -38,6 +38,30 @@ import {
   updateGameReview,
 } from "./gameReviews.js";
 
+import {
+    validateBoolean,
+    validateFloat,
+    validateInteger,
+    validateString,
+    validateStrOfLen,
+    validateArray,
+    validateNonEmptyArray,
+    validateObject,
+    validateNonEmptyObject,
+    validateFunction,
+    validateObjectID,
+    validateName,
+    validateUsername,
+    validateEmail,
+    validateGeoJson,
+    validateTitle,
+    validateBody,
+    validateRating,  
+    validateURL,
+    validateCondition,
+} from '../utilities/validation.js'
+
+
 export const gameReviewsData = {
   createGameReview,
   removeGameReviewsByReviewedGameId,
@@ -77,3 +101,27 @@ export const usersData = {
   getUserById,
   updateUser,
 };
+
+export const validation ={
+    validateBoolean,
+    validateFloat,
+    validateInteger,
+    validateString,
+    validateStrOfLen,
+    validateArray,
+    validateNonEmptyArray,
+    validateObject,
+    validateNonEmptyObject,
+    validateFunction,
+    validateObjectID,
+    validateName,
+    validateUsername,
+    validateEmail,
+    validateGeoJson,
+    validateTitle,
+    validateBody,
+    validateRating,  
+    validateURL,
+    validateCondition,
+}
+

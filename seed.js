@@ -28,37 +28,65 @@ let gr3;
 let gr4;
 
 try {
-  u1 = await usersData.createUser("user", "one", "u1@acb.com", "password", {
-    type: "Point",
-    coordinates: [-73.856077, 40.848447],
-  });
+  u1 = await usersData.createUser(
+    "user",
+    "one",
+    "u1",
+    "u1@acb.com",
+    "password",
+    {
+      type: "Point",
+      coordinates: [-73.856077, 40.848447],
+    }
+  );
 } catch (e) {
   console.log(e);
 }
 
 try {
-  u2 = await usersData.createUser("user", "two", "u2@acb.com", "password", {
-    type: "Point",
-    coordinates: [-73.856077, 40.848447],
-  });
+  u2 = await usersData.createUser(
+    "user",
+    "two",
+    "u2",
+    "u2@acb.com",
+    "password",
+    {
+      type: "Point",
+      coordinates: [-73.856077, 40.848447],
+    }
+  );
 } catch (e) {
   console.log(e);
 }
 
 try {
-  u3 = await usersData.createUser("user", "three", "u3@acb.com", "password", {
-    type: "Point",
-    coordinates: [-73.856077, 40.848447],
-  });
+  u3 = await usersData.createUser(
+    "user",
+    "three",
+    "u3",
+    "u3@acb.com",
+    "password",
+    {
+      type: "Point",
+      coordinates: [-73.856077, 40.848447],
+    }
+  );
 } catch (e) {
   console.log(e);
 }
 
 try {
-  u4 = await usersData.createUser("user", "four", "u4@acb.com", "password", {
-    type: "Point",
-    coordinates: [-73.856077, 40.848447],
-  });
+  u4 = await usersData.createUser(
+    "user",
+    "four",
+    "u4",
+    "u4@acb.com",
+    "password",
+    {
+      type: "Point",
+      coordinates: [-73.856077, 40.848447],
+    }
+  );
 } catch (e) {
   console.log(e);
 }
@@ -68,7 +96,7 @@ try {
     u1._id.toString(),
     u2._id.toString(),
     "AWESOME",
-    "Simply hilarious.",
+    "Simply hilarious. Simply hilarious.",
     5
   );
 } catch (e) {
@@ -80,7 +108,7 @@ try {
     u3._id.toString(),
     u2._id.toString(),
     "STINKS",
-    "He counts cards!",
+    "He counts cards! He counts cards!",
     0
   );
 } catch (e) {
@@ -92,7 +120,7 @@ try {
     u4._id.toString(),
     u2._id.toString(),
     "Solid",
-    "Solid player.",
+    "Solid player. Solid player.",
     3
   );
 } catch (e) {
@@ -168,7 +196,7 @@ try {
     u2._id.toString(),
     g4._id.toString(),
     "Fun",
-    "Risk is fun.",
+    "Risk is fun. Risk is fun.",
     5
   );
 } catch (e) {
@@ -192,7 +220,7 @@ try {
     u1._id.toString(),
     g3._id.toString(),
     "Riches",
-    "I am rich now.",
+    "I am rich now. I am rich now.",
     3
   );
 } catch (e) {
@@ -204,7 +232,7 @@ try {
     u1._id.toString(),
     g1._id.toString(),
     "Sucks",
-    "Missing peices.",
+    "Missing peices. Missing peices.",
     0
   );
 } catch (e) {

@@ -1,0 +1,62 @@
+/*
+* Marcel Castillo
+* I pledge my honor that I have abided by the Stevens Honor System
+*/
+
+body {
+    background: #fefefe;
+    font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+    font-size: 15pt;
+}
+
+main {
+    max-width: 75%;
+    margin: auto;
+}
+
+header {
+    border-bottom: 1px solid #afafaf;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #333;
+    margin-bottom: 5px;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+p {
+    font-size: 1rem;
+    line-height: 2;
+}
+
+footer {
+    font-size: 0.5rem;
+    line-height: 1;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+.error-list {
+    color: red;
+    font-weight: bold;
+}
+
+.inputClass {
+    border: 3px solid red;
+    background-color: #eee;
+}

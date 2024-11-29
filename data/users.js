@@ -6,23 +6,27 @@ import {
   validateString,
   validateNonEmptyObject,
   validateName,
+  validateUsername,
 } from "../utilities/validation.js";
 import { removeGamesByOwnerId } from "./games.js";
 import {
   updateFirstName,
   updateLastName,
+  updateUsername,
 } from "./helpers/updatePostingUserName.js";
 import { removeUserReviewsByReviewedId } from "./userReviews.js";
 
 export const createUser = async (
   firstName,
   lastName,
+  username,
   email,
   hashedPassword,
   location
 ) => {
   firstName = validateName(firstName);
   lastName = validateName(lastName);
+  username = validateUsername(username);
   email = validateEmail(email);
   hashedPassword = validateString(hashedPassword);
   location = validateGeoJson(location);
@@ -33,6 +37,7 @@ export const createUser = async (
   const newUser = {
     firstName,
     lastName,
+    username,
     email,
     hashedPassword,
     location,
@@ -42,6 +47,12 @@ export const createUser = async (
   };
 
   const usersCollection = await users();
+
+  // make sure username is unique
+  const accountWithUsername = await usersCollection.findOne({
+    username: username,
+  });
+  if (accountWithUsername) throw "username must be unique!";
 
   // make sure email is unique
   const accountWithEmail = await usersCollection.findOne({
@@ -111,6 +122,17 @@ export const updateUser = async (id, updateFeilds) => {
   const patchedUser = {};
   let updated = false;
   patchedUser.date = new Date().toUTCString();
+
+  if (updateFeilds.firstName !== undefined) {
+    patchedUser.firstName = validateName(updateFeilds.firstName);
+    updated = true;
+  }
+
+  if (updateFeilds.lastName !== undefined) {
+    patchedUser.lastName = validateName(updateFeilds.lastName);
+    updated = true;
+  }
+
   if (updateFeilds.hashedPassword !== undefined) {
     patchedUser.hashedPassword = validateString(updateFeilds.hashedPassword);
     updated = true;
@@ -123,36 +145,52 @@ export const updateUser = async (id, updateFeilds) => {
 
   const usersCollection = await users();
 
+  if (updateFeilds.username !== undefined) {
+    const username = validateUsername(updateFeilds.username);
+
+    // make sure the email isn't used by another user
+    const accountWithUsername = await usersCollection.findOne({
+      _id: { $ne: id },
+      username: username,
+    });
+    if (accountWithUsername) throw "username must be unique!";
+
+    patchedUser.username = username;
+    updated = true;
+  }
+
   if (updateFeilds.email !== undefined) {
-    patchedUser.email = validateString(updateFeilds.email);
+    const email = validateString(updateFeilds.email);
 
     // make sure the email isn't used by another user
     const accountWithEmail = await usersCollection.findOne({
       _id: { $ne: id },
-      email: patchedUser.email,
+      email: email,
     });
     if (accountWithEmail) throw "email must be unique!";
-    updated = true;
-  }
 
-  // ##################
-  // MAKE TRANSACTION
-
-  if (updateFeilds.firstName !== undefined) {
-    const firstName = validateName(updateFeilds.firstName);
-    await updateFirstName(id, firstName);
-    patchedUser.firstName = firstName;
-    updated = true;
-  }
-
-  if (updateFeilds.lastName !== undefined) {
-    const lastName = validateName(updateFeilds.lastName);
-    await updateLastName(id, lastName);
-    patchedUser.lastName = validateName(lastName);
+    patchedUser.email = email;
     updated = true;
   }
 
   if (!updated) throw "must update a field";
+
+  // ##################
+  // MAKE TRANSACTION
+
+  // update dependencies
+  if (patchedUser.firstName !== undefined) {
+    await updateFirstName(id, patchedUser.firstName);
+  }
+
+  if (patchedUser.lastName !== undefined) {
+    await updateLastName(id, patchedUser.lastName);
+  }
+
+  if (patchedUser.username !== undefined) {
+    await updateUsername(id, patchedUser.username);
+  }
+
   // update user
   const updateInfo = await usersCollection.findOneAndUpdate(
     { _id: id },

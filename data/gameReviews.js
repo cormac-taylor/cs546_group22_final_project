@@ -32,12 +32,14 @@ export const createGameReview = async (
 
   const firstName = postingUserData.firstName;
   const lastName = postingUserData.lastName;
+  const username = postingUserData.username;
 
   const newGameReview = {
     postingUser,
     reviewedGame,
     firstName,
     lastName,
+    username,
     title,
     date,
     body,
@@ -63,12 +65,13 @@ export const createGameReview = async (
   // ##################
   // MAKE TRANSACTION
 
+  // update dependencies
+  await addReviewToGameStats(newGameReview.reviewedGame, newGameReview.rating);
+
   // insert review
   const insertInfo = await gameReviewsCollection.insertOne(newGameReview);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw "could not add game review.";
-
-  await addReviewToGameStats(newGameReview.reviewedGame, newGameReview.rating);
 
   const newId = insertInfo.insertedId.toString();
   return await getGameReviewById(newId);
@@ -126,6 +129,7 @@ export const getAllGameReviews = async () => {
   const gameReviewsCollection = await gameReviews();
   let gameReviewList = await gameReviewsCollection.find({}).toArray();
   if (!gameReviewList) throw "could not get all game reviews.";
+
   return gameReviewList;
 };
 
@@ -140,6 +144,7 @@ export const getGameReviewsByPostingUserId = async (id) => {
     .toArray();
   if (!gameReviewList)
     throw `could not get game reviews for postingUser: ${id}.`;
+
   return gameReviewList;
 };
 
@@ -154,6 +159,7 @@ export const getGameReviewsByReviewedGameId = async (id) => {
     .toArray();
   if (!gameReviewList)
     throw `could not get game reviews for reviewedGame: ${id}.`;
+
   return gameReviewList;
 };
 
