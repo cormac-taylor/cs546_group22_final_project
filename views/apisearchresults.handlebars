@@ -1,0 +1,19 @@
+<h1>Games Found</h1>
+<h2 id="searchQuery">Results for: '{{searchByTitle}}'</h2>
+
+<main>
+    {{!-- list of each game found in api --}}
+    <ol>
+        {{#each games}}
+        <li id="gameList">
+            {{name._text}}
+            {{!-- button to select game, sends id of game back --}}
+            <form method="POST" action="/manage/addGame">
+                <button name="gameID" value={{_attributes.objectid}}>Post this Game</button>
+            </form>
+        </li>
+        {{/each}}
+    </ol>
+
+    <a id="backToSearch" href="/manage/addGame">Search for a Different Game</a>
+</main>
