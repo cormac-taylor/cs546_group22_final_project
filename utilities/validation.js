@@ -26,11 +26,11 @@ export const validateInteger = (int) => {
 export const validateString = (str) => {
   if (typeof str !== "string") throw "must be a string!";
   let res = str.trim();
-  if (!res) throw "must have a char!";
+  if (!res) throw "must not be empty!";
   return res;
 };
 
-const validateStrOfLen = (str, minLen, maxLen) => {
+export const validateStrOfLen = (str, minLen, maxLen) => {
   const res = validateString(str);
   if (res.length < minLen) throw `must be at least ${minLen} chars!`;
   if (res.length > maxLen) throw `must be at most ${maxLen} chars!`;
@@ -76,7 +76,8 @@ export const validateName = (name) => {
   const NAME_REGEX = /^[a-zA-Z]+([ \-']{0,1}[a-zA-Z]+){0,2}[.]{0,1}$/;
 
   const res = validateStrOfLen(name, 2, 32);
-  if (!NAME_REGEX.test(res)) throw "must be name!";
+  //TODO: This error is going to float up to the user
+  if (!NAME_REGEX.test(res)) throw "Please provide a valid name.";
   return res;
 };
 

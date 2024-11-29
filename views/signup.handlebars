@@ -1,1 +1,47 @@
-{{!-- signup page --}}
+{{!--
+* Marcel Castillo
+* I pledge my honor that I have abided by the Stevens Honor System
+--}}
+
+<article class="signup-container">
+    <h1>Sign Up</h1>
+    <form action="/signup" method="POST" class="signup-form">
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" value="{{signup.firstName}}">
+        </div>
+
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" value="{{signup.lastName}}">
+        </div>
+
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="{{signup.username}}">
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{signup.email}}">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="submit-button">Sign Up</button>
+        </div>
+    </form>
+    {{#if hasErrors}}
+    <ul class="error-list">
+        {{#each errors}}
+        <li>
+            {{this}}
+        </li>
+        {{/each}}
+    </ul>
+    {{/if}}
+</article>
