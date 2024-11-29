@@ -1,0 +1,16 @@
+<h1>Add a Game Posting</h1>
+
+<main>
+    {{!-- for to send user's search query to api --}}
+    <form method="POST" action="/manage/apigamesearch">     
+        <label for="searchByTitle">Search for a game:</label>
+            <input type="text" name="searchByTitle" id="searchByTitle"/>
+        
+            <input type="submit" />
+    </form> 
+
+    {{!-- only shows the id of the game selected for now --}}
+    {{#if id}}
+    <h2>Game ID: {{id}}</h2>
+    {{/if}}
+</main>
