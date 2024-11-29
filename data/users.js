@@ -115,6 +115,23 @@ export const getUserById = async (id) => {
   return user;
 };
 
+/**
+ * Finds the entry in the database by username
+ * @param username The user entered username.
+ */
+export const getUserByUsername = async (username) => {
+    username = validateUsername(username);
+  
+    const usersCollection = await users();
+    const user = await usersCollection.findOne({
+      username: username,
+    });
+    if (!user) throw `no user with username: ${username}.`;
+    
+    return user;
+};
+
+
 export const updateUser = async (id, updateFeilds) => {
   id = validateObjectID(id);
   updateFeilds = validateNonEmptyObject(updateFeilds);

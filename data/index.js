@@ -3,6 +3,7 @@ import {
   removeUser,
   getAllUsers,
   getUserById,
+  getUserByUsername,
   updateUser,
 } from "./users.js";
 
@@ -75,5 +76,6 @@ export const usersData = {
   removeUser,
   getAllUsers,
   getUserById,
+  getUserByUsername,
   updateUser,
 };
