@@ -1,6 +1,5 @@
 import { Router } from "express";
 const router = Router();
-import {} from "../utilities/validation.js";
 
 router.route("/").get(async (_, res) => {
   try {
