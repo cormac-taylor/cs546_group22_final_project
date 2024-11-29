@@ -11,7 +11,9 @@ router
     .route('/')
     .get(async (req, res) => {
         try{
-            res.render('signup')
+            res.render('signup', {
+                pageTitle: 'Sign Up'
+            });
         } catch(e){
             //TODO: After creating an error page, present that with error instead
             res.status(500).json({error: e});
@@ -51,6 +53,7 @@ router
         /* Error Display*/
         if (errors.length > 0){
             res.render('signup', {
+                pageTitle: 'Sign Up',
                 errors: errors,
                 hasErrors: true,
                 signup: userSignupData
