@@ -46,20 +46,22 @@ router
         return;
     };
     let compareToMatch = false;
-    try{
+    try{    // Verify username and password match
         const user = await usersData.getUserByUsername(userSigninData.username);
         const hash = user.hashedPassword;
         compareToMatch = await bcrypt.compare(plainTextPass, hash);
         // If passwords match, proceed with session
         if (compareToMatch){
             //Route them to their user page and begin their session.
-            res.json({route: `/signin/${userSigninData.username}`, method: req.method});
+            req.session.user = {username: user.username, email: user.email, userId: user._id}
+            res.json({route: `/dashboard/${user.username}`, method: req.method, session: req.session.user, });
         } else {
-            throw 'Internal error';
+            throw 'Internal error'; // Username exists but incorrect password was entered.
         }
     } catch (e) {
         res.render('signin', {
             pageTitle: 'BokenBoards Sign In',
+            //Do not return the reason for the error on the page. Simply render the page with invalidity.
             errors: ['Invalid username or password. Please try again.'],
             hasErrors: true,
             signup: userSigninData

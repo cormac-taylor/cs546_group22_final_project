@@ -1,7 +1,8 @@
 import express from "express";
-const app = express();
+import session from 'express-session';
 import configRoutes from "./routes/index.js";
 import exphbs from "express-handlebars";
+const app = express();
 
 /* Session Management */
 app.use(
@@ -31,7 +32,7 @@ app.use('/signin', (req, res, next) =>{
     } else {
         next();
     }
-})
+});
 
 /* Regular Express Code */
 app.use("/public", express.static("public"));
