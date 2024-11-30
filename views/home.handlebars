@@ -1,19 +1,64 @@
 {{!-- home page --}}
 <h1>BokenBoards</h1>
+{{!-- I need a value to see if the user is signed in or not, I might have to look at the cookies to see if they are already
+signed in --}}
 
-{{!-- temp navigation buttons --}}
-<main>
-    <form action="/manage">
-        <button>Manage Games</button>
-    </form>
+<div id="userOptions"></div>
 
-    <form action="/signin">
-        <button>Sign In</button>
-    </form>
+<script>
+    // This is a boolean to make the check if the user is already signed in
+    // Right now it is hard coded to false but can be automated through cookies
+    // TODO: Use cookies for the boolean variable
+    let loggedIn = false
 
-    {{#if status}}
-    <h3>{{status}}</h3>
-    {{/if}}
+    // Check if the user is logged in
+    if (loggedIn){
+        // User is logged in so they can manage games/Find games/Sign out
+        let manageGamesButton = document.createElement("button")
+        manageGamesButton.textContent = "Manage Your Games"
+        manageGamesButton.onclick = () => {
+            window.location.href = '/manageGames'
+        }
 
+        let findGamesButton = document.createElement("button")
+        findGamesButton.textContent = "Find Games"
+        findGamesButton.onclick = () => {
+            // Call the function for finding game
+        }
 
-</main>
+        let signOutButton = document.createElement("button")
+        signOutButton.textContent = "Sign out"
+        signOutButton.onclick = () => {
+            loggedIn = false
+            window.location.href = '/home'
+
+        }
+        let buttons = document.getElementById("userOptions")
+        buttons.innerHTML = ""
+
+        buttons.append(manageGamesButton)
+        buttons.append(findGamesButton)
+        buttons.append(signOutButton)
+    }
+    else{
+        // Here there are 2 things either u have an account or not so sign in or create new account
+        let signInButton = document.createElement("button")
+        signInButton.textContent = "Sign In"
+        signInButton.onclick = () => {
+            window.location.href = '/signin'
+
+        }
+        let createAccountButton = document.createElement("button")
+        createAccountButton.textContent = "Create Account"
+        createAccountButton.onclick = () => {
+            window.location.href = '/signup'
+        }
+
+        
+        let buttons = document.getElementById("userOptions")
+        buttons.innerHTML = ""
+
+        buttons.append(signInButton)
+        buttons.append(createAccountButton)
+    }
+</script>
