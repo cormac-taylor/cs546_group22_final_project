@@ -16,7 +16,6 @@ app.use(
 );
 // Verify the user is logged in before they attempt to access the dashboard route
 app.use('/dashboard', (req, res, next) => {
-    console.log(`User session id: ${req.session.id}`);
     if (!req.session.user){
         return res.redirect('/signin');
     } else {
