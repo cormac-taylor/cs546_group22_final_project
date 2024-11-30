@@ -108,7 +108,7 @@ export const validateTitle = (title) => {
 };
 
 export const validateBody = (body) => {
-  return validateStrOfLen(body, 16, 512);
+  return validateStrOfLen(body, 16, 102400);
 };
 
 export const validateRating = (rating) => {

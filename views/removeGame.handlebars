@@ -1,0 +1,19 @@
+<h1>Remove a Game Posting</h1>
+
+<main>
+    {{!-- list of games posted by user --}}
+    <ol>
+        {{#each games}}
+        <li id="gameList">
+            <h3>{{gameTitle}}</h3>
+            <p>Posted on {{datePosted}}</p>
+            {{!-- button to select game, sends id of game back --}}
+            <form method="POST" action="/manage/removeGame">
+                <button name="gameID" value={{_id}}>Remove this Game</button>
+            </form>
+        </li>
+        {{/each}}
+    </ol>
+
+    <a id="backToManageGames" href="/manage">Back to Manage Games</a>
+</main>

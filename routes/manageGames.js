@@ -2,6 +2,7 @@ import { Router } from "express";
 const router = Router();
 import * as validation from "../utilities/validation.js";
 import * as gamesapi from "../data/gamesAPI.js"
+import * as games from "../data/games.js"
 
 // main page for managing a user's games
 router.route("/").get(async (_, res) => {
@@ -22,9 +23,32 @@ router.route("/addGame").get(async (req,res) => {
 });
 
 // routed here after user selects a specific game from the api, continues process to add game
-router.route("/addGame").post(async (req,res) => {
+router.route("/addGame1").post(async (req,res) => {
     try {
-        res.render("addGame", { pageTitle: "Add Game", id: req.body.gameID });
+        if(!req.body.gid) {throw 'Error: Game not selected'}
+    } catch (e) {
+        res.status(404).json({ error: e });
+    }
+    try {
+        // games.createGame("674a82432950296bf59e615b", {type: "Point", coordinates: [-73.856077, 40.848447]}, req.body.title, game.description._text, "new", game.image._text) // using seed user for now
+        res.render("addGame", { pageTitle: "Add Game", gid: req.body.gid, title: req.body.title, status1: "Game Selected! Please enter the condition of the game." });
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
+
+router.route("/addGame2").post(async (req,res) => {
+    try {
+        if(!req.body.gid) {throw 'Error: Game not selected'}
+    } catch (e) {
+        res.status(404).json({ error: e });
+    }
+    try {
+        let game = await gamesapi.searchGamesByID(parseInt(req.body.gid));
+        // console.log(game)
+        // console.log(game.name._text)
+        games.createGame("674a82432950296bf59e615b", {type: "Point", coordinates: [-73.856077, 40.848447]}, req.body.title, game.description._text, req.body.cond, game.image._text) // using seed user for now
+        res.render("addGame", { pageTitle: "Add Game", status2: "Game added! Add another or navigate back using the button below." });
     } catch (e) {
         res.status(500).json({ error: e });
     }
@@ -41,6 +65,25 @@ router.route("/apigamesearch").post(async (req,res) => {
     try {
         let g = await gamesapi.searchGamesByTitle(req.body.searchByTitle);
         res.render("apisearchresults", { pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle });
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
+
+router.route("/removeGame").get(async (req,res) => {
+    try {
+        let g = await games.getGamesByOwnerID("674a82432950296bf59e615b") // using a seed user for now
+        res.render("removeGame", { pageTitle: "Remove Game", games: g });
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
+
+router.route("/removeGame").post(async (req,res) => {
+    try {
+        let deleted = await games.removeGameById(req.body.gameID)
+        let g = await games.getGamesByOwnerID("674a82432950296bf59e615b") // using a seed user for now
+        res.render("removeGame", { pageTitle: "Remove Game", games: g });
     } catch (e) {
         res.status(500).json({ error: e });
     }
