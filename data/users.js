@@ -23,17 +23,14 @@ export const createUser = async (
   lastName,
   username,
   email,
-  password,
+  hashedPassword,
   location
 ) => {
   firstName = validateName(firstName);
   lastName = validateName(lastName);
   username = validateUsername(username);
   email = validateEmail(email);
-  password = validateString(password);
-  // Hash the password
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  console.log(`${hashedPassword}`);
   location = validateGeoJson(location);
   const date = new Date().toUTCString();
   const averageRating = 0;

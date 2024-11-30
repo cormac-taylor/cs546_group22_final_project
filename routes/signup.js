@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import {usersData, locationData} from '../data/index.js';
+import {utils} from '../utilities/utilityIndex.js'
 import * as validation from "../utilities/validation.js"
-import bcrypt from 'bcrypt';
 
 const router = Router();
 
@@ -64,7 +64,9 @@ router
         try{
             let location = locationData.defaultLocation();
             const {firstName, lastName, username, email, password} = userSignupData
-            const newUser = await usersData.createUser(firstName, lastName, username, email, password, location);
+
+            let hashedPassword = utils.hashPassword(password)
+            const newUser = await usersData.createUser(firstName, lastName, username, email, hashedPassword, location);
             //TODO: Redirect to login page with notification of successful user account creation
             res.redirect(`/home`);
         } catch (e) {

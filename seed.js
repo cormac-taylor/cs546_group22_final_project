@@ -5,6 +5,7 @@ import {
   gameReviewsData,
 } from "./data/index.js";
 import { dbConnection, closeConnection } from "./config/mongoConnection.js";
+import {utils} from './utilities/utilityIndex.js'
 
 //lets drop the database each time this is run
 const db = await dbConnection();
@@ -27,6 +28,8 @@ let gr1;
 let gr2;
 let gr3;
 let gr4;
+let password = await utils.hashPassword('password');
+let notpass = await utils.hashPassword('notpass');
 
 try {
   u1 = await usersData.createUser(
@@ -34,7 +37,7 @@ try {
     "one",
     "u1",
     "u1@acb.com",
-    "password",
+    password,
     {
         type: "Feature",
         geometry: {
@@ -73,7 +76,7 @@ try {
     "two",
     "u2",
     "u2@acb.com",
-    "password",
+    password,
     {
         type: "Feature",
         geometry: {
@@ -112,7 +115,7 @@ try {
     "three",
     "u3",
     "u3@acb.com",
-    "password",
+    password,
     {
         type: "Feature",
         geometry: {
@@ -151,7 +154,7 @@ try {
     "four",
     "u4",
     "u4@acb.com",
-    "password",
+    password,
     {
         type: "Feature",
         geometry: {
@@ -190,14 +193,14 @@ try {
       "five",
       "mc",
       "lol@kek.com",
-      "notpassword",
+      notpass,
       {
-        type: "Feature", // Declares this as a GeoJSON Feature object
+        type: "Feature",
         geometry: {
-            type: "Point", // Specifies the geometry type (Point)
-            coordinates: [-74.025923, 40.745684] // Longitude first, then latitude
+            type: "Point", 
+            coordinates: [-74.025923, 40.745684] 
         },
-        properties: { // Additional metadata
+        properties: { 
             Address: {
                 StreetAddress: "1 Castle Point Ter",
                 LocalArea: "",
