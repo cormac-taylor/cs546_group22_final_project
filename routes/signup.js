@@ -1,7 +1,7 @@
 import {Router} from 'express';
-import {usersData} from '../data/index.js';
+import {usersData, locationData} from '../data/index.js';
+import {utils} from '../utilities/utilityIndex.js'
 import * as validation from "../utilities/validation.js"
-import bcrypt from 'bcrypt';
 
 const router = Router();
 
@@ -46,7 +46,7 @@ router
         }
         try{
             //TODO: Currently, there is no password validation (2 ints and 2 special chars should be required)
-            plainTextPass = validation.validateString(userSignupData.password)
+            userSignupData.password = validation.validateString(userSignupData.password)
         }catch (e) {
             errors.push(`Password ${e}`);
         }
@@ -62,25 +62,21 @@ router
         }
 
         try{
-            //TODO: GeoMongoDB and password hashing need to be implemented
-            let location = {
-                "type": "Feature",
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [-123.3656, 40.7865]
-                },
-                "properties": {
-                  "name": "Dinagat Islands"
-                }
-              }
-            const saltRounds = 10;
-            const hash = await bcrypt.hash(plainTextPass, saltRounds);
-            const {firstName, lastName, username, email} = userSignupData
-            const newUser = await usersData.createUser(firstName, lastName, username, email, hash, location);
+            let location = locationData.defaultLocation();
+            const {firstName, lastName, username, email, password} = userSignupData
+
+            let hashedPassword = utils.hashPassword(password)
+            const newUser = await usersData.createUser(firstName, lastName, username, email, hashedPassword, location);
             //TODO: Redirect to login page with notification of successful user account creation
             res.redirect(`/home`);
         } catch (e) {
-            res.status(500).json({error: e});
+            res.status(500).render('signup', {
+                pageTitle: 'Sign Up',
+                errors: [e],
+                hasErrors: true,
+                signup: userSignupData
+            });
+            return;
         }
     });
 

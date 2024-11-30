@@ -24,7 +24,7 @@ export const validateInteger = (int) => {
 };
 
 export const validateString = (str) => {
-  if (typeof str !== "string") throw "must be a string!";
+  if (typeof str !== 'string') throw "must be a string!";
   let res = str.trim();
   if (!res) throw "must not be empty!";
   return res;

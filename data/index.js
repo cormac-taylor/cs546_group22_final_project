@@ -39,6 +39,8 @@ import {
   updateGameReview,
 } from "./gameReviews.js";
 
+import locationDataFunctions from './location.js'
+
 export const gameReviewsData = {
   createGameReview,
   removeGameReviewsByReviewedGameId,
@@ -79,3 +81,5 @@ export const usersData = {
   getUserByUsername,
   updateUser,
 };
+
+export const locationData = locationDataFunctions;

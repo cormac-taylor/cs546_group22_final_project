@@ -1,6 +1,8 @@
 import {Router} from 'express';
 import {usersData} from '../data/index.js';
+import {utils} from '../utilities/utilityIndex.js'
 import * as validation from "../utilities/validation.js"
+
 import bcrypt from 'bcrypt';
 
 const router = Router();
@@ -41,7 +43,7 @@ router
             pageTitle: 'Sign In',
             errors: errors,
             hasErrors: true,
-            signup: userSigninData
+            signin: userSigninData
         });
         return;
     };
@@ -64,7 +66,7 @@ router
             //Do not return the reason for the error on the page. Simply render the page with invalidity.
             errors: ['Invalid username or password. Please try again.'],
             hasErrors: true,
-            signup: userSigninData
+            signin: userSigninData
         });
         return;
     }
