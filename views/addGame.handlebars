@@ -10,7 +10,25 @@
     </form> 
 
     {{!-- only shows the id of the game selected for now --}}
-    {{#if id}}
-    <h2>Game ID: {{id}}</h2>
+    {{#if status1}}
+    <h3>{{status1}}</h3>
+    <form method="POST" action="/manage/addGame2">
+        <label for="cond">Select the condition of your game:</label>
+        <input type="hidden" name="gid" value={{gid}}>
+        <input type="hidden" name="title" value={{title}}>
+        <select name="cond" id="game-condition-drop", required="true">
+            <option value="new">New</option>
+            <option value="like-new">Like-New</option>
+            <option value="used">Used</option>
+            <option value="well-used">Well-Used</option>
+        </select>
+        <input type="submit" />
+    </form>
     {{/if}}
+
+    {{#if status2}}
+    <h3>{{status2}}</h3>
+    {{/if}}
+
+    <a id="backToManageGames" href="/manage">Search for a Different Game</a>
 </main>
