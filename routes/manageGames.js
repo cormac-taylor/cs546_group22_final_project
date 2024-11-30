@@ -5,18 +5,44 @@ import * as gamesapi from "../data/gamesAPI.js"
 import * as games from "../data/games.js"
 
 // main page for managing a user's games
-router.route("/").get(async (_, res) => {
-  try {
-    res.render("manageGames", { pageTitle: "Manage Games" });
-  } catch (e) {
-    res.status(500).json({ error: e });
-  }
+router.route("/").get(async (req, res) => {
+    let signedin = false;
+    try {
+        if (req.session.user) {
+            signedin = true;
+        }
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+    try {
+        if (signedin) {
+            res.render("manageGames", { pageTitle: "Manage Games" });
+        }
+        else {
+            res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
+        }
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
 });
 
 // routes to a page for a user to begin the process of adding a game to their postings
 router.route("/addGame").get(async (req,res) => {
+    let signedin = false;
     try {
-        res.render("addGame", { pageTitle: "Add Game" });
+        if (req.session.user) {
+            signedin = true;
+        }
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+    try {
+        if (signedin) {
+            res.render("addGame", { pageTitle: "Add Game" });
+        }
+        else {
+            res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
+        }
     } catch (e) {
         res.status(500).json({ error: e });
     }
@@ -70,9 +96,22 @@ router.route("/apigamesearch").post(async (req,res) => {
 });
 
 router.route("/removeGame").get(async (req,res) => {
+    let signedin = false;
     try {
-        let g = await games.getGamesByOwnerID(req.session.user.userId)
-        res.render("removeGame", { pageTitle: "Remove Game", games: g });
+        if (req.session.user) {
+            signedin = true;
+        }
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+    try {
+        if (signedin) {
+            let g = await games.getGamesByOwnerID(req.session.user.userId)
+            res.render("removeGame", { pageTitle: "Remove Game", games: g });
+        }
+        else {
+            res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
+        }
     } catch (e) {
         res.status(500).json({ error: e });
     }
