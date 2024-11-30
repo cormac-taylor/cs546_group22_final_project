@@ -45,9 +45,8 @@ router.route("/addGame2").post(async (req,res) => {
     }
     try {
         let game = await gamesapi.searchGamesByID(parseInt(req.body.gid));
-        // console.log(game)
         // console.log(game.name._text)
-        games.createGame("674a82432950296bf59e615b", {type: "Point", coordinates: [-73.856077, 40.848447]}, req.body.title, game.description._text, req.body.cond, game.image._text) // using seed user for now
+        games.createGame(req.session.user.userId, {type: "Point", coordinates: [-73.856077, 40.848447]}, req.body.title, game.description._text, req.body.cond, game.image._text) // using seed user for now
         res.render("addGame", { pageTitle: "Add Game", status2: "Game added! Add another or navigate back using the button below." });
     } catch (e) {
         res.status(500).json({ error: e });
@@ -72,7 +71,7 @@ router.route("/apigamesearch").post(async (req,res) => {
 
 router.route("/removeGame").get(async (req,res) => {
     try {
-        let g = await games.getGamesByOwnerID("674a82432950296bf59e615b") // using a seed user for now
+        let g = await games.getGamesByOwnerID(req.session.user.userId)
         res.render("removeGame", { pageTitle: "Remove Game", games: g });
     } catch (e) {
         res.status(500).json({ error: e });
@@ -82,7 +81,7 @@ router.route("/removeGame").get(async (req,res) => {
 router.route("/removeGame").post(async (req,res) => {
     try {
         let deleted = await games.removeGameById(req.body.gameID)
-        let g = await games.getGamesByOwnerID("674a82432950296bf59e615b") // using a seed user for now
+        let g = await games.getGamesByOwnerID(req.session.user.userId) // using a seed user for now
         res.render("removeGame", { pageTitle: "Remove Game", games: g });
     } catch (e) {
         res.status(500).json({ error: e });
