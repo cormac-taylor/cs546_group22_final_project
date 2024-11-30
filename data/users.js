@@ -30,7 +30,6 @@ export const createUser = async (
   lastName = validateName(lastName);
   username = validateUsername(username);
   email = validateEmail(email);
-  console.log(`${hashedPassword}`);
   location = validateGeoJson(location);
   const date = new Date().toUTCString();
   const averageRating = 0;
@@ -134,6 +133,7 @@ export const getUserByUsername = async (username) => {
 };
 
 /* Patch format update. Takes an updateObj and only updates what's provided */
+// TODO: Add the functions to update the affected User Reviews and Game Reviews
 export const updateUser = async (id, updateObj) => {
     const usersCollection = await users();
     if (Object.keys(updateObj).length === 0) throw `Error: No fields to update.`;

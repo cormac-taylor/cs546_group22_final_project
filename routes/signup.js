@@ -65,7 +65,7 @@ router
             let location = locationData.defaultLocation();
             const {firstName, lastName, username, email, password} = userSignupData
 
-            let hashedPassword = utils.hashPassword(password)
+            let hashedPassword = await utils.hashPassword(password)
             const newUser = await usersData.createUser(firstName, lastName, username, email, hashedPassword, location);
             //TODO: Redirect to login page with notification of successful user account creation
             res.redirect(`/home`);
