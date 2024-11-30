@@ -5,18 +5,44 @@ import * as gamesapi from "../data/gamesAPI.js"
 import * as games from "../data/games.js"
 
 // main page for managing a user's games
-router.route("/").get(async (_, res) => {
-  try {
-    res.render("manageGames", { pageTitle: "Manage Games" });
-  } catch (e) {
-    res.status(500).json({ error: e });
-  }
+router.route("/").get(async (req, res) => {
+    let signedin = false;
+    try {
+        if (req.session.user) {
+            signedin = true;
+        }
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+    try {
+        if (signedin) {
+            res.render("manageGames", { pageTitle: "Manage Games" });
+        }
+        else {
+            res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
+        }
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
 });
 
 // routes to a page for a user to begin the process of adding a game to their postings
 router.route("/addGame").get(async (req,res) => {
+    let signedin = false;
     try {
-        res.render("addGame", { pageTitle: "Add Game" });
+        if (req.session.user) {
+            signedin = true;
+        }
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+    try {
+        if (signedin) {
+            res.render("addGame", { pageTitle: "Add Game" });
+        }
+        else {
+            res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
+        }
     } catch (e) {
         res.status(500).json({ error: e });
     }
@@ -45,9 +71,8 @@ router.route("/addGame2").post(async (req,res) => {
     }
     try {
         let game = await gamesapi.searchGamesByID(parseInt(req.body.gid));
-        // console.log(game)
         // console.log(game.name._text)
-        games.createGame("674a82432950296bf59e615b", {type: "Point", coordinates: [-73.856077, 40.848447]}, req.body.title, game.description._text, req.body.cond, game.image._text) // using seed user for now
+        games.createGame(req.session.user.userId, {type: "Point", coordinates: [-73.856077, 40.848447]}, req.body.title, game.description._text, req.body.cond, game.image._text) // using seed user for now
         res.render("addGame", { pageTitle: "Add Game", status2: "Game added! Add another or navigate back using the button below." });
     } catch (e) {
         res.status(500).json({ error: e });
@@ -71,9 +96,22 @@ router.route("/apigamesearch").post(async (req,res) => {
 });
 
 router.route("/removeGame").get(async (req,res) => {
+    let signedin = false;
     try {
-        let g = await games.getGamesByOwnerID("674a82432950296bf59e615b") // using a seed user for now
-        res.render("removeGame", { pageTitle: "Remove Game", games: g });
+        if (req.session.user) {
+            signedin = true;
+        }
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+    try {
+        if (signedin) {
+            let g = await games.getGamesByOwnerID(req.session.user.userId)
+            res.render("removeGame", { pageTitle: "Remove Game", games: g });
+        }
+        else {
+            res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
+        }
     } catch (e) {
         res.status(500).json({ error: e });
     }
@@ -82,7 +120,7 @@ router.route("/removeGame").get(async (req,res) => {
 router.route("/removeGame").post(async (req,res) => {
     try {
         let deleted = await games.removeGameById(req.body.gameID)
-        let g = await games.getGamesByOwnerID("674a82432950296bf59e615b") // using a seed user for now
+        let g = await games.getGamesByOwnerID(req.session.user.userId) // using a seed user for now
         res.render("removeGame", { pageTitle: "Remove Game", games: g });
     } catch (e) {
         res.status(500).json({ error: e });
