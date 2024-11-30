@@ -55,9 +55,9 @@ router
         if (compareToMatch){
             //Route them to their user page and begin their session.
             req.session.user = {username: user.username, email: user.email, userId: user._id}
-            res.json({route: `/dashboard/${user.username}`, method: req.method, session: req.session.user, });
+            return res.redirect('/dashboard');
         } else {
-            throw 'Internal error'; // Username exists but incorrect password was entered.
+            throw 'Invalid username or password. Please try again.'; // Username exists but incorrect password was entered.
         }
     } catch (e) {
         res.render('signin', {

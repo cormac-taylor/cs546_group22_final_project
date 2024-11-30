@@ -5,8 +5,7 @@ import * as validation from "../utilities/validation.js"
 
 const router = Router();
 
-//TODO: Implement a middleware that checks if the user is signed in.
-//      If user is signed in, route to the main logged in page
+//  If user is signed in, app.js routes to the main logged in page
 router
     .route('/')
     .get(async (req, res) => {
