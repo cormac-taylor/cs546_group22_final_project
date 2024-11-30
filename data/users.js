@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { users } from "../config/mongoCollections.js";
 import {
   validateObjectID,
@@ -15,20 +16,24 @@ import {
   updateUsername,
 } from "./helpers/updatePostingUserName.js";
 import { removeUserReviewsByReviewedId } from "./userReviews.js";
+import bcrypt from 'bcrypt';
 
 export const createUser = async (
   firstName,
   lastName,
   username,
   email,
-  hashedPassword,
+  password,
   location
 ) => {
   firstName = validateName(firstName);
   lastName = validateName(lastName);
   username = validateUsername(username);
   email = validateEmail(email);
-  hashedPassword = validateString(hashedPassword);
+  password = validateString(password);
+  // Hash the password
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
   location = validateGeoJson(location);
   const date = new Date().toUTCString();
   const averageRating = 0;
@@ -52,18 +57,18 @@ export const createUser = async (
   const accountWithUsername = await usersCollection.findOne({
     username: username,
   });
-  if (accountWithUsername) throw "username must be unique!";
+  if (accountWithUsername) throw "Sorry, that username is already taken.";
 
   // make sure email is unique
   const accountWithEmail = await usersCollection.findOne({
     email: email,
   });
-  if (accountWithEmail) throw "email must be unique!";
+  if (accountWithEmail) throw "Sorry, that email is already taken.";
 
   // add new user
   const insertInfo = await usersCollection.insertOne(newUser);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
-    throw "could not add user.";
+    throw "Account could not be created.";
 
   const newId = insertInfo.insertedId.toString();
   return await getUserById(newId);
@@ -131,93 +136,39 @@ export const getUserByUsername = async (username) => {
     return user;
 };
 
+/* Patch format update. Takes an updateObj and only updates what's provided */
+export const updateUser = async (id, updateObj) => {
+    const usersCollection = await users();
+    if (Object.keys(updateObj).length === 0) throw `Error: No fields to update.`;
 
-export const updateUser = async (id, updateFeilds) => {
-  id = validateObjectID(id);
-  updateFeilds = validateNonEmptyObject(updateFeilds);
+    //Build the update query
+    const updatedUser = {};
+    if (updateObj.firstName) updatedUser.firstName = validateName(updateObj.firstName);
+    if (updateObj.lastName) updatedUser.lastName = validateName(updateObj.lastName);
+    if (updateObj.username){
+        const existingUsername = await usersCollection.findOne({username: updateObj.username});
+        if (existingUsername) throw `Error: ${updateObj.username} is taken.`;
+        updatedUser.username = validateUsername(updateObj.username);
+    };
+    if (updateObj.email){
+        const existingEmail = await usersCollection.findOne({email: updateObj.email});
+        if (existingEmail) throw `Error: ${updateObj.email} is taken.`;
+        updatedUser.email = validateEmail(updateObj.email);
+    };
+    if (updateObj.password){
+        const saltRounds = 10;
+        const hash = await bcrypt.hash(plainTextPass, saltRounds);
+        updatedUser.password = hash;
+    };
+    if (updateObj.location) updatedUser.location = validateGeoJson(updateObj.location);
 
-  const patchedUser = {};
-  let updated = false;
-  patchedUser.date = new Date().toUTCString();
+    const patchedUser = await usersCollection.findOneAndUpdate(
+        {_id: new ObjectId(id)},
+        {$set: {...updatedUser}},
+        {returnDocument: 'after'}
+    );
+    console.log('Here');
+    if (!patchedUser) throw `Error: Could not update profile successfully`;
 
-  if (updateFeilds.firstName !== undefined) {
-    patchedUser.firstName = validateName(updateFeilds.firstName);
-    updated = true;
-  }
-
-  if (updateFeilds.lastName !== undefined) {
-    patchedUser.lastName = validateName(updateFeilds.lastName);
-    updated = true;
-  }
-
-  if (updateFeilds.hashedPassword !== undefined) {
-    patchedUser.hashedPassword = validateString(updateFeilds.hashedPassword);
-    updated = true;
-  }
-
-  if (updateFeilds.location !== undefined) {
-    patchedUser.location = validateGeoJson(updateFeilds.location);
-    updated = true;
-  }
-
-  const usersCollection = await users();
-
-  if (updateFeilds.username !== undefined) {
-    const username = validateUsername(updateFeilds.username);
-
-    // make sure the email isn't used by another user
-    const accountWithUsername = await usersCollection.findOne({
-      _id: { $ne: id },
-      username: username,
-    });
-    if (accountWithUsername) throw "username must be unique!";
-
-    patchedUser.username = username;
-    updated = true;
-  }
-
-  if (updateFeilds.email !== undefined) {
-    const email = validateString(updateFeilds.email);
-
-    // make sure the email isn't used by another user
-    const accountWithEmail = await usersCollection.findOne({
-      _id: { $ne: id },
-      email: email,
-    });
-    if (accountWithEmail) throw "email must be unique!";
-
-    patchedUser.email = email;
-    updated = true;
-  }
-
-  if (!updated) throw "must update a field";
-
-  // ##################
-  // MAKE TRANSACTION
-
-  // update dependencies
-  if (patchedUser.firstName !== undefined) {
-    await updateFirstName(id, patchedUser.firstName);
-  }
-
-  if (patchedUser.lastName !== undefined) {
-    await updateLastName(id, patchedUser.lastName);
-  }
-
-  if (patchedUser.username !== undefined) {
-    await updateUsername(id, patchedUser.username);
-  }
-
-  // update user
-  const updateInfo = await usersCollection.findOneAndUpdate(
-    { _id: id },
-    { $set: patchedUser },
-    { returnDocument: "after" }
-  );
-  if (!updateInfo) throw `could not patch user with id: ${id}.`;
-
-  return updateInfo;
-
-  // ^^^^^^^^^^^^^^^^^^
-  // ##################
+    return patchedUser;
 };
