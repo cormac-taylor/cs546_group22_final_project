@@ -1,0 +1,67 @@
+<article class="profile-update-container">
+    <h1>Update Profile</h1>
+    <form action="/dashboard/{{user.username}}/update" method="POST" class="profile-update-form">
+        <div class="form-group">
+            <label for="attribute">Choose an attribute to update:</label>
+            <select id="attribute" name="attribute" onchange="showInputField()">
+                <option value="">Select an Attribute</option>
+                <option value="firstName">First Name</option>
+                <option value="lastName">Last Name</option>
+                <option value="username">Username</option>
+                <option value="email">Email</option>
+                <option value="password">Password</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="valueField" hidden>
+            <label for="newValue">New Value:</label>
+            <input type="text" id="newValue" name="newValue">
+        </div>
+
+        <div class="form-group" id="passwordField" hidden>
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" name="newPassword">
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="submit-button">Update Profile</button>
+        </div>
+        <br>
+        <a href="/dashboard" class="home-link">Dashboard</a>
+    </form>
+
+    {{#if hasErrors}}
+    <ul class="error-list">
+        {{#each errors}}
+        <li>{{this}}</li>
+        {{/each}}
+    </ul>
+    {{/if}}
+    {{#if success}}
+    <ul class="success-list">
+        <li>Profile was successfully updated!</li>
+    </ul>
+    {{/if}}
+
+</article>
+
+<script>
+    function showInputField() {
+        /* DOM Manipulation */
+        var attribute = document.getElementById('attribute').value;
+        var valueField = document.getElementById('valueField');
+        var passwordField = document.getElementById('passwordField');
+        if (attribute === "password") {
+            passwordField.hidden = false;  // Show password field
+            valueField.hidden = true;      // Hide the normal input field
+        } else if (attribute) {
+            valueField.hidden = false;
+            passwordField.hidden = true;
+            /* Set the attribute to match the selected option*/
+            document.getElementById('newValue').setAttribute('name', attribute);
+        } else {
+            valueField.hidden = true;
+            passwordField.hidden = true;
+        }
+    }
+</script>

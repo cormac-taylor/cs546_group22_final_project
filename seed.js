@@ -28,7 +28,7 @@ let gr1;
 let gr2;
 let gr3;
 let gr4;
-let password = await utils.hashPassword('password');
+let password = await utils.hashPassword('pass');
 let notpass = await utils.hashPassword('notpass');
 
 try {

@@ -1,4 +1,4 @@
-import {locationData} from './index.js';
+import {locationData, usersData} from './index.js';
 
 let address = '1 Castle Point Terrace, Hoboken'
 // try{
@@ -55,7 +55,6 @@ let JerseyCity = {
 };
 let location = {};
 let result;
-let userOneId = '674a770368fd3a4cf77fe182';
 
 // try{
 //     result = await locationData.makeGeoJSON(Hoboken)
@@ -65,9 +64,22 @@ let userOneId = '674a770368fd3a4cf77fe182';
 //     console.log(e);
 // }
 
+// try{
+//     const nearbyUsers = await locationData.nearbyUsers('674a770368fd3a4cf77fe182', 1.8)
+//     console.log(nearbyUsers);
+// } catch(e){
+//     console.log(e);
+// }
+
+let userOneId = '674b592aeb565b1db2edbaca'; //username: u1
+let updateObject = {
+    firstName: 'First',
+    lastName: 'Lastname',
+    username: 'Primero'
+};
 try{
-    const nearbyUsers = await locationData.nearbyUsers('674a770368fd3a4cf77fe182', 1.8)
-    console.log(nearbyUsers);
+    currUser = await usersData.updateUser(userOneId, updateObject)
+    console.log(currUser);
 } catch(e){
     console.log(e);
 }

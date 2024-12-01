@@ -7,7 +7,7 @@
         <li><strong>Email:</strong> {{user.email}}</li>
         <li><strong>Location:</strong> {{user.location.properties.ShortString}}</li>
     </ul>
-    <a href="/update" class="settings-link">Edit Profile Settings</a>
+    <a href="/dashboard/{{user.username}}/update" class="settings-link">Edit Profile Settings</a>
     <br>
-    <a href="/home" class="home-link">Homepage</a>"
+    <a href="/home" class="home-link">Homepage</a>
 </div>
