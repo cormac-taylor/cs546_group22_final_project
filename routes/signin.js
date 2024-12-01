@@ -34,7 +34,7 @@ router
         try{
             plainTextPass = validation.validateString(userSigninData.password)
         }catch (e) {
-            errors.push(`Username ${e}`);
+            errors.push(`Password ${e}`);
         }
     /* Error Display*/
     if (errors.length > 0){

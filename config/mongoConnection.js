@@ -13,6 +13,11 @@ export const dbConnection = async () => {
   return _db;
 };
 
+// Added for Transactional Updates to DB
+export const getConnection = () => {
+    return _connection;
+  };
+
 export const closeConnection = async () => {
   await _connection.close();
 };

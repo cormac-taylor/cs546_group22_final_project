@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
-import { users } from "../config/mongoCollections.js";
+import {getConnection} from '../config/mongoConnection.js'
+import {users, gameReviews, userReviews} from "../config/mongoCollections.js";
 import {
   validateObjectID,
   validateEmail,
@@ -17,6 +18,7 @@ import {
 } from "./helpers/updatePostingUserName.js";
 import { removeUserReviewsByReviewedId } from "./userReviews.js";
 import bcrypt from 'bcrypt';
+import session from "express-session";
 
 export const createUser = async (
   firstName,
@@ -135,37 +137,80 @@ export const getUserByUsername = async (username) => {
 /* Patch format update. Takes an updateObj and only updates what's provided */
 // TODO: Add the functions to update the affected User Reviews and Game Reviews
 export const updateUser = async (id, updateObj) => {
-    const usersCollection = await users();
     if (Object.keys(updateObj).length === 0) throw `Error: No fields to update.`;
+    
+    const connection = getConnection();
+    const session = connection.startSession();
+    try{
+        await session.startTransaction();    // Marks the start of the transaction
 
-    //Build the update query
-    const updatedUser = {};
-    if (updateObj.firstName) updatedUser.firstName = validateName(updateObj.firstName);
-    if (updateObj.lastName) updatedUser.lastName = validateName(updateObj.lastName);
-    if (updateObj.username){
-        const existingUsername = await usersCollection.findOne({username: updateObj.username});
-        if (existingUsername) throw `Error: ${updateObj.username} is taken.`;
-        updatedUser.username = validateUsername(updateObj.username);
-    };
-    if (updateObj.email){
-        const existingEmail = await usersCollection.findOne({email: updateObj.email});
-        if (existingEmail) throw `Error: ${updateObj.email} is taken.`;
-        updatedUser.email = validateEmail(updateObj.email);
-    };
-    if (updateObj.password){
-        const saltRounds = 10;
-        const hash = await bcrypt.hash(plainTextPass, saltRounds);
-        updatedUser.password = hash;
-    };
-    if (updateObj.location) updatedUser.location = validateGeoJson(updateObj.location);
+        // Retrieve collection pointers
+        const usersCollection = await users();
+        const userReviewsCollection = await userReviews();
+        const gameReviewsCollection = await gameReviews();
 
-    const patchedUser = await usersCollection.findOneAndUpdate(
-        {_id: new ObjectId(id)},
-        {$set: {...updatedUser}},
-        {returnDocument: 'after'}
-    );
-    console.log('Here');
-    if (!patchedUser) throw `Error: Could not update profile successfully`;
+        //Build the update objects
+        const updatedUser = {};
+        const updatedGameReview = {};
+        const updatedUserReview = {};
+        if (updateObj.firstName) {
+            updatedUser.firstName = validateName(updateObj.firstName);
+            updatedGameReview.firstName = validateName(updateObj.firstName);
+            updatedUserReview.firstName = validateName(updateObj.firstName);
+        }
+        if (updateObj.lastName){
+            updatedUser.lastName = validateName(updateObj.lastName);
+            updatedGameReview.lastName = validateName(updateObj.lastName);
+            updatedUserReview.lastName = validateName(updateObj.lastName);
+        }
+        if (updateObj.username){
+            const existingUsername = await usersCollection.findOne({username: updateObj.username});
+            if (existingUsername) throw `Error: ${updateObj.username} is taken.`;
+            updatedUser.username = validateUsername(updateObj.username);
+            updatedGameReview.username = validateUsername(updateObj.username);
+            updatedUserReview.username = validateUsername(updateObj.username);
+        };
+        if (updateObj.email){
+            const existingEmail = await usersCollection.findOne({email: updateObj.email});
+            if (existingEmail) throw `Error: ${updateObj.email} is taken.`;
+            updatedUser.email = validateEmail(updateObj.email);
+        };
+        if (updateObj.password){
+            const saltRounds = 10;
+            const hash = await bcrypt.hash(plainTextPass, saltRounds);
+            updatedUser.password = hash;
+        };
+        if (updateObj.location) updatedUser.location = validateGeoJson(updateObj.location);
 
-    return patchedUser;
+        // Finds the user to update
+        const patchedUser = await usersCollection.findOneAndUpdate(
+            {_id: new ObjectId(id)},
+            {$set: {...updatedUser}},
+            {returnDocument: 'after', session}
+        );
+        // If there were requested changes to any *name fields
+        // push them to all user and game reviews
+        if (updatedUserReview){
+            await userReviewsCollection.updateMany(
+                {username: updatedUserReview.username},
+                {$set: {...updatedUserReview}},
+                {session}
+            );
+            await gameReviewsCollection.updateMany(
+                {username: updatedUserReview.username},
+                {$set: {...updatedUserReview}},
+                {session}
+            );
+        };
+        // Commit the Transaction
+        await session.commitTransaction();
+        return patchedUser; 
+    }
+    catch(e){
+        await session.abortTransaction();
+        throw `Error: Could not update database successfully`;
+    }finally{
+        session.endSession();
+    }
+    
 };

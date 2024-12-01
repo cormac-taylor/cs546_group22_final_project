@@ -1,0 +1,42 @@
+<article class="profile-update-container">
+    <h1>Update Profile</h1>
+    <form action="/dashboard/{{user.username}}/update" method="POST" class="profile-update-form">
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" value="{{user.firstName}}">
+        </div>
+
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" value="{{user.lastName}}">
+        </div>
+
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="{{user.username}}">
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{user.email}}">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" value="{{user.password}}">
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="submit-button">Update Profile</button>
+        </div>
+    </form>
+    {{#if hasErrors}}
+    <ul class="error-list">
+        {{#each errors}}
+        <li>
+            {{this}}
+        </li>
+        {{/each}}
+    </ul>
+    {{/if}}
+</article>
