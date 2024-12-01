@@ -64,7 +64,6 @@ router
         }
     })
     .post(async (req, res) =>{
-        console.log('Hit Route')
         let userId;
         let currUser;
         try{
@@ -125,7 +124,7 @@ router
         }
         /* Error Display*/
         if (errors.length > 0){
-            res.render('Update Profile', {
+            res.render('updateProfile', {
                 pageTitle: 'Update Profile',
                 errors: errors,
                 hasErrors: true,
@@ -135,14 +134,12 @@ router
         }
         /* If user entered valid data*/
         try{
-            if (updatedData.password){
-                updatedData.password = await utils.hashPassword(password);
-            }
             const updatedUser = await usersData.updateUser(userId, updatedData);
-
-            req.session.user = {username: user.username, email: user.email, userId: user._id}
-            return res.redirect('/dashboard');
-
+            req.session.user = {username: updatedUser.username, email: updatedUser.email, userId: updatedUser._id};
+            res.render('updateProfile', {
+                pageTitle: 'dashboard',
+                success: true,
+            });
         } catch (e){
             res.status(500).render('updateProfile', {
                 pageTitle: 'Update Profile: Error',
