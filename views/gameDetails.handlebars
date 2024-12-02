@@ -1,0 +1,30 @@
+<form action="/games">
+    <button>Go Back</button>
+</form>
+
+<img id ="gameIMG" alt="{{g.gameTitle}} Picture" src={{g.imgURL}}>
+
+<h1>{{g.gameTitle}}</h1>
+
+<h2>Posted by: {{user}}</h2>
+
+<h2>Condition: {{g.condition}}</h2>
+
+<h2>Rating: {{g.averageRating}}</h2>
+
+<h3>Description:</h3>
+<p>{{{g.description}}}</p>
+
+<br>
+<h2>Reviews:</h2>
+{{#each reviews}}
+    <div>
+        <h5>{{username}}</h5>
+        <h4>Title: {{title}}</h4>
+        <h4>Rating: {{rating}}/5</h4>
+        <p>Reviewed on: {{date}}</p>
+        <p>{{body}}</p>
+
+    </div>
+
+{{/each}}
