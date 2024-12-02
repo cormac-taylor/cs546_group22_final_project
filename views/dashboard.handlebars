@@ -22,6 +22,10 @@
             <li class="gameEntry">
                 <h2>{{gameTitle}}</h2>
                 <img class="searchResultImage" alt="{{gameTitle}}" src="{{imgURL}}">
+                <form method="POST" action="/manage/modifyGame">
+                    <input type="hidden" name="gid" value={{_id}}>
+                    <button type="submit">Modify Posting</button>
+                </form>
             </li>
             {{/each}}
         </ul>
