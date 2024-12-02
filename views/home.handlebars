@@ -5,22 +5,8 @@ signed in --}}
 
 <div id="userOptions"></div>
 
-<script>
-    let signInButton = document.createElement("button")
-        signInButton.textContent = "Sign In"
-        signInButton.onclick = () => {
-            window.location.href = '/signin'
+{{!-- Change the shit below to href, you are making you life harder this way!!! --}}
 
-        }
-        let createAccountButton = document.createElement("button")
-        createAccountButton.textContent = "Create Account"
-        createAccountButton.onclick = () => {
-            window.location.href = '/signup'
-        }
-        
-        let buttons = document.getElementById("userOptions")
-        buttons.innerHTML = ""
-
-        buttons.append(signInButton)
-        buttons.append(createAccountButton)
-</script>
+<button onclick="window.location.href= '/signin'">Sign In</button>
+<button onclick="window.location.href= '/signup'">Create Account</button>
+<button onclick="window.location.href= '/events'">See Events Near Me</button>
