@@ -16,7 +16,7 @@ router.route("/").get(async (req, res) => {
     }
     try {
         if (signedin) {
-            res.render("manageGames", { pageTitle: "Manage Games" });
+            res.render("manageGames", { pageTitle: "Manage Games", user: req.session.user.username });
         }
         else {
             res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
@@ -41,7 +41,7 @@ router.route("/addGame").get(async (req,res) => {
             res.render("addGame", { pageTitle: "Add Game" });
         }
         else {
-            res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
+            res.render("Boken Boards", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
         }
     } catch (e) {
         res.status(500).json({ error: e });
