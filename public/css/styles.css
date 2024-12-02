@@ -31,6 +31,8 @@ footer {
 }
 
 .container,
+.games-container,
+.profile-container,
 .signup-container,
 .signin-container {
     background-color: #fff;
@@ -41,6 +43,11 @@ footer {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     width: 80%;
     max-width: 500px;
+}
+
+.content-container {
+    display: flex;
+    justify-content: space-around;
 }
 
 h1,
@@ -59,7 +66,7 @@ li {
 input[type="text"],
 input[type="email"],
 input[type="password"] {
-    width: 100%;
+    width: 50%;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -102,4 +109,16 @@ button:hover,
 
 .error-list li {
     margin-bottom: 5px;
+}
+
+.searchResultImage {
+    width: 100px;
+    height: auto;
+    border-radius: 4px;
+}
+
+#gameIMG {
+    width: 400px;
+    height: auto;
+    border-radius: 4px;
 }

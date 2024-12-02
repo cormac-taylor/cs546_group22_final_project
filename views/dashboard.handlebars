@@ -1,17 +1,29 @@
-<div class="container">
-    <h1>User Profile</h1>
-    <ul class="profile-info">
-        <li><strong>First Name:</strong> {{user.firstName}}</li>
-        <li><strong>Last Name:</strong> {{user.lastName}}</li>
-        <li><strong>Username:</strong> {{user.username}}</li>
-        <li><strong>Email:</strong> {{user.email}}</li>
-        <li><strong>Location:</strong> {{user.location.properties.ShortString}}</li>
-    </ul>
-    <a href="/dashboard/{{user.username}}/update" class="settings-link">Edit Profile Settings</a>
-    <br>
-    <a href="/home" class="home-link">Homepage</a>
-    <br>
-    <a href="/manage" class="home-link">Manage Games</a>
-    <br>
-    <a href="/games" class="home-link">Discover Games</a>
-</div>
+<section class="content-container">
+    <div class="profile-container">
+        <h1>User Profile</h1>
+        <ul class="profile-info">
+            <li><strong>First Name:</strong> {{user.firstName}}</li>
+            <li><strong>Last Name:</strong> {{user.lastName}}</li>
+            <li><strong>Username:</strong> {{user.username}}</li>
+            <li><strong>Email:</strong> {{user.email}}</li>
+            <li><strong>Location:</strong> {{user.location.properties.ShortString}}</li>
+        </ul>
+        <a href="/dashboard/{{user.username}}/update" class="settings-link">Edit Profile Settings</a>
+        <br>
+        <a href="/home" class="home-link">Homepage</a>
+        <br>
+        <a href="/games" class="home-link">Discover Games</a>
+    </div>
+    <div class="games-container">
+        <h2>Your Games:</h2>
+        <a href="/manage" class="home-link">Manage Games</a>
+        <ul class="games-list">
+            {{#each games}}
+            <li class="gameEntry">
+                <h2>{{gameTitle}}</h2>
+                <img class="searchResultImage" alt="{{gameTitle}}" src="{{imgURL}}">
+            </li>
+            {{/each}}
+        </ul>
+    </div>
+</section>
