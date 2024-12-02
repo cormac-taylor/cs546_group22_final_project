@@ -12,19 +12,25 @@
 
 <h2>Rating: {{g.averageRating}}</h2>
 
+<h2>Posted on: {{g.datePosted}}</h2>
+
 <h3>Description:</h3>
 <p>{{{g.description}}}</p>
 
 <br>
 <h2>Reviews:</h2>
-{{#each reviews}}
-    <div>
-        <h5>{{username}}</h5>
-        <h4>Title: {{title}}</h4>
-        <h4>Rating: {{rating}}/5</h4>
-        <p>Reviewed on: {{date}}</p>
-        <p>{{body}}</p>
+{{#if reviews}}
+    {{#each reviews}}
+        <div>
+            <h4>Posted by: {{username}}</h4>
+            <h4>Title: {{title}}</h4>
+            <h4>Rating: {{rating}}/5</h4>
+            <p>Reviewed on: {{date}}</p>
+            <p>{{body}}</p>
 
-    </div>
+        </div>
 
-{{/each}}
+    {{/each}}
+{{else}}
+    <h3>No reviews yet...</h3>
+{{/if}}
