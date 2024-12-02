@@ -57,7 +57,7 @@ router.route("/addGame1").post(async (req,res) => {
     }
     try {
         // games.createGame("674a82432950296bf59e615b", {type: "Point", coordinates: [-73.856077, 40.848447]}, req.body.title, game.description._text, "new", game.image._text) // using seed user for now
-        res.render("addGame", { pageTitle: "Add Game", gid: req.body.gid, title: req.body.title, status1: "Game Selected! Please enter the condition of the game." });
+        res.render("addGame", { pageTitle: "Add Game", gid: req.body.gid, title: req.body.title, status1: " Selected! Please enter the condition of the game." });
     } catch (e) {
         res.status(500).json({ error: e });
     }
@@ -89,7 +89,7 @@ router.route("/apigamesearch").post(async (req,res) => {
     }
     try {
         let g = await gamesapi.searchGamesByTitle(req.body.searchByTitle);
-        res.render("apisearchresults", { pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle });
+        res.render("apisearchresults", { pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle, adding: "testing" });
     } catch (e) {
         res.status(500).json({ error: e });
     }

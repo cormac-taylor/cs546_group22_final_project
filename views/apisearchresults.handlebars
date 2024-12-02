@@ -8,12 +8,20 @@
         <li id="gameList">
             {{name._text}}
             {{!-- button to select game, sends id of game back --}}
-            <form method="POST" action="/manage/addGame1">
-                <input type="hidden" name="gid" value={{ _attributes.objectid }}>
-                <input type="hidden" name="title" value={{name._text}}>
-                <button type="submit">Post this Game</button>
-                {{!-- <button name="gameID" value={gid: {{_attributes.objectid}}, title: {{searchByTitle}} }>Post this Game</button> --}}
-            </form>
+            {{!-- {{#if ../adding}} --}}
+                <form method="POST" action="/manage/addGame1">
+                    <input type="hidden" name="gid" value={{ _attributes.objectid }}>
+                    <input type="hidden" name="title" value="{{name._text}}">
+                    <button type="submit">Post this Game</button>
+                </form>
+            {{!-- {{/if}} --}}
+            {{!-- {{#if ../selecting}}
+                <form method="POST" action="/games/view">
+                    <input type="hidden" name="gid" value={{ _attributes.objectid }}>
+                    <input type="hidden" name="title" value="{{name._text}}">
+                    <button type="submit">Post this Game</button>
+                </form>
+            {{/if}} --}}
         </li>
         {{/each}}
     </ol>

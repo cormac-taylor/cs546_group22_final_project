@@ -1,0 +1,18 @@
+<h1>Discover or Lookup Games</h1>
+
+{{!-- <form method="POST" action="/games">     
+    <label for="searchByTitle">Search for a game:</label>
+        <input type="text" name="searchByTitle" id="searchByTitle"/>
+        <input type="submit" />
+</form>  --}}
+
+<ol>
+{{#each games}}
+    <li>{{gameTitle}}</li>
+    <form method="POST" action="/games/gameDetails">
+        <input type="hidden" name="gid" value={{_id}}>
+        <button type="submit">View Details</button>
+    </form>
+
+{{/each}}
+</ol>
