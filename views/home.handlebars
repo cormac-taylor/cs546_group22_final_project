@@ -5,60 +5,8 @@ signed in --}}
 
 <div id="userOptions"></div>
 
-<script>
-    // This is a boolean to make the check if the user is already signed in
-    // Right now it is hard coded to false but can be automated through cookies
-    // TODO: Use cookies for the boolean variable
-    let loggedIn = false
-
-    // Check if the user is logged in
-    if (loggedIn){
-        // User is logged in so they can manage games/Find games/Sign out
-        let manageGamesButton = document.createElement("button")
-        manageGamesButton.textContent = "Manage Your Games"
-        manageGamesButton.onclick = () => {
-            window.location.href = '/manageGames'
-        }
-
-        let findGamesButton = document.createElement("button")
-        findGamesButton.textContent = "Find Games"
-        findGamesButton.onclick = () => {
-            // Call the function for finding game
-        }
-
-        let signOutButton = document.createElement("button")
-        signOutButton.textContent = "Sign out"
-        signOutButton.onclick = () => {
-            loggedIn = false
-            window.location.href = '/home'
-
-        }
-        let buttons = document.getElementById("userOptions")
-        buttons.innerHTML = ""
-
-        buttons.append(manageGamesButton)
-        buttons.append(findGamesButton)
-        buttons.append(signOutButton)
-    }
-    else{
-        // Here there are 2 things either u have an account or not so sign in or create new account
-        let signInButton = document.createElement("button")
-        signInButton.textContent = "Sign In"
-        signInButton.onclick = () => {
-            window.location.href = '/signin'
-
-        }
-        let createAccountButton = document.createElement("button")
-        createAccountButton.textContent = "Create Account"
-        createAccountButton.onclick = () => {
-            window.location.href = '/signup'
-        }
-
-        
-        let buttons = document.getElementById("userOptions")
-        buttons.innerHTML = ""
-
-        buttons.append(signInButton)
-        buttons.append(createAccountButton)
-    }
-</script>
+{{!-- Think about using a form w/ button here, it take liek 2 seconds to replace (reason: code will look smooth and similar) --}}
+{{!-- Check for the status, this will help me reviev information from other webpages like the information that Vraj wants to send to me --}}
+<button onclick="window.location.href= '/signin'">Sign In</button>
+<button onclick="window.location.href= '/signup'">Create Account</button>
+<button onclick="window.location.href= '/events'">See Events Near Me</button>
