@@ -3,6 +3,7 @@ const router = Router();
 import {} from "../utilities/validation.js";
 
 router.route("/").get(async (req, res) => {
+router.route("/").get(async (req, res) => {
   try {
     if (req.session.user){
       res.redirect(`/dashboard`)

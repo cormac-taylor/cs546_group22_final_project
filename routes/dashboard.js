@@ -1,7 +1,8 @@
 import {Router} from 'express';
-import {usersData, locationData} from '../data/index.js';
+import {usersData, locationData, gamesData} from '../data/index.js';
 import {utils} from '../utilities/utilityIndex.js'
 import * as validation from "../utilities/validation.js"
+import { games } from '../config/mongoCollections.js';
 
 const router = Router();
 
@@ -25,14 +26,18 @@ router
             }
             let userId = req.session.user.userId;
             let currUser = await usersData.getUserById(userId);
-
+            let currGames = await gamesData.getGamesByOwnerID(userId);
+            let hasGames = false;
+            if (currGames) hasGames = true;
             // Ensure session name matches URL
             if (req.params.username !== req.session.user.username){
                 return res.status(403).json({error: e});
             }
             res.render('dashboard', {
-                pageTitle: 'Sign Up',
-                user: currUser
+                pageTitle: 'BokenBoards Dashboard',
+                user: currUser,
+                hasGames: true,
+                games: currGames
             });
         } catch(e){
             //TODO: After creating an error page, present that with error instead
