@@ -30,3 +30,7 @@ export const addEvent = async (
 
 }
 
+// export const deleteEvent(){
+    
+// }
+

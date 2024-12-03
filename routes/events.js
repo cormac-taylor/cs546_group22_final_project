@@ -60,7 +60,22 @@ router.route("/createEvent").get(async (req, res) => {
         
     });
 
-// router.route("/createEvent").post(async (req, res) =>
+router.route("/updateEvent").get(async (req, res) => {
+    try {
+        res.render("updateEvent", { pageTitle: "Update Event" })
+        
+    } catch (e) {
+        res.status(500).json({ error: e })
+    }
+})
+    .patch
 
-// )
+router.route("/deleteEvent").get(async (req, res) => {
+    try {
+        res.render("deleteEvent", { pageTitle: "Delete Event" })
+        
+    } catch (e) {
+        res.status(500).json({ error: e })
+    }
+})
 export default router;
