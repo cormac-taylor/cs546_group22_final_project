@@ -133,12 +133,14 @@ export const getGameById = async (id) => {
   return game;
 };
 
+/* Patches game update. Takes in gameId and an object with fields to update */
 export const updateGame = async (id, updateFeilds) => {
   id = validateObjectID(id);
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
   const patchedGame = {};
   let updated = false;
+  let userReq = {}; 
   patchedGame.datePosted = new Date().toUTCString();
 
   if (updateFeilds.location !== undefined) {
@@ -165,19 +167,61 @@ export const updateGame = async (id, updateFeilds) => {
     patchedGame.imgURL = validateURL(updateFeilds.imgURL);
     updated = true;
   }
+  /* Adds request to this game's request field */
+  /* Throws error on self request and multiple request */
+  if (updateFeilds.userRequest !== undefined){
+    const userRequest = updateFeilds.userRequest
+    userReq.reqUserId = validateObjectID(userRequest.reqUserId);
+    userReq.message = validateString(userRequest.message);
+    const currGame = await getGameById(id.toString()); // Here id refers to the gameId
+    if (userReq.reqUserId.toString() === currGame.ownerID.toString()) throw `Error: You cannot request your own games.`
+    if (currGame.requests){
+        for (let req of currGame.requests){ // for each request in the requests array 
+            if (req.reqUserId.toString() === userReq.reqUserId.toString()) throw `Error: You've already requested this game.`
+        }
+    }
+    updated = true;
+  }
 
   if (!updated) throw "must update a field";
 
-  // update game
   const gamesCollection = await games();
+
+  /* Define the update operations. Conditional push into the requests array if a request for this game was made: */
+  const updateOps = {$set: patchedGame};
+  if (userReq !== undefined){
+    updateOps.$push = {requests: userReq};
+  }
+
+  /* Update the games collection */
   const updateInfo = await gamesCollection.findOneAndUpdate(
     { _id: id },
-    { $set: patchedGame },
+    updateOps,
     { returnDocument: "after" }
   );
   if (!updateInfo) throw `could not patch game with id: ${id}.`;
 
   return updateInfo;
+};
+
+/* Returns the list of active requests for games owned by user.
+    If no requests, returns empty list */
+export const getRequestedGames = async (userId) =>{
+    let gameList;
+    try{
+        /* getGamesByOwnerId throws error if there are no games */
+        gameList = await getGamesByOwnerID(userId)
+    } catch (e){
+        return [];
+    }
+    let reqList = [];
+    for (let game of gameList){ //Iterate through list of games owned by user
+        let reqArray = game.requests
+        if (reqArray) {
+            reqList = reqList.concat(reqArray);   //Push active requests into reqList
+        }
+    }
+    return reqList;
 };
 
 export const sortByClosestLocation = async (userLoc) => {

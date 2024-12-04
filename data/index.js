@@ -26,6 +26,7 @@ import {
   getGamesByOwnerID,
   getGameById,
   updateGame,
+  getRequestedGames,
 } from "./games.js";
 
 import {
@@ -60,6 +61,7 @@ export const gamesData = {
   getGamesByOwnerID,
   getGameById,
   updateGame,
+  getRequestedGames,
 };
 
 export const userReviewsData = {

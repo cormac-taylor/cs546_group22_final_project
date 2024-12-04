@@ -33,6 +33,7 @@ footer {
 .container,
 .games-container,
 .profile-container,
+.requests-container,
 .signup-container,
 .signin-container {
     background-color: #fff;
@@ -127,7 +128,7 @@ button:hover,
     text-align: right;
 }
 
-.navigation a{
+.navigation a {
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 15px;

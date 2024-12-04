@@ -20,6 +20,10 @@ const constructorMethod = (app) => {
   app.use('/public', staticDir('public'));
   app.use('/events', eventsRoutes)
 
+  app.use('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/')
+  })
   app.use("*", (_, res) => {
     res.redirect("/");
   });

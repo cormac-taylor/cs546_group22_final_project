@@ -30,4 +30,15 @@
             {{/each}}
         </ul>
     </div>
+    <div class="requests-container">
+        <h2>Active Requests:</h2>
+        <ul class="request-list">
+            {{#each requests}}
+            <li class="requestEntry">
+                <h2>{{reqUserId}}</h2>
+                <p>{{message}}</p>
+            </li>
+            {{/each}}
+        </ul>
+    </div>
 </section>

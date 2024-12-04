@@ -27,17 +27,26 @@ router
             let userId = req.session.user.userId;
             let currUser = await usersData.getUserById(userId);
             let currGames = await gamesData.getGamesByOwnerID(userId);
+            let activeRequests = await gamesData.getRequestedGames(userId);
             let hasGames = false;
+            let hasReqs = false;
             if (currGames) hasGames = true;
+            if (activeRequests){
+                hasReqs = true;
+                //TODO: Call display info function here
+            }
             // Ensure session name matches URL
             if (req.params.username !== req.session.user.username){
                 return res.status(403).json({error: e});
             }
             res.render('dashboard', {
                 pageTitle: 'BokenBoards Dashboard',
+                signedIn: true,
                 user: currUser,
-                hasGames: true,
-                games: currGames
+                hasGames: hasGames,
+                games: currGames,
+                hasReqs: hasReqs,
+                requests: activeRequests,
             });
         } catch(e){
             //TODO: After creating an error page, present that with error instead
@@ -61,6 +70,7 @@ router
             }
             res.render('updateProfile', {
                 pageTitle: 'Update Profile',
+                signedIn: true,
                 user: currUser
             });
         } catch(e){
@@ -131,6 +141,7 @@ router
         if (errors.length > 0){
             res.render('updateProfile', {
                 pageTitle: 'Update Profile',
+                signedIn: true,
                 errors: errors,
                 hasErrors: true,
                 user: updatedData
@@ -143,12 +154,14 @@ router
             req.session.user = {username: updatedUser.username, email: updatedUser.email, userId: updatedUser._id};
             res.render('updateProfile', {
                 pageTitle: 'dashboard',
+                signedIn: true,
                 success: true,
                 user: updatedUser
             });
         } catch (e){
             res.status(500).render('updateProfile', {
                 pageTitle: 'Update Profile: Error',
+                signedIn: true,
                 errors: [e],
                 hasErrors: true,
                 user: updatedData
