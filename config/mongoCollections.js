@@ -17,3 +17,4 @@ export const users = getCollectionFn("users");
 export const userReviews = getCollectionFn("userReviews");
 export const games = getCollectionFn("games");
 export const gameReviews = getCollectionFn("gameReviews");
+export const events = getCollectionFn("events");

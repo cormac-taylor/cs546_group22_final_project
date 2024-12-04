@@ -1,4 +1,6 @@
 import { games } from "../config/mongoCollections.js";
+import * as turf from '@turf/turf'
+
 import {
   validateBody,
   validateCondition,
@@ -177,3 +179,10 @@ export const updateGame = async (id, updateFeilds) => {
 
   return updateInfo;
 };
+
+export const sortByClosestLocation = async (userLoc) => {
+  userLoc = validateGeoJson(userLoc);
+  let gameList = await getAllGames();
+  gameList.sort((a,b) => turf.distance(a.location.geometry, userLoc, {units: 'miles'}) - turf.distance(b.location.geometry, userLoc, {units: 'miles'}));
+  return gameList;
+}

@@ -122,3 +122,23 @@ button:hover,
     height: auto;
     border-radius: 4px;
 }
+
+.navigation {
+    text-align: right;
+}
+
+.navigation a{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-right: 10px;
+    border-style: solid;
+    color: black;
+    font-size: 15px;
+}
+
+.navigation a:hover {
+    background-color: #0056b3;
+    color: white;
+}

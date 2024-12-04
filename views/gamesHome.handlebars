@@ -1,4 +1,7 @@
 <h1>Discover or Lookup Games</h1>
+<form action="/dashboard/{{user}}">
+    <button>Back to Dashboard</button>
+</form>
 
 {{!-- <form method="POST" action="/games">     
     <label for="searchByTitle">Search for a game:</label>
@@ -8,7 +11,10 @@
 
 <ol>
 {{#each games}}
-    <li>{{gameTitle}}</li>
+    <li>
+        <h2>{{gameTitle}}</h2>
+        <p>Posted in: {{location.properties.Address.City}}</p>
+    </li>
     <form method="POST" action="/games/gameDetails">
         <input type="hidden" name="gid" value={{_id}}>
         <button type="submit">View Details</button>
