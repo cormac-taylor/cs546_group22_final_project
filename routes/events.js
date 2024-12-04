@@ -68,7 +68,9 @@ router.route("/updateEvent").get(async (req, res) => {
         res.status(500).json({ error: e })
     }
 })
-    .patch
+    .patch(async (req, res) => {
+        
+    })
 
 router.route("/deleteEvent").get(async (req, res) => {
     try {

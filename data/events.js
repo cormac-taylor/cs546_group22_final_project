@@ -29,8 +29,14 @@ export const addEvent = async (
 
 
 }
+export const updateEvent = async (
+    // I need the Event Id here
+) => {
 
-// export const deleteEvent(){
-    
-// }
+}
+export const deleteEvent = async (
+    // I need the Event Id here
+) => {
+
+}
 

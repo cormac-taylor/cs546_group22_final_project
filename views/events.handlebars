@@ -1,9 +1,42 @@
 <h1>BokenBoards' Events</h1>
 
-<h2>Create a Meetup</h2>
+<h2>Meetup Options</h2>
 {{!-- Think about using a form w/ button here, it take like 2 seconds to replace (reason: code will look smooth and similar) --}}
 <button onclick="window.location.href= '/events/createEvent'"> Create Event</button>
 <button onclick="window.location.href= '/events/updateEvent'"> Update Event</button>
 <button onclick="window.location.href= '/events/deleteEvent'"> Delete Event</button>
+<h2>See Upcoming Events Below</h2>
+<div id="calendar"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const calendarEl = document.getElementById('calendar');
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth', // Month view by default
+        headerToolbar: {
+          left: 'prev,next today', // Navigation buttons
+          center: 'title', // Title display
+          right: 'dayGridMonth,timeGridWeek,timeGridDay', // View options
+        },
+        events: [
+          {
+            title: 'Board Game Night',
+            start: '2024-12-15T18:00:00',
+            end: '2024-12-15T21:00:00',
+            description: 'An evening of board games!',
+          },
+          {
+            title: 'Strategy Meeting',
+            start: '2024-12-18T14:00:00',
+            description: 'Planning the next big event.',
+          },
+        ],
+      });
+
+      calendar.render();
+    });
+  </script>
 
 {{!-- <form action=""></form> --}}
