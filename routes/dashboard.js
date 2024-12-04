@@ -144,6 +144,7 @@ router
             res.render('updateProfile', {
                 pageTitle: 'dashboard',
                 success: true,
+                user: updatedUser
             });
         } catch (e){
             res.status(500).render('updateProfile', {
