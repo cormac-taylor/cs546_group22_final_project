@@ -27,13 +27,25 @@ router
             let userId = req.session.user.userId;
             let currUser = await usersData.getUserById(userId);
             let currGames = await gamesData.getGamesByOwnerID(userId);
-            let activeRequests = await gamesData.getRequestedGames(userId);
             let hasGames = false;
             let hasReqs = false;
+            let requests = [];
             if (currGames) hasGames = true;
-            if (activeRequests){
-                hasReqs = true;
-                //TODO: Call display info function here
+            for (let game of currGames){
+                if (game.requests !== undefined && game.requests.length !== 0){
+                    hasReqs = true;
+                    for (let request of game.requests){
+                        let reqUser = await usersData.getUserById(request.reqUserId.toString());
+                        let reqObj = {
+                            reqUserId: reqUser._id,
+                            reqUsername: reqUser.username,
+                            reqFirstName: reqUser.firstName,
+                            reqLastName: reqUser.lastName,
+                            reqUserMsg: request.message,
+                        }
+                        requests.push(reqObj);
+                    }
+                }
             }
             // Ensure session name matches URL
             if (req.params.username !== req.session.user.username){
@@ -46,7 +58,7 @@ router
                 hasGames: hasGames,
                 games: currGames,
                 hasReqs: hasReqs,
-                requests: activeRequests,
+                requests: requests,
             });
         } catch(e){
             //TODO: After creating an error page, present that with error instead

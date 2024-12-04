@@ -31,6 +31,7 @@ export const createGame = async (
   imgURL = validateURL(imgURL);
   const averageRating = 0;
   const numReviews = 0;
+  let requests = [];
 
   const newGame = {
     ownerID,
@@ -42,6 +43,7 @@ export const createGame = async (
     imgURL,
     averageRating,
     numReviews,
+    requests,
   };
 
   // make sure postingUser exits
@@ -214,8 +216,10 @@ export const getRequestedGames = async (userId) =>{
     } catch (e){
         return [];
     }
+
+    //Iterate through list of games owned by user
     let reqList = [];
-    for (let game of gameList){ //Iterate through list of games owned by user
+    for (let game of gameList){ 
         let reqArray = game.requests
         if (reqArray) {
             reqList = reqList.concat(reqArray);   //Push active requests into reqList

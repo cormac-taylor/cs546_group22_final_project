@@ -32,12 +32,20 @@
     </div>
     <div class="requests-container">
         <h2>Active Requests:</h2>
+        {{#unless hasReqs}}
+        <p>No active requests at this time.</p>
+        {{/unless}}
         <ul class="request-list">
             {{#each requests}}
-            <li class="requestEntry">
-                <h2>{{reqUserId}}</h2>
-                <p>{{message}}</p>
-            </li>
+            <ul class="requestEntry">
+                <li><strong>Username:</strong> {{reqUsername}}</li>
+                <li><strong>First Name:</strong> {{reqFirstName}}</li>
+                <li><strong>Last Name:</strong> {{reqLastName}}</li>
+                <li><strong>Message:</strong> {{reqUserMsg}}</li>
+                <button type="submit">View Requester's Profile</button>
+                <br>
+                <br>
+            </ul>
             {{/each}}
         </ul>
     </div>
