@@ -119,11 +119,63 @@ router.route("/removeGame").get(async (req,res) => {
 
 router.route("/removeGame").post(async (req,res) => {
     try {
-        let deleted = await games.removeGameById(req.body.gameID)
-        let g = await games.getGamesByOwnerID(req.session.user.userId) // using a seed user for now
+        let deleted = await games.removeGameById(req.body.gameID);
+        let g = await games.getGamesByOwnerID(req.session.user.userId);
         res.render("removeGame", { pageTitle: "Remove Game", games: g });
     } catch (e) {
         res.status(500).json({ error: e });
+    }
+});
+
+router.route("/modifyGame").post(async (req,res) => {
+    try {
+        res.render("updateGamePosting", { pageTitle: "Modify Posting", gid: req.body.gid });
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
+
+router.route("/modifyGameUpdate").post(async (req,res) => {
+    const updatedData = req.body;
+    let errors = [];
+    if (updatedData.condition){
+        try{
+            updatedData.condition = validation.validateCondition(updatedData.condition);
+        }catch (e) {
+            errors.push(`Condition ${e}`);
+        }
+    }
+    // TODO: allow user entered location
+    if (updatedData.location){
+        try{
+            updatedData.condition = validation.validateGeoJson(updatedData.location);
+        }catch (e) {
+            errors.push(`Location ${e}`);
+        }
+    }
+
+    if (errors.length > 0){
+        res.render('updateGamePosting', {
+            pageTitle: 'Update Game',
+            errors: errors,
+            hasErrors: true
+        });
+        return;
+    }
+
+    try{
+        const updatedGame = await games.updateGame(req.body.gid, updatedData);
+        res.render('updateGamePosting', {
+            pageTitle: 'Update Game',
+            success: true
+        });
+    } catch (e){
+        res.status(500).render('updateGamePosting', {
+            pageTitle: 'Update Game: Error',
+            errors: [e],
+            hasErrors: true
+        });
+        return;
     }
 });
 
