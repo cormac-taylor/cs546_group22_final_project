@@ -43,6 +43,43 @@ router
             res.status(500).json({error: e});
         }
     });
+
+router
+    .route('/viewrequest/approve')
+    .post(async (req, res) =>{
+        if (!req.session.user){
+            return res.status(401).send('You must be logged in to view this page.')
+        }
+        try{
+            let userId = req.session.user.userId;
+            let reqId = validation.validateObjectID(req.body.reqUserId);
+            let gameId = validation.validateObjectID(req.body.reqGame);
+            let reqMsg = validation.validateString(req.body.msg);
+            let approveStr = validation.validateString(req.body.approve);
+            let approveVal = ((str) => str === 'true')(approveStr);
+            let currUser = await usersData.getUserById(userId);
+            let reqUser = await usersData.getUserById(reqId.toString());
+            let reqGame = await gamesData.getGameById(gameId.toString());
+            if (reqGame.ownerID.toString() !== userId) throw `Error: This game does not belong to you!`;
+
+            /* Updates the game object by removing the request and setting game borrowed status accordingly */
+            reqGame = await gamesData.handleRequest(gameId.toString(), reqId.toString(), approveVal);
+
+            res.render('viewRequest', {
+                pageTitle: 'View Game Request',
+                signedIn: true,
+                requestHandled: true,
+                approveVal,
+                reqUser,
+                reqGame,
+                reqMsg,
+            });
+        }catch(e){
+            //TODO: After creating an error page, present that with error instead
+            res.status(500).json({error: e});
+        }
+    });
+
 router
     .route('/:username')
     .get(async (req, res) => {

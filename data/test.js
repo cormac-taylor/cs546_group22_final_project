@@ -84,51 +84,18 @@ let result;
 //     console.log(e);
 // }
 
-let monopolyId = '6750a1ccc7337dddc62cbe3d';    // Monopoly owned by u2
-let connect4Id = '6750a1ccc7337dddc62cbe3e';    // Connect 4 owned by u1
-let u1id = '6750a1ccc7337dddc62cbe32'   // u1 user one
-let u2id = '6750a1ccc7337dddc62cbe33'   // u2 user two
-let u3id = '6750a1ccc7337dddc62cbe34'   // u3 user three
-let u4id = '6750a1ccc7337dddc62cbe35'   // u4 user four
+let monopolyId = '6750ed218558ce1c2ee99dbb';    // Monopoly owned by u2
+let connect4Id = '6750e72d2dd74aae564d862c';    // Connect 4 owned by u1
+let u1id = '6750ed218558ce1c2ee99db0'   // u1 user one
+let u2id = '6750e72d2dd74aae564d8621'   // u2 user two
+let u3id = '6750e72d2dd74aae564d8622'   // u3 user three
+let u4id = '6750e72d2dd74aae564d8623'   // u4 user four
 
-let userRequest = (userId) =>{
-    let updateObj = {
-        userRequest: {
-            reqUserId: userId,  // u1 is requesting
-            message: 'Im a user. Id like to borrow this game.'
-        }
-    }
-    return updateObj
-}
+let approval = true;
 let currGame;
 try {
-    currGame = await gamesData.updateGame(monopolyId, userRequest(u1id));
+    currGame = await gamesData.handleRequest(monopolyId, u1id, approval);
     console.log(currGame);
-} catch(e){
-    console.log(e);
-}
-try {
-    currGame = await gamesData.updateGame(monopolyId, userRequest(u3id));
-    console.log(currGame);
-} catch(e){
-    console.log(e);
-}
-try {
-    currGame = await gamesData.updateGame(monopolyId, userRequest(u1id));
-    console.log(currGame);
-} catch(e){
-    console.log(e); // Should error, already made a request
-}
-try {
-    currGame = await gamesData.updateGame(monopolyId, userRequest(u2id));
-    console.log(currGame);
-} catch(e){
-    console.log(e); // Should error, user cannot request their own game
-}
-let currReqs;
-try {
-    currReqs = await gamesData.getRequestedGames(u1id);
-    console.log(currReqs)
 } catch(e){
     console.log(e);
 }

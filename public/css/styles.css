@@ -103,7 +103,8 @@ button:hover,
     margin-top: 20px;
 }
 
-.success-list {
+.success-list,
+.request-handle {
     color: green;
     margin-top: 20px;
 }

@@ -10,21 +10,28 @@
             <li><strong>Game Requesting: </strong>{{reqGame.gameTitle}}</li>
             <li><strong>Message: </strong>{{reqMsg}}</li>
         </ul>
+        {{#if requestHandled}}
+        <ul class="request-handle">
+            <li>You have {{#if approveVal}}approved{{else}}denied{{/if}} this request.</li>
+        </ul>
+        {{/if}}
+        {{#unless requestHandled}}
         {{!-- Approval --}}
         <form method="POST" action="/dashboard/viewrequest/approve">
-            <input type="hidden" name="reqUserId" value={{reqUserId}}>
-            <input type="hidden" name="reqGame" value="{{gameId}}">
-            <input type="hidden" name="msg" value="{{reqUserMsg}}">
+            <input type="hidden" name="reqUserId" value={{reqUser._id}}>
+            <input type="hidden" name="reqGame" value="{{reqGame._id}}">
+            <input type="hidden" name="msg" value="{{reqMsg}}">
             <input type="hidden" name="approve" value="true">
             <button type="submit">Approve Request</button>
         </form>
         {{!-- Denial --}}
         <form method="POST" action="/dashboard/viewrequest/approve">
-            <input type="hidden" name="reqUserId" value={{reqUserId}}>
-            <input type="hidden" name="reqGame" value="{{gameId}}">
-            <input type="hidden" name="msg" value="{{reqUserMsg}}">
+            <input type="hidden" name="reqUserId" value={{reqUser._id}}>
+            <input type="hidden" name="reqGame" value="{{reqGame._id}}">
+            <input type="hidden" name="msg" value="{{reqMsg}}">
             <input type="hidden" name="approve" value="false">
             <button type="submit">Deny Request</button>
         </form>
+        {{/unless}}
     </div>
 </section>

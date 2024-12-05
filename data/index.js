@@ -27,6 +27,7 @@ import {
   getGameById,
   updateGame,
   getRequestedGames,
+  handleRequest,
 } from "./games.js";
 
 import {
@@ -62,6 +63,7 @@ export const gamesData = {
   getGameById,
   updateGame,
   getRequestedGames,
+  handleRequest
 };
 
 export const userReviewsData = {

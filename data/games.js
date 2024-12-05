@@ -228,6 +228,23 @@ export const getRequestedGames = async (userId) =>{
     return reqList;
 };
 
+export const handleRequest = async (gameId, reqUserId, approval) =>{
+    gameId = validateObjectID(gameId);
+    reqUserId = validateObjectID(reqUserId);
+    const gamesCollection = await games();
+    let borrowed = false;
+    /* If borrowed, enter the requesting userId. If not, leave field false */
+    if (approval) borrowed = reqUserId;
+
+    const updatedGame = await gamesCollection.findOneAndUpdate(
+        {_id: gameId},
+        {$set: {'borrowed': borrowed}, $pull: {requests: {'reqUserId': reqUserId}}},
+        {returnDocument: 'after'}
+    );
+    if (!updatedGame) throw `Error: Could not remove request successfully.`;
+    return updatedGame;
+}
+
 export const sortByClosestLocation = async (userLoc) => {
   userLoc = validateGeoJson(userLoc);
   let gameList = await getAllGames();

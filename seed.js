@@ -377,22 +377,22 @@ try {
 
 /* Request Seeding */
 let currGame;
-let userRequest = (userId) =>{
+let userRequest = (user) =>{
     let updateObj = {
         userRequest: {
-            reqUserId: userId,  // u1 is requesting
-            message: 'Im a user. Id like to borrow this game.'
+            reqUserId: user._id.toString(),  // u1 is requesting
+            message: `Im user ${user.username}. Id like to borrow this game.`
         }
     }
     return updateObj
 }
 try {
-    currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u1._id.toString()));
+    currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u1));
 } catch(e){
     console.log(e);
 }
 try {
-    currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u3._id.toString()));
+    currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u3));
 } catch(e){
     console.log(e);
 }
