@@ -45,7 +45,8 @@ router
         }
         try{
             //TODO: Currently, there is no password validation (2 ints and 2 special chars should be required)
-            userSignupData.password = validation.validateString(userSignupData.password)
+            // Cormac added a validation function but not to those specs (seems really strong)
+            userSignupData.password = validation.validatePassword(userSignupData.password)
         }catch (e) {
             errors.push(`Password ${e}`);
         }

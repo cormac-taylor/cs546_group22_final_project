@@ -211,7 +211,8 @@ router
         if (updatedData.password){
             try{
                 //TODO: Currently, there is no password validation (2 ints and 2 special chars should be required)
-                updatedData.password = validation.validateString(updatedData.password);
+                // Cormac added a password validation function but not to those specs (seems very strong)
+                updatedData.password = validation.validatePassword(updatedData.password);
             }catch (e) {
                 errors.push(`Password ${e}`);
             }
