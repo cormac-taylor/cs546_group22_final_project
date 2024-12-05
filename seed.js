@@ -375,4 +375,25 @@ try {
   console.log(e);
 }
 
+/* Request Seeding */
+let currGame;
+let userRequest = (user) =>{
+    let updateObj = {
+        userRequest: {
+            reqUserId: user._id.toString(),  // u1 is requesting
+            message: `Im user ${user.username}. Id like to borrow this game.`
+        }
+    }
+    return updateObj
+}
+try {
+    currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u1));
+} catch(e){
+    console.log(e);
+}
+try {
+    currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u3));
+} catch(e){
+    console.log(e);
+}
 await closeConnection();

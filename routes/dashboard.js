@@ -18,6 +18,72 @@ router
 });
 
 router
+    .route('/viewrequest')
+    .post(async (req, res) =>{
+        if (!req.session.user){
+            return res.status(401).send('You must be logged in to view this page.')
+        }
+        try{
+            let userId = req.session.user.userId;
+            let reqId = validation.validateObjectID(req.body.reqUserId);
+            let gameId = validation.validateObjectID(req.body.reqGame);
+            let reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
+            let reqMsg = reqObj.message;
+            let currUser = await usersData.getUserById(userId);
+            let reqUser = await usersData.getUserById(reqId.toString());
+            let reqGame = await gamesData.getGameById(gameId.toString());
+            res.render('viewRequest', {
+                pageTitle: 'View Game Request',
+                signedIn: true,
+                reqUser,
+                reqGame,
+                reqMsg,
+            });
+        }catch(e){
+            //TODO: After creating an error page, present that with error instead
+            res.status(500).json({error: e});
+        }
+    });
+
+router
+    .route('/viewrequest/approve')
+    .post(async (req, res) =>{
+        if (!req.session.user){
+            return res.status(401).send('You must be logged in to view this page.')
+        }
+        try{
+            let userId = req.session.user.userId;
+            let reqId = validation.validateObjectID(req.body.reqUserId);
+            let gameId = validation.validateObjectID(req.body.reqGame);
+            let reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
+            let reqMsg = reqObj.message;
+            let approveStr = validation.validateString(req.body.approve);
+            let approveVal = ((str) => str === 'true')(approveStr);
+            let currUser = await usersData.getUserById(userId);
+            let reqUser = await usersData.getUserById(reqId.toString());
+            let reqGame = await gamesData.getGameById(gameId.toString());
+            if (reqGame.ownerID.toString() !== userId) throw `Error: This game does not belong to you!`;
+
+            /* Updates the game object by removing the request and setting game borrowed status accordingly */
+            reqGame = await gamesData.handleRequest(gameId.toString(), reqId.toString(), approveVal);
+
+            res.render('viewRequest', {
+                pageTitle: 'View Game Request',
+                signedIn: true,
+                requestHandled: true,
+                approveVal,
+                reqUser,
+                reqGame,
+                reqMsg,
+            });
+        }catch(e){
+            //TODO: After creating an error page, present that with error instead
+            res.status(500).json({error: e});
+        }
+    });
+
+// TODO: Add list of requested games to dashboard
+router
     .route('/:username')
     .get(async (req, res) => {
         try{
@@ -28,16 +94,38 @@ router
             let currUser = await usersData.getUserById(userId);
             let currGames = await gamesData.getGamesByOwnerID(userId);
             let hasGames = false;
+            let hasReqs = false;
+            let requests = [];
             if (currGames) hasGames = true;
+            for (let game of currGames){
+                if (game.requests !== undefined && game.requests.length !== 0){
+                    hasReqs = true;
+                    for (let request of game.requests){
+                        let reqUser = await usersData.getUserById(request.reqUserId.toString());
+                        let reqObj = {
+                            reqUserId: reqUser._id,
+                            gameId: game._id,
+                            reqUsername: reqUser.username,
+                            reqFirstName: reqUser.firstName,
+                            reqLastName: reqUser.lastName,
+                            reqUserMsg: request.message,
+                        }
+                        requests.push(reqObj);
+                    }
+                }
+            }
             // Ensure session name matches URL
             if (req.params.username !== req.session.user.username){
                 return res.status(403).json({error: e});
             }
             res.render('dashboard', {
                 pageTitle: 'BokenBoards Dashboard',
+                signedIn: true,
                 user: currUser,
-                hasGames: true,
-                games: currGames
+                hasGames: hasGames,
+                games: currGames,
+                hasReqs: hasReqs,
+                requests: requests,
             });
         } catch(e){
             //TODO: After creating an error page, present that with error instead
@@ -61,6 +149,7 @@ router
             }
             res.render('updateProfile', {
                 pageTitle: 'Update Profile',
+                signedIn: true,
                 user: currUser
             });
         } catch(e){
@@ -131,6 +220,7 @@ router
         if (errors.length > 0){
             res.render('updateProfile', {
                 pageTitle: 'Update Profile',
+                signedIn: true,
                 errors: errors,
                 hasErrors: true,
                 user: updatedData
@@ -143,11 +233,14 @@ router
             req.session.user = {username: updatedUser.username, email: updatedUser.email, userId: updatedUser._id};
             res.render('updateProfile', {
                 pageTitle: 'dashboard',
+                signedIn: true,
                 success: true,
+                user: updatedUser
             });
         } catch (e){
             res.status(500).render('updateProfile', {
                 pageTitle: 'Update Profile: Error',
+                signedIn: true,
                 errors: [e],
                 hasErrors: true,
                 user: updatedData

@@ -2,7 +2,7 @@
     <button>Go Back</button>
 </form>
 
-<img id ="gameIMG" alt="{{g.gameTitle}} Picture" src={{g.imgURL}}>
+<img id="gameIMG" alt="{{g.gameTitle}} Picture" src={{g.imgURL}}>
 
 <h1>{{g.gameTitle}}</h1>
 
@@ -20,17 +20,22 @@
 <br>
 <h2>Reviews:</h2>
 {{#if reviews}}
-    {{#each reviews}}
-        <div>
-            <h4>Posted by: {{username}}</h4>
-            <h4>Title: {{title}}</h4>
-            <h4>Rating: {{rating}}/5</h4>
-            <p>Reviewed on: {{date}}</p>
-            <p>{{body}}</p>
+{{#each reviews}}
+<div>
+    <h4>Posted by: {{username}}</h4>
+    <h4>Title: {{title}}</h4>
+    <h4>Rating: {{rating}}/5</h4>
+    <p>Reviewed on: {{date}}</p>
+    <p>{{body}}</p>
 
-        </div>
+</div>
 
-    {{/each}}
+{{/each}}
 {{else}}
-    <h3>No reviews yet...</h3>
+<h3>No reviews yet...</h3>
 {{/if}}
+
+<form method="POST" action="/request">
+    <input type="hidden" name="gid" value={{g._id}}>
+    <button type="submit">Make Request</button>
+</form>

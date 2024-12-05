@@ -1,0 +1,39 @@
+<section class="content-container">
+    <div class="profile-container">
+        <h1>Your Game Request</h1>
+        <form action="/request/confirm" method="POST" class="new-post-form">
+            <label for "gameReq-info">
+                <ul id="gameReq-info" class="gameReq-info">
+                    <li><strong>Game Title: </strong> {{game.gameTitle}}</li>
+                    <img id="gameIMG" alt="{{game.gameTitle}} Picture" src={{game.imgURL}}>
+                    <li><strong>Location: </strong> {{game.location.properties.ShortString}}</li>
+                    <li><strong>Game Rating: </strong> {{game.rating}}</li>
+                </ul>
+            </label>
+            <label for="message-body">
+                Message Body
+            </label>
+            <textarea id="message-body" name="msgbody" rows="4" placeholder="Write a short message here.
+        be sure to state how long you wish to borrow the game for!" class="full-width-input">{{post.body}}</textarea>
+            {{#if requestMade}}
+            <ul class="request-handle">
+                <li>You have successfully requested this game.</li>
+            </ul>
+            {{/if}}
+            {{#unless requestMade}}
+            <input type="hidden" name="gid" value="{{game._id}}">
+            <button type="submit">Make Request</button>
+            {{/unless}}
+        </form>
+        <form action="/games">
+            <button>Back to Games</button>
+        </form>
+        {{#if hasErrors}}
+        <ul class="error-list">
+            {{#each errors}}
+            <li>{{this}}</li>
+            {{/each}}
+        </ul>
+        {{/if}}
+    </div>
+</section>

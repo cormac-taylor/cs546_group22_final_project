@@ -26,6 +26,10 @@ import {
   getGamesByOwnerID,
   getGameById,
   updateGame,
+  getRequestedGames,
+  handleRequest,
+  requestGame,
+  returnRequest,
 } from "./games.js";
 
 import {
@@ -60,6 +64,10 @@ export const gamesData = {
   getGamesByOwnerID,
   getGameById,
   updateGame,
+  getRequestedGames,
+  handleRequest,
+  requestGame,
+  returnRequest,
 };
 
 export const userReviewsData = {
