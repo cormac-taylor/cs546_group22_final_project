@@ -173,8 +173,8 @@ export const updateGame = async (id, updateFeilds) => {
   /* Throws error on self request and multiple request */
   if (updateFeilds.userRequest !== undefined){
     const userRequest = updateFeilds.userRequest
-    userReq.reqUserId = validateObjectID(userRequest.reqUserId);
-    userReq.message = validateString(userRequest.message);
+    userReq.reqUserId = validateObjectID(userRequest.reqUserId.toString());
+    userReq.message = userRequest.message;
     const currGame = await getGameById(id.toString()); // Here id refers to the gameId
     if (userReq.reqUserId.toString() === currGame.ownerID.toString()) throw `Error: You cannot request your own games.`
     if (currGame.requests){
@@ -228,6 +228,7 @@ export const getRequestedGames = async (userId) =>{
     return reqList;
 };
 
+/* Marks game object as borrowed by borrower. Removes request from gameObj*/
 export const handleRequest = async (gameId, reqUserId, approval) =>{
     gameId = validateObjectID(gameId);
     reqUserId = validateObjectID(reqUserId);
@@ -243,7 +244,39 @@ export const handleRequest = async (gameId, reqUserId, approval) =>{
     );
     if (!updatedGame) throw `Error: Could not remove request successfully.`;
     return updatedGame;
-}
+};
+
+/* Adds a request object {reqUserId, msg} to the identified game*/
+export const requestGame = async (gameId, reqUserId, message) => {
+    gameId = validateObjectID(gameId);
+    reqUserId = validateObjectID(reqUserId);
+
+    let updateObj = {
+        userRequest: {
+            reqUserId: reqUserId,   // User making Request
+            message: message
+        }
+    };
+
+    const updatedGame = await updateGame(gameId.toString(), updateObj);
+    if (!updatedGame) throw `Error: Could not successfully request game.`
+    return updatedGame;
+};
+
+/* Returns the request object in the game from the requesting user */
+export const returnRequest = async (gameId, reqUserId) => {
+    gameId = validateObjectID(gameId);
+    reqUserId = validateObjectID(reqUserId);
+    const gamesCollection = await games();
+
+    const reqBody = await gamesCollection.findOne(
+        {_id: gameId, 'requests.reqUserId': reqUserId},
+        {projection: {'requests.$': 1}}
+    );
+
+    if (!reqBody) throw `Error: Could not return request successfully.`;
+    return reqBody;
+};
 
 export const sortByClosestLocation = async (userLoc) => {
   userLoc = validateGeoJson(userLoc);

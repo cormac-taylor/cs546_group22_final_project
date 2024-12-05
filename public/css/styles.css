@@ -78,7 +78,9 @@ input[type="password"] {
 
 button,
 .settings-link,
-.home-link {
+.home-link,
+.games-link,
+.event-link {
     background-color: #007BFF;
     color: white;
     padding: 10px 20px;

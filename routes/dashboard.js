@@ -27,7 +27,8 @@ router
             let userId = req.session.user.userId;
             let reqId = validation.validateObjectID(req.body.reqUserId);
             let gameId = validation.validateObjectID(req.body.reqGame);
-            let reqMsg = validation.validateString(req.body.msg);
+            let reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
+            let reqMsg = reqObj.message;
             let currUser = await usersData.getUserById(userId);
             let reqUser = await usersData.getUserById(reqId.toString());
             let reqGame = await gamesData.getGameById(gameId.toString());
@@ -54,7 +55,8 @@ router
             let userId = req.session.user.userId;
             let reqId = validation.validateObjectID(req.body.reqUserId);
             let gameId = validation.validateObjectID(req.body.reqGame);
-            let reqMsg = validation.validateString(req.body.msg);
+            let reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
+            let reqMsg = reqObj.message;
             let approveStr = validation.validateString(req.body.approve);
             let approveVal = ((str) => str === 'true')(approveStr);
             let currUser = await usersData.getUserById(userId);
@@ -80,6 +82,7 @@ router
         }
     });
 
+// TODO: Add list of requested games to dashboard
 router
     .route('/:username')
     .get(async (req, res) => {

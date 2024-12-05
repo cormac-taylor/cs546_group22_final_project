@@ -5,6 +5,7 @@ import gameDetailRoutes from "./gameDetails.js"
 import signupRoutes from "./signup.js"
 import signinRoutes from "./signin.js"
 import dashboardRoutes from './dashboard.js'
+import requestRoutes from './request.js'
 import eventsRoutes from './events.js'
 
 import {static as staticDir} from 'express';
@@ -15,6 +16,7 @@ const constructorMethod = (app) => {
   app.use('/dashboard', dashboardRoutes);
   app.use("/manage", manageGameRoutes);
   app.use("/games", gameDetailRoutes);
+  app.use('/request', requestRoutes);
   app.use('/signup', signupRoutes);
   app.use('/signin', signinRoutes);
   app.use('/public', staticDir('public'));

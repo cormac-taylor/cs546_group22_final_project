@@ -12,7 +12,9 @@
         <br>
         <a href="/home" class="home-link">Homepage</a>
         <br>
-        <a href="/games" class="home-link">Discover Games</a>
+        <a href="/games" class="games-link">Discover Games</a>
+        <br>
+        <a href="/events" class="event-link">Event Page</a>
     </div>
     <div class="games-container">
         <h2>Your Games:</h2>
@@ -45,7 +47,6 @@
                 <form method="POST" action="/dashboard/viewrequest">
                     <input type="hidden" name="reqUserId" value={{reqUserId}}>
                     <input type="hidden" name="reqGame" value="{{gameId}}">
-                    <input type="hidden" name="msg" value="{{reqUserMsg}}">
                     <button type="submit">View Details</button>
                 </form>
                 <br>
