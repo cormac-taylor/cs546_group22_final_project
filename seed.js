@@ -28,8 +28,8 @@ let gr1;
 let gr2;
 let gr3;
 let gr4;
-let password = await utils.hashPassword('passw12');
-let notpass = await utils.hashPassword('notpass12');
+let password = await utils.hashPassword('passw');
+let notpass = await utils.hashPassword('notpass');
 
 try {
   u1 = await usersData.createUser(
