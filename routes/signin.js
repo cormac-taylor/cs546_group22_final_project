@@ -27,12 +27,12 @@ router
         let errors = [];
         let plainTextPass;
         try{
-            userSigninData.username = validation.validateUsername(userSigninData.username)
+            userSigninData.username = validation.validateString(userSigninData.username)
         }catch (e) {
             errors.push(`Username ${e}`);
         }
         try{
-            plainTextPass = validation.validatePassword(userSigninData.password)
+            plainTextPass = validation.validateString(userSigninData.password)
         }catch (e) {
             errors.push(`Password ${e}`);
         }
