@@ -1,0 +1,14 @@
+<h1>Write a Review for {{reviewed}}</h1>
+
+<form action="/community/writeUserReview/{{uid}}" method="POST">
+    <label for="reviewingRating">Rating (from 0 to 5, 5 being the best):</label>
+    <input type="range" id="reviewingRating" name="reviewingRating" min="0" max="5" step="1">
+    <br>
+    <label for="reviewingTitle">Title of Review:</label>
+    <input type="text", id="reviewingTitle" name="reviewingTitle">
+    <br>
+    <label for="reviewingBody">Review:</label>
+    <input type="text", id="reviewingBody" name="reviewingBody">
+    <br>
+    <input type="submit">
+</form>

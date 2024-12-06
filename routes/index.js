@@ -7,6 +7,7 @@ import signinRoutes from "./signin.js"
 import dashboardRoutes from './dashboard.js'
 import requestRoutes from './request.js'
 import eventsRoutes from './events.js'
+import communityRoutes from './community.js'
 
 import {static as staticDir} from 'express';
 
@@ -21,6 +22,7 @@ const constructorMethod = (app) => {
   app.use('/signin', signinRoutes);
   app.use('/public', staticDir('public'));
   app.use('/events', eventsRoutes)
+  app.use('/community', communityRoutes)
   app.use('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/')
