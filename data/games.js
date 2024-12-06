@@ -191,7 +191,7 @@ export const updateGame = async (id, updateFeilds) => {
 
   /* Define the update operations. Conditional push into the requests array if a request for this game was made: */
   const updateOps = {$set: patchedGame};
-  if (userReq !== undefined){
+  if (updateFeilds.userRequest !== undefined){
     updateOps.$push = {requests: userReq};
   }
 
