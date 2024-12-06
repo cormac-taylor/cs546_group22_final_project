@@ -7,12 +7,14 @@ import * as userData from "../data/users.js"
 import * as gameReviewData from "../data/gameReviews.js"
 
 router.route("/").get(async (req, res) => {
-    // let g = await games.getAllGames();
+    let user;
     try {
-        let g = await games.sortByClosestLocation({
-            type: "Point",
-            coordinates: [-74.033697, 40.717753]
-        })
+        user = await userData.getUserById(req.session.user.userId);
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+    try {
+        let g = await games.sortByClosestLocation(user.location.geometry, req.session.user.userId);
         if(req.session.user){
             res.render("gamesHome", {pageTitle: "Discover", games: g, user: req.session.user.username});
         }

@@ -35,7 +35,7 @@ try {
   u1 = await usersData.createUser(
     "user",
     "one",
-    "u1",
+    "user1",
     "u1@acb.com",
     password,
     {
@@ -74,7 +74,7 @@ try {
   u2 = await usersData.createUser(
     "user",
     "two",
-    "u2",
+    "user2",
     "u2@acb.com",
     password,
     {
@@ -113,7 +113,7 @@ try {
   u3 = await usersData.createUser(
     "user",
     "three",
-    "u3",
+    "user3",
     "u3@acb.com",
     password,
     {
@@ -152,7 +152,7 @@ try {
   u4 = await usersData.createUser(
     "user",
     "four",
-    "u4",
+    "user4",
     "u4@acb.com",
     password,
     {
@@ -191,7 +191,7 @@ try {
     u5 = await usersData.createUser(
       "user",
       "five",
-      "mc",
+      "user5",
       "lol@kek.com",
       notpass,
       {
