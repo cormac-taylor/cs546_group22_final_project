@@ -28,14 +28,14 @@ let gr1;
 let gr2;
 let gr3;
 let gr4;
-let password = await utils.hashPassword('pass');
+let password = await utils.hashPassword('passw');
 let notpass = await utils.hashPassword('notpass');
 
 try {
   u1 = await usersData.createUser(
     "user",
     "one",
-    "u1",
+    "user1",
     "u1@acb.com",
     password,
     {
@@ -74,7 +74,7 @@ try {
   u2 = await usersData.createUser(
     "user",
     "two",
-    "u2",
+    "user2",
     "u2@acb.com",
     password,
     {
@@ -113,7 +113,7 @@ try {
   u3 = await usersData.createUser(
     "user",
     "three",
-    "u3",
+    "user3",
     "u3@acb.com",
     password,
     {
@@ -152,7 +152,7 @@ try {
   u4 = await usersData.createUser(
     "user",
     "four",
-    "u4",
+    "user4",
     "u4@acb.com",
     password,
     {
@@ -191,7 +191,7 @@ try {
     u5 = await usersData.createUser(
       "user",
       "five",
-      "mc",
+      "user5",
       "lol@kek.com",
       notpass,
       {
@@ -375,4 +375,25 @@ try {
   console.log(e);
 }
 
+/* Request Seeding */
+let currGame;
+let userRequest = (user) =>{
+    let updateObj = {
+        userRequest: {
+            reqUserId: user._id.toString(),  // u1 is requesting
+            message: `Im user ${user.username}. Id like to borrow this game.`
+        }
+    }
+    return updateObj
+}
+try {
+    currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u1));
+} catch(e){
+    console.log(e);
+}
+try {
+    currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u3));
+} catch(e){
+    console.log(e);
+}
 await closeConnection();

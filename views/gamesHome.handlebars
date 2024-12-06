@@ -13,6 +13,7 @@
 {{#each games}}
     <li>
         <h2>{{gameTitle}}</h2>
+        <img class="searchResultImage" alt="{{gameTitle}}" src="{{imgURL}}">
         <p>Posted in: {{location.properties.Address.City}}</p>
     </li>
     <form method="POST" action="/games/gameDetails">

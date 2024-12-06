@@ -1,4 +1,4 @@
-import {locationData, usersData} from './index.js';
+import {gamesData, locationData, usersData} from './index.js';
 
 let address = '1 Castle Point Terrace, Hoboken'
 // try{
@@ -71,15 +71,31 @@ let result;
 //     console.log(e);
 // }
 
-let userOneId = '674b592aeb565b1db2edbaca'; //username: u1
-let updateObject = {
-    firstName: 'First',
-    lastName: 'Lastname',
-    username: 'Primero'
-};
-try{
-    currUser = await usersData.updateUser(userOneId, updateObject)
-    console.log(currUser);
+// let userOneId = '674b592aeb565b1db2edbaca'; //username: u1
+// let updateObject = {
+//     firstName: 'First',
+//     lastName: 'Lastname',
+//     username: 'Primero'
+// };
+// try{
+//     currUser = await usersData.updateUser(userOneId, updateObject)
+//     console.log(currUser);
+// } catch(e){
+//     console.log(e);
+// }
+
+let monopolyId = '6750ed218558ce1c2ee99dbb';    // Monopoly owned by u2
+let connect4Id = '6750e72d2dd74aae564d862c';    // Connect 4 owned by u1
+let u1id = '6750ed218558ce1c2ee99db0'   // u1 user one
+let u2id = '6750e72d2dd74aae564d8621'   // u2 user two
+let u3id = '6750e72d2dd74aae564d8622'   // u3 user three
+let u4id = '6750e72d2dd74aae564d8623'   // u4 user four
+
+let approval = true;
+let currGame;
+try {
+    currGame = await gamesData.handleRequest(monopolyId, u1id, approval);
+    console.log(currGame);
 } catch(e){
     console.log(e);
 }

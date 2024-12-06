@@ -56,7 +56,6 @@ router.route("/addGame1").post(async (req,res) => {
         res.status(404).json({ error: e });
     }
     try {
-        // games.createGame("674a82432950296bf59e615b", {type: "Point", coordinates: [-73.856077, 40.848447]}, req.body.title, game.description._text, "new", game.image._text) // using seed user for now
         res.render("addGame", { pageTitle: "Add Game", gid: req.body.gid, title: req.body.title, status1: " Selected! Please enter the condition of the game." });
     } catch (e) {
         res.status(500).json({ error: e });
@@ -71,8 +70,40 @@ router.route("/addGame2").post(async (req,res) => {
     }
     try {
         let game = await gamesapi.searchGamesByID(parseInt(req.body.gid));
-        // console.log(game.name._text)
-        games.createGame(req.session.user.userId, {type: "Point", coordinates: [-73.856077, 40.848447]}, req.body.title, game.description._text, req.body.cond, game.image._text) // using seed user for now
+        let gimg;
+        if (game.image){
+            gimg = game.image._text;
+        }
+        else {
+            gimg = "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
+        }
+        await games.createGame(req.session.user.userId, {
+            type: "Feature",
+            geometry: {
+                type: "Point",
+                coordinates: [-74.033697, 40.717753]
+            },
+            properties: {
+                Address: {
+                    StreetAddress: "30 Montgomery St",
+                    City: "Jersey City",
+                    State: "NJ",
+                    StateName: "New Jersey",
+                    Zip: "07302",
+                    County: "Hudson",
+                    Country: "US",
+                    CountryFullName: "United States",
+                    SPLC: null
+                },
+                Region: 4,
+                POITypeID: 104,
+                PersistentPOIID: -1,
+                SiteID: -1,
+                ResultType: 10,
+                ShortString: "Bank, 30 Montgomery St, Jersey City, NJ, US, Hudson 07302",
+                TimeZone: "GMT-5:00 EST"
+            }
+        }, req.body.title, game.description._text, req.body.cond, gimg) 
         res.render("addGame", { pageTitle: "Add Game", status2: "Game added! Add another or navigate back using the button below." });
     } catch (e) {
         res.status(500).json({ error: e });
@@ -89,7 +120,7 @@ router.route("/apigamesearch").post(async (req,res) => {
     }
     try {
         let g = await gamesapi.searchGamesByTitle(req.body.searchByTitle);
-        res.render("apisearchresults", { pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle, adding: "testing" });
+        res.render("apisearchresults", { pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle });
     } catch (e) {
         res.status(500).json({ error: e });
     }
@@ -145,7 +176,7 @@ router.route("/modifyGameUpdate").post(async (req,res) => {
             errors.push(`Condition ${e}`);
         }
     }
-    // TODO: allow user entered location
+    // TODO: allow user enetered location
     if (updatedData.location){
         try{
             updatedData.condition = validation.validateGeoJson(updatedData.location);
