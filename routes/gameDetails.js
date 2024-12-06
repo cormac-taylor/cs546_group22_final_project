@@ -7,6 +7,10 @@ import * as userData from "../data/users.js"
 import * as gameReviewData from "../data/gameReviews.js"
 
 router.route("/").get(async (req, res) => {
+    if(!req.session.user){
+        res.render("signin", { pageTitle: "BokenBoards" });
+        return;
+    }
     let user;
     try {
         user = await userData.getUserById(req.session.user.userId);
