@@ -32,7 +32,8 @@ router
             errors.push(`Username ${e}`);
         }
         try{
-            plainTextPass = validation.validatePassword(userSigninData.password)
+            // plainTextPass = validation.validatePassword(userSigninData.password)
+            plainTextPass = validation.validateString(userSigninData.password)
         }catch (e) {
             errors.push(`Password ${e}`);
         }
