@@ -14,11 +14,11 @@
       const calendarEl = document.getElementById('calendar');
 
       const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth', // Month view by default
+        initialView: 'dayGridMonth',
         headerToolbar: {
-          left: 'prev,next today', // Navigation buttons
-          center: 'title', // Title display
-          right: 'dayGridMonth,timeGridWeek,timeGridDay', // View options
+          left: 'prev,next today', 
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay',
         },
         events: [
           {
@@ -39,4 +39,4 @@
     });
   </script>
 
-{{!-- <form action=""></form> --}}
+{{!-- same calender for people close by and also add a limit to the number of events a user can post --}}
