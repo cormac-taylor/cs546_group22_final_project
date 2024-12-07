@@ -70,7 +70,6 @@ router.route("/addGame2").post(async (req,res) => {
     }
     try {
         let game = await gamesapi.searchGamesByID(parseInt(req.body.gid));
-        // console.log(game.name._text)
         let gimg;
         if (game.image){
             gimg = game.image._text;
@@ -121,7 +120,7 @@ router.route("/apigamesearch").post(async (req,res) => {
     }
     try {
         let g = await gamesapi.searchGamesByTitle(req.body.searchByTitle);
-        res.render("apisearchresults", { pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle, adding: "testing" });
+        res.render("apisearchresults", { pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle });
     } catch (e) {
         res.status(500).json({ error: e });
     }
@@ -151,8 +150,8 @@ router.route("/removeGame").get(async (req,res) => {
 
 router.route("/removeGame").post(async (req,res) => {
     try {
-        let deleted = await games.removeGameById(req.body.gameID)
-        let g = await games.getGamesByOwnerID(req.session.user.userId) // using a seed user for now
+        let deleted = await games.removeGameById(req.body.gameID);
+        let g = await games.getGamesByOwnerID(req.session.user.userId);
         res.render("removeGame", { pageTitle: "Remove Game", games: g });
     } catch (e) {
         res.status(500).json({ error: e });

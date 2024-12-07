@@ -3,6 +3,18 @@ import validator from "validator";
 import { valid as isValidGeoJson } from "geojson-validation";
 import { isWebUri } from "valid-url";
 
+const MIN_NAME_LEN = 2;
+const MAX_NAME_LEN = 32;
+const MIN_USERNAME_LEN = 5;
+const MAX_USERNAME_LEN = 10;
+const MIN_TITLE_LEN = 1;
+const MAX_TITLE_LEN = 64;
+const MIN_BODY_LEN = 16;
+const MAX_BODY_LEN = 2048;
+const MIN_RATING = 0;
+const MAX_RATING = 5;
+const MIN_PASSWORD_LEN = 8;
+
 export const validateBoolean = (bool) => {
   if (typeof bool !== "boolean") throw "must be a boolean!";
   return bool;
@@ -24,7 +36,7 @@ export const validateInteger = (int) => {
 };
 
 export const validateString = (str) => {
-  if (typeof str !== 'string') throw "must be a string!";
+  if (typeof str !== "string") throw "must be a string!";
   let res = str.trim();
   if (!res) throw "must not be empty!";
   return res;
@@ -75,7 +87,7 @@ export const validateName = (name) => {
   // https://a-tokyo.medium.com/first-and-last-name-validation-for-forms-and-databases-d3edf29ad29d
   const NAME_REGEX = /^[a-zA-Z]+([ \-']{0,1}[a-zA-Z]+){0,2}[.]{0,1}$/;
 
-  const res = validateStrOfLen(name, 2, 32);
+  const res = validateStrOfLen(name, MIN_NAME_LEN, MAX_NAME_LEN);
   //TODO: This error is going to float up to the user
   if (!NAME_REGEX.test(res)) throw "Please provide a valid name.";
   return res;
@@ -85,9 +97,9 @@ export const validateUsername = (username) => {
   // https://stackoverflow.com/questions/9628879/javascript-regex-username-validation
   const USERNAME_REGEX = /^[a-z0-9_\.]+$/;
 
-  const res = validateStrOfLen(username, 2, 32).toLowerCase();
+  const res = validateStrOfLen(username, MIN_USERNAME_LEN, MAX_USERNAME_LEN).toLowerCase();
   if (!USERNAME_REGEX.test(res))
-    throw "must be username (a-z, 0-9, _, or . and >=8 chars)!";
+    throw `must be username (a-z, 0-9, _, or . and between ${MIN_USERNAME_LEN} and ${MAX_USERNAME_LEN} in length)!`;
   return res;
 };
 
@@ -104,16 +116,16 @@ export const validateGeoJson = (geoJson) => {
 };
 
 export const validateTitle = (title) => {
-  return validateStrOfLen(title, 1, 64);
+  return validateStrOfLen(title, MIN_TITLE_LEN, MAX_TITLE_LEN);
 };
 
 export const validateBody = (body) => {
-  return validateStrOfLen(body, 16, 102400);
+  return validateStrOfLen(body, MIN_BODY_LEN, MAX_BODY_LEN);
 };
 
 export const validateRating = (rating) => {
   const res = validateInteger(rating);
-  if (res < 0 || 5 < res) throw "must be between 0 and 5!";
+  if (res < MIN_RATING || MAX_RATING < res) throw `must be between ${MIN_RATING} and ${MAX_RATING}!`;
   return res;
 };
 
@@ -129,5 +141,16 @@ export const validateCondition = (condition) => {
   const res = validateString(condition).toLowerCase();
   if (!CONDITIONS.find((cond) => cond === res))
     throw "must be a valid condition: new, like-new, used, or well-used";
+  return res;
+};
+
+export const validatePassword = (password) => {
+  // https://www.geeksforgeeks.org/javascript-program-to-validate-password-using-regular-expressions/
+  const PASSWORD_REGEX =
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]+$/;
+
+  const res = validateStrOfLen(password, MIN_PASSWORD_LEN, Infinity);
+  if (!PASSWORD_REGEX.test(res))
+    throw "not strong enough. Include a uppercase, digit, and special character.";
   return res;
 };

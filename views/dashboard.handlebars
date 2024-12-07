@@ -12,7 +12,9 @@
         <br>
         <a href="/home" class="home-link">Homepage</a>
         <br>
-        <a href="/games" class="home-link">Discover Games</a>
+        <a href="/games" class="games-link">Discover Games</a>
+        <br>
+        <a href="/events" class="event-link">Event Page</a>
     </div>
     <div class="games-container">
         <h2>Your Games:</h2>
@@ -27,6 +29,29 @@
                     <button type="submit">Modify Posting</button>
                 </form>
             </li>
+            {{/each}}
+        </ul>
+    </div>
+    <div class="requests-container">
+        <h2>Active Requests:</h2>
+        {{#unless hasReqs}}
+        <p>No active requests at this time.</p>
+        {{/unless}}
+        <ul class="request-list">
+            {{#each requests}}
+            <ul class="requestEntry">
+                <li><strong>Username:</strong> {{reqUsername}}</li>
+                <li><strong>First Name:</strong> {{reqFirstName}}</li>
+                <li><strong>Last Name:</strong> {{reqLastName}}</li>
+                <li><strong>Message:</strong> {{reqUserMsg}}</li>
+                <form method="POST" action="/dashboard/viewrequest">
+                    <input type="hidden" name="reqUserId" value={{reqUserId}}>
+                    <input type="hidden" name="reqGame" value="{{gameId}}">
+                    <button type="submit">View Details</button>
+                </form>
+                <br>
+                <br>
+            </ul>
             {{/each}}
         </ul>
     </div>

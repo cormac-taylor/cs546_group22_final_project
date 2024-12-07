@@ -31,6 +31,7 @@ export const createGame = async (
   imgURL = validateURL(imgURL);
   const averageRating = 0;
   const numReviews = 0;
+  let requests = [];
 
   const newGame = {
     ownerID,
@@ -42,6 +43,7 @@ export const createGame = async (
     imgURL,
     averageRating,
     numReviews,
+    requests,
   };
 
   // make sure postingUser exits
@@ -133,12 +135,14 @@ export const getGameById = async (id) => {
   return game;
 };
 
+/* Patches game update. Takes in gameId and an object with fields to update */
 export const updateGame = async (id, updateFeilds) => {
   id = validateObjectID(id);
   updateFeilds = validateNonEmptyObject(updateFeilds);
 
   const patchedGame = {};
   let updated = false;
+  let userReq = {}; 
   patchedGame.datePosted = new Date().toUTCString();
 
   if (updateFeilds.location !== undefined) {
@@ -165,14 +169,36 @@ export const updateGame = async (id, updateFeilds) => {
     patchedGame.imgURL = validateURL(updateFeilds.imgURL);
     updated = true;
   }
+  /* Adds request to this game's request field */
+  /* Throws error on self request and multiple request */
+  if (updateFeilds.userRequest !== undefined){
+    const userRequest = updateFeilds.userRequest
+    userReq.reqUserId = validateObjectID(userRequest.reqUserId.toString());
+    userReq.message = userRequest.message;
+    const currGame = await getGameById(id.toString()); // Here id refers to the gameId
+    if (userReq.reqUserId.toString() === currGame.ownerID.toString()) throw `Error: You cannot request your own games.`
+    if (currGame.requests){
+        for (let req of currGame.requests){ // for each request in the requests array 
+            if (req.reqUserId.toString() === userReq.reqUserId.toString()) throw `Error: You've already requested this game.`
+        }
+    }
+    updated = true;
+  }
 
   if (!updated) throw "must update a field";
 
-  // update game
   const gamesCollection = await games();
+
+  /* Define the update operations. Conditional push into the requests array if a request for this game was made: */
+  const updateOps = {$set: patchedGame};
+  if (updateFeilds.userRequest !== undefined){
+    updateOps.$push = {requests: userReq};
+  }
+
+  /* Update the games collection */
   const updateInfo = await gamesCollection.findOneAndUpdate(
     { _id: id },
-    { $set: patchedGame },
+    updateOps,
     { returnDocument: "after" }
   );
   if (!updateInfo) throw `could not patch game with id: ${id}.`;
@@ -180,9 +206,82 @@ export const updateGame = async (id, updateFeilds) => {
   return updateInfo;
 };
 
-export const sortByClosestLocation = async (userLoc) => {
+/* Returns the list of active requests for games owned by user.
+    If no requests, returns empty list */
+export const getRequestedGames = async (userId) =>{
+    let gameList;
+    try{
+        /* getGamesByOwnerId throws error if there are no games */
+        gameList = await getGamesByOwnerID(userId)
+    } catch (e){
+        return [];
+    }
+
+    //Iterate through list of games owned by user
+    let reqList = [];
+    for (let game of gameList){ 
+        let reqArray = game.requests
+        if (reqArray) {
+            reqList = reqList.concat(reqArray);   //Push active requests into reqList
+        }
+    }
+    return reqList;
+};
+
+/* Marks game object as borrowed by borrower. Removes request from gameObj*/
+export const handleRequest = async (gameId, reqUserId, approval) =>{
+    gameId = validateObjectID(gameId);
+    reqUserId = validateObjectID(reqUserId);
+    const gamesCollection = await games();
+    let borrowed = false;
+    /* If borrowed, enter the requesting userId. If not, leave field false */
+    if (approval) borrowed = reqUserId;
+
+    const updatedGame = await gamesCollection.findOneAndUpdate(
+        {_id: gameId},
+        {$set: {'borrowed': borrowed}, $pull: {requests: {'reqUserId': reqUserId}}},
+        {returnDocument: 'after'}
+    );
+    if (!updatedGame) throw `Error: Could not remove request successfully.`;
+    return updatedGame;
+};
+
+/* Adds a request object {reqUserId, msg} to the identified game*/
+export const requestGame = async (gameId, reqUserId, message) => {
+    gameId = validateObjectID(gameId);
+    reqUserId = validateObjectID(reqUserId);
+
+    let updateObj = {
+        userRequest: {
+            reqUserId: reqUserId,   // User making Request
+            message: message
+        }
+    };
+
+    const updatedGame = await updateGame(gameId.toString(), updateObj);
+    if (!updatedGame) throw `Error: Could not successfully request game.`
+    return updatedGame;
+};
+
+/* Returns the request object in the game from the requesting user */
+export const returnRequest = async (gameId, reqUserId) => {
+    gameId = validateObjectID(gameId);
+    reqUserId = validateObjectID(reqUserId);
+    const gamesCollection = await games();
+
+    const reqBody = await gamesCollection.findOne(
+        {_id: gameId, 'requests.reqUserId': reqUserId},
+        {projection: {'requests.$': 1}}
+    );
+
+    if (!reqBody) throw `Error: Could not return request successfully.`;
+    return reqBody;
+};
+
+export const sortByClosestLocation = async (userLoc, userId) => {
   userLoc = validateGeoJson(userLoc);
   let gameList = await getAllGames();
+  gameList = gameList.filter((game) => game.ownerID.toString() !== userId);
   gameList.sort((a,b) => turf.distance(a.location.geometry, userLoc, {units: 'miles'}) - turf.distance(b.location.geometry, userLoc, {units: 'miles'}));
   return gameList;
 }
