@@ -5,7 +5,7 @@
 
 <article class="signin-container">
     <h2>Login Form</h2>
-    <form action="/signin" method="POST">
+    <form action="/signin" method="POST" id="signin-form">
         <div>
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" value="{{signin.username}}">
@@ -15,7 +15,7 @@
             <input type="password" id="password" name="password">
         </div>
         <div>
-            <button type="submit">Login</button>
+            <button type="submit" id="submitButton">Login</button>
         </div>
         {{#if hasErrors}}
         <ul class="error-list">
@@ -26,7 +26,8 @@
             {{/each}}
         </ul>
         {{/if}}
-        <p>Don't have an account? <a href="/signup">Sign up here</a>.</p>
+        <ul class="error-list" id="client-error-list" hidden></ul>
     </form>
-
+    <p>Don't have an account? <a href="/signup">Sign up here</a>.</p>
+    <script src="/public/js/signin.js" type="module"></script>
 </article>
