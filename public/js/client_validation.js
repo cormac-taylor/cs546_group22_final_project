@@ -24,7 +24,8 @@ export const validateName = (name) => {
 
   const res = validateStrOfLen(name, MIN_NAME_LEN, MAX_NAME_LEN);
   //TODO: This error is going to float up to the user
-  if (!NAME_REGEX.test(res)) throw `must be of length ${MIN_NAME_LEN} to ${MAX_NAME_LEN}.`;
+  if (!NAME_REGEX.test(res))
+    throw `must be of length ${MIN_NAME_LEN} to ${MAX_NAME_LEN}.`;
   return res;
 };
 
@@ -43,8 +44,10 @@ export const validateUsername = (username) => {
 };
 
 export const validateEmail = (email) => {
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const res = validateString(email).toLowerCase();
-  if (!validator.isEmail(res)) throw "must be an email address!";
+  if (!EMAIL_REGEX.test(res)) throw "must be an email address!";
   return res;
 };
 
@@ -60,7 +63,7 @@ export const validatePassword = (password) => {
 
   // temp till testing done
   const res = password.trim();
-  if (!res) throw "no empty"
-  
+  if (!res) throw "must not be empty! (ANY PASSWORD FOR TESTING)";
+
   return res;
 };

@@ -12,7 +12,8 @@ let usernameInput = document.getElementById("username");
 let emailInput = document.getElementById("email");
 let passwordInput = document.getElementById("password");
 let confirmPasswordInput = document.getElementById("confirmPassword");
-let errorList = document.getElementById("client-error-list");
+let clientErrorList = document.getElementById("client-error-list");
+let serverErrorList = document.getElementById("server-error-list");
 
 if (signUpForm) {
   signUpForm.addEventListener("submit", (event) => {
@@ -73,16 +74,18 @@ if (signUpForm) {
     if (errors.length > 0) {
       event.preventDefault();
 
-      errorList.innerHTML = "";
+      clientErrorList.innerHTML = "";
       for (let e of errors) {
         let li = document.createElement("li");
         li.innerHTML = e;
-        errorList.appendChild(li);
+        clientErrorList.appendChild(li);
       }
-      errorList.hidden = false;
+      clientErrorList.hidden = false;
+      serverErrorList.hidden = true;
     } else {
-        errorList.innerHTML = "";
-        errorList.hidden = true;
+        clientErrorList.innerHTML = "";
+        clientErrorList.hidden = true;
+        serverErrorList.hidden = false;
     }
   });
 }
