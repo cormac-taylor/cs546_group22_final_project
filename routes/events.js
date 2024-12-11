@@ -1,7 +1,8 @@
 import { Router } from "express";
 const router = Router();
 import * as validation from "../utilities/validation.js";
-import { addEvent } from "../data/events.js";
+import { addEvent, findAllEvents } from "../data/events.js";
+
 
 // Main page for people to see events
 router.route("/").get(async (req, res) => {
@@ -20,6 +21,10 @@ router.route("/createEvent").get(async (req, res) => {
     // Anyone can see this so no check for cookies
     //console.log("let me see events")
     try {
+        if (!req.session.user){
+            return res.status(401).send('You must be logged in to view this page.')
+        }
+        let ownerID = req.session.user.userId
         res.render("createEvent", { pageTitle: "Create Event" })
         
     } catch (e) {
@@ -29,6 +34,10 @@ router.route("/createEvent").get(async (req, res) => {
     .post(async (req, res) => {
         const createEventFormInfo = req.body
         let errors = []
+        if (!req.session.user){
+            return res.status(401).send('You must be logged in to view this page.')
+        }
+        let ownerID = req.session.user.userId
         try{
             createEventFormInfo.username = validation.validateUsername(createEventFormInfo.username)
         }
@@ -55,27 +64,61 @@ router.route("/createEvent").get(async (req, res) => {
         catch(e){
             errors.push(`Description ${e}`)
         }
-        let result = await addEvent(createEventFormInfo.username, createEventFormInfo.email, createEventFormInfo.location, createEventFormInfo.description)
-        return result
-        
+        let result = await addEvent(ownerID, createEventFormInfo.username, createEventFormInfo.email, createEventFormInfo.location, createEventFormInfo.description)
+        // const eventId = result.insertedId
+        // I can do something like the above but idk how to make the button delete that specific item
+        res.render("events", { pageTitle: "Local Events" })
     });
 
 router.route("/updateEvent").get(async (req, res) => {
     try {
-        res.render("updateEvent", { pageTitle: "Update Event" })
+        if (!req.session.user){
+            return res.status(401).send('You must be logged in to view this page.')
+        }
+        let ownerID = req.session.user.userId
+        const eventList = await findAllEvents(ownerID)
+        res.render("updateEvent", { pageTitle: "Update Event", userId: req.session.user.userId, events: eventList})
+        
         
     } catch (e) {
         res.status(500).json({ error: e })
     }
 })
-    .patch
+    .patch(async (req, res) => {
+        
+        const { eventName, email, location, description } = req.body
+        const updateFields = {}
+        if (eventName){
+            updateFields.eventName = eventName
+        }
+        if (email){
+            updateFields.email = email
+        }
+        if (location){
+            updateFields.location = location
+        }
+        if (description){
+            updateFields.description = description
+        }
+        
+    })
 
 router.route("/deleteEvent").get(async (req, res) => {
     try {
-        res.render("deleteEvent", { pageTitle: "Delete Event" })
+        if (!req.session.user){
+            return res.status(401).send('You must be logged in to view this page.')
+        }
+        let ownerID = req.session.user.userId
+        const eventList = await findAllEvents(ownerID)
+        // console.log(eventList)
+        res.render("deleteEvent", { pageTitle: "Delete Event", userId: req.session.user.userId, events: eventList})
         
     } catch (e) {
         res.status(500).json({ error: e })
     }
 })
+
+    .delete(async (req, res) => {
+
+    })
 export default router;
