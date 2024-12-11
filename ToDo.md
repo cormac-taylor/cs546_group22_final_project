@@ -1,10 +1,35 @@
 # To Do
 
-### Cormac
-##### Key
-- Route : description
+### Core Features In Progress
+    - Landing Page: needs content
+    - Sign In User Page:  location data
+    - User Profile: ?
+    - Manage Games Page: ?
+    - Game Profile/Reviews: ?
+    - Discover Games: ?
+    - Find Games: ?
+    - Community blog/Events page: ?
+    - User Profile/Reviews: ?
+
+### Core Features Done
+    - Log In User Page
+
+### Missing Requirements
+    - AJAX form with error handling (client-side as well as server side)
+    - if your application is vulnerable to XSS
+    - full seed file
+
+### Requirements to test
+    - input validation, site-wide
+    - invalid HTML
+    - bugs/usability issues
+    - server crash
+    - confirm user can only leave one review and delete review
+
+### Cormac's Notes
+##### Key | Route : description
 - \* : make prettier if have time
-- \* validate html
+
 - \* make header dynamic or at least make the routing more intuitive (the button are bit odd to use in their current placment)
 - / : home should have info; either add new content or make see events or community the home 
 - / : rename "Create Account" to  "Sign Up" for consistancy
