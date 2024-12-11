@@ -5,7 +5,7 @@
 
 <article class="signup-container">
     <h1>Sign Up</h1>
-    <form action="/signup" method="POST" class="signup-form">
+    <form action="/signup" method="POST" class="signup-form" id="signup-form">
         <div class="form-group">
             <label for="firstName">First Name:</label>
             <input type="text" id="firstName" name="firstName" value="{{signup.firstName}}">
@@ -32,9 +32,13 @@
         </div>
 
         <div class="form-group">
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword">
+        </div>
+
+        <div class="form-group">
             <button type="submit" class="submit-button">Sign Up</button>
         </div>
-    </form>
     {{#if hasErrors}}
     <ul class="error-list">
         {{#each errors}}
@@ -44,4 +48,8 @@
         {{/each}}
     </ul>
     {{/if}}
+    <ul class="error-list" id="client-error-list" hidden></ul>
+    </form>
+    <p>Already have an account? <a href="/signin">Sign in here</a>.</p>
+    <script src="/public/js/signup.js" type="module"></script>
 </article>
