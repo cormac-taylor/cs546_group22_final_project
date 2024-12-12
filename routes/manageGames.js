@@ -3,6 +3,7 @@ const router = Router();
 import * as validation from "../utilities/validation.js";
 import * as gamesapi from "../data/gamesAPI.js"
 import * as games from "../data/games.js"
+import * as users from "../data/users.js"
 
 // main page for managing a user's games
 router.route("/").get(async (req, res) => {
@@ -22,7 +23,7 @@ router.route("/").get(async (req, res) => {
             res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
         }
     } catch (e) {
-        res.status(500).json({ error: e });
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
 });
 
@@ -34,7 +35,7 @@ router.route("/addGame").get(async (req,res) => {
             signedin = true;
         }
     } catch (e) {
-        res.status(500).json({ error: e });
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
     try {
         if (signedin) {
@@ -44,7 +45,7 @@ router.route("/addGame").get(async (req,res) => {
             res.render("Boken Boards", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
         }
     } catch (e) {
-        res.status(500).json({ error: e });
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
 });
 
@@ -53,20 +54,26 @@ router.route("/addGame1").post(async (req,res) => {
     try {
         if(!req.body.gid) {throw 'Error: Game not selected'}
     } catch (e) {
-        res.status(404).json({ error: e });
+        return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: e});
     }
     try {
         res.render("addGame", { pageTitle: "Add Game", gid: req.body.gid, title: req.body.title, status1: " Selected! Please enter the condition of the game." });
     } catch (e) {
-        res.status(500).json({ error: e });
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
 });
 
 router.route("/addGame2").post(async (req,res) => {
+    let user;
+    try{
+        user = await users.getUserById(req.session.user.userId)
+    } catch(e) {
+        return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});
+    }
     try {
         if(!req.body.gid) {throw 'Error: Game not selected'}
     } catch (e) {
-        res.status(404).json({ error: e });
+        return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: e});
     }
     try {
         let game = await gamesapi.searchGamesByID(parseInt(req.body.gid));
@@ -77,36 +84,10 @@ router.route("/addGame2").post(async (req,res) => {
         else {
             gimg = "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
         }
-        await games.createGame(req.session.user.userId, {
-            type: "Feature",
-            geometry: {
-                type: "Point",
-                coordinates: [-74.033697, 40.717753]
-            },
-            properties: {
-                Address: {
-                    StreetAddress: "30 Montgomery St",
-                    City: "Jersey City",
-                    State: "NJ",
-                    StateName: "New Jersey",
-                    Zip: "07302",
-                    County: "Hudson",
-                    Country: "US",
-                    CountryFullName: "United States",
-                    SPLC: null
-                },
-                Region: 4,
-                POITypeID: 104,
-                PersistentPOIID: -1,
-                SiteID: -1,
-                ResultType: 10,
-                ShortString: "Bank, 30 Montgomery St, Jersey City, NJ, US, Hudson 07302",
-                TimeZone: "GMT-5:00 EST"
-            }
-        }, req.body.title, game.description._text, req.body.cond, gimg) 
+        await games.createGame(req.session.user.userId, user.location.geometry, req.body.title, game.description._text, req.body.cond, gimg) 
         res.render("addGame", { pageTitle: "Add Game", status2: "Game added! Add another or navigate back using the button below." });
     } catch (e) {
-        res.status(500).json({ error: e });
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
 });
 
@@ -114,15 +95,21 @@ router.route("/addGame2").post(async (req,res) => {
 router.route("/apigamesearch").post(async (req,res) => {
     try {
         if(!req.body.searchByTitle.trim()) {throw 'You must enter a search term!'}
+        validation.validateString(req.body.searchByTitle);
     } catch (e) {
         // return res.status(400).render('error', {er: "400", c: "error", message: e})
-        return res.status(400).json({error: e});
+        return res.status(400).render("error", {pageTitle: "Error", errorStatus: "400", errorMsg: e});
     }
     try {
         let g = await gamesapi.searchGamesByTitle(req.body.searchByTitle);
-        res.render("apisearchresults", { pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle });
+        if(req.body.searchDiscover){
+            res.render("apisearchresults", { pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle, searchDiscover: true });
+        }
+        else{
+            res.render("apisearchresults", { pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle, postGame: true });
+        }
     } catch (e) {
-        res.status(500).json({ error: e });
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
 });
 
@@ -133,7 +120,7 @@ router.route("/removeGame").get(async (req,res) => {
             signedin = true;
         }
     } catch (e) {
-        res.status(500).json({ error: e });
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
     try {
         if (signedin) {
@@ -144,7 +131,7 @@ router.route("/removeGame").get(async (req,res) => {
             res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
         }
     } catch (e) {
-        res.status(500).json({ error: e });
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
 });
 
@@ -154,15 +141,17 @@ router.route("/removeGame").post(async (req,res) => {
         let g = await games.getGamesByOwnerID(req.session.user.userId);
         res.render("removeGame", { pageTitle: "Remove Game", games: g });
     } catch (e) {
-        res.status(500).json({ error: e });
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
 });
 
 router.route("/modifyGame").post(async (req,res) => {
     try {
+        validation.validateObjectID(req.body.gid)
+        if(!req.body.gid) {throw 'Game must be selected'}
         res.render("updateGamePosting", { pageTitle: "Modify Posting", gid: req.body.gid });
     } catch (e) {
-        res.status(500).json({ error: e });
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
 });
 

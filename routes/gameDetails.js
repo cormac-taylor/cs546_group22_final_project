@@ -18,9 +18,47 @@ router.route("/").get(async (req, res) => {
         res.status(500).json({ error: e });
     }
     try {
-        let g = await games.sortByClosestLocation(user.location.geometry, req.session.user.userId);
+        let g;
+        g = await games.sortByClosestLocation(user.location.geometry, req.session.user.userId);
         if(req.session.user){
-            res.render("gamesHome", {pageTitle: "Discover", games: g, user: req.session.user.username});
+            if(g.length === 0) {
+                res.render("gamesHome", {pageTitle: "Discover", games: g, user: req.session.user.username, gamesFound: false});
+            }
+            else{
+                res.render("gamesHome", {pageTitle: "Discover", games: g, user: req.session.user.username, gamesFound: true});
+            }
+        }
+        else{
+            res.render("signin", { pageTitle: "BokenBoards", status: "Sign in to see more!" })
+        }
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
+router.route("/").post(async (req, res) => {
+    if(!req.session.user){
+        res.render("signin", { pageTitle: "BokenBoards" });
+        return;
+    }
+    let user;
+    try {
+        user = await userData.getUserById(req.session.user.userId);
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+    try {
+        let g;
+        g = await games.sortByClosestLocation(user.location.geometry, req.session.user.userId);
+        if(req.body.searchTerm) {
+            g = g.filter((game) => game.gameTitle === req.body.searchTerm);
+        }
+        if(req.session.user){
+            if(g.length === 0) {
+                res.render("gamesHome", {pageTitle: "Discover", games: g, user: req.session.user.username, gamesFound: false});
+            }
+            else{
+                res.render("gamesHome", {pageTitle: "Discover", games: g, user: req.session.user.username, gamesFound: true});
+            }
         }
         else{
             res.render("signin", { pageTitle: "BokenBoards", status: "Sign in to see more!" })
