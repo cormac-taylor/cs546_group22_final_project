@@ -11,9 +11,9 @@ app.use(
         secret: 'Install Crypto for Better Safety lol',
         saveUninitialized: false,
         resave: false,
-        cookie: {maxAge: 300000}
     })
 );
+
 // Verify the user is logged in before they attempt to access the dashboard route
 app.use('/dashboard', (req, res, next) => {
     if (!req.session.user){
