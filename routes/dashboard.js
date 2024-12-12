@@ -3,6 +3,7 @@ import {usersData, locationData, gamesData} from '../data/index.js';
 import {utils} from '../utilities/utilityIndex.js'
 import * as validation from "../utilities/validation.js"
 import { games } from '../config/mongoCollections.js';
+import xss from "xss"
 
 const router = Router();
 
@@ -10,8 +11,8 @@ router
 // TODO: Handle user going to /dashboard without /'username'
     .route('/')
     .get(async (req, res) => {
-    if (req.session.user){
-        return res.redirect(`/dashboard/${req.session.user.username}`);
+    if (xss(req.session.user)){
+        return res.redirect(`/dashboard/${xss(req.session.user.username)}`);
     } else {
         return res.redirect('/signin');
     }
@@ -20,13 +21,13 @@ router
 router
     .route('/viewrequest')
     .post(async (req, res) =>{
-        if (!req.session.user){
+        if (!xss(req.session.user)){
             return res.status(401).send('You must be logged in to view this page.')
         }
         try{
-            let userId = req.session.user.userId;
-            let reqId = validation.validateObjectID(req.body.reqUserId);
-            let gameId = validation.validateObjectID(req.body.reqGame);
+            let userId = xss(req.session.user.userId);
+            let reqId = validation.validateObjectID(xss(req.body.reqUserId));
+            let gameId = validation.validateObjectID(xss(req.body.reqGame));
             let reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
             let reqMsg = reqObj.message;
             let currUser = await usersData.getUserById(userId);
@@ -48,16 +49,16 @@ router
 router
     .route('/viewrequest/approve')
     .post(async (req, res) =>{
-        if (!req.session.user){
+        if (!xss(req.session.user)){
             return res.status(401).send('You must be logged in to view this page.')
         }
         try{
-            let userId = req.session.user.userId;
-            let reqId = validation.validateObjectID(req.body.reqUserId);
-            let gameId = validation.validateObjectID(req.body.reqGame);
+            let userId = xss(req.session.user.userId);
+            let reqId = validation.validateObjectID(xss(req.body.reqUserId));
+            let gameId = validation.validateObjectID(xss(req.body.reqGame));
             let reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
             let reqMsg = reqObj.message;
-            let approveStr = validation.validateString(req.body.approve);
+            let approveStr = validation.validateString(xss(req.body.approve));
             let approveVal = ((str) => str === 'true')(approveStr);
             let currUser = await usersData.getUserById(userId);
             let reqUser = await usersData.getUserById(reqId.toString());
@@ -87,10 +88,10 @@ router
     .route('/:username')
     .get(async (req, res) => {
         try{
-            if (!req.session.user){
+            if (!xss(req.session.user)){
                 return res.status(401).send('You must be logged in to view this page.')
             }
-            let userId = req.session.user.userId;
+            let userId = xss(req.session.user.userId);
             let currUser = await usersData.getUserById(userId);
             let currGames = await gamesData.getGamesByOwnerID(userId);
             let hasGames = false;
@@ -115,7 +116,7 @@ router
                 }
             }
             // Ensure session name matches URL
-            if (req.params.username !== req.session.user.username){
+            if (xss(req.params.username) !== xss(req.session.user.username)){
                 return res.status(403).json({error: e});
             }
             res.render('dashboard', {
@@ -137,14 +138,14 @@ router
     .route('/:username/update')
     .get(async (req, res) => {
         try{
-            if (!req.session.user){
+            if (!xss(req.session.user)){
                 return res.status(401).send('You must be logged in to view this page.')
             }
-            let userId = req.session.user.userId;
+            let userId = xss(req.session.user.userId);
             let currUser = await usersData.getUserById(userId);
 
             // Ensure session name matches URL
-            if (req.params.username !== req.session.user.username){
+            if (xss(req.params.username) !== xss(req.session.user.username)){
                 return res.status(403).json({error: e});
             }
             res.render('updateProfile', {
@@ -162,14 +163,14 @@ router
         let currUser;
         try{
             // Ensure there is a valid session for user
-            if (!req.session.user){
+            if (!xss(req.session.user)){
                 return res.status(401).send('You must be logged in to view this page.')
             }
-            userId = req.session.user.userId;
+            userId = xss(req.session.user.userId);
             currUser = await usersData.getUserById(userId);
 
             // Ensure session name matches URL
-            if (req.params.username !== req.session.user.username){
+            if (xss(req.params.username) !== xss(req.session.user.username)){
                 return res.status(403).json({error: e});
             }
         } catch(e){
@@ -180,39 +181,39 @@ router
         /* Verification of user updated data */
         const updatedData = req.body;
         let errors = [];
-        if (updatedData.firstName){
+        if (xss(updatedData.firstName)){
             try{
-                updatedData.firstName = validation.validateName(updatedData.firstName)
+                updatedData.firstName = validation.validateName(xss(updatedData.firstName))
             }catch (e) {
                 errors.push(`First name ${e}`);
             }
         }
-        if (updatedData.lastName){
+        if (xss(updatedData.lastName)){
             try{
-                updatedData.lastName = validation.validateName(updatedData.lastName)
+                updatedData.lastName = validation.validateName(xss(updatedData.lastName))
             }catch (e) {
                 errors.push(`Last name ${e}`);
             }
         }
-        if (updatedData.username){
+        if (xss(updatedData.username)){
             try{
-                updatedData.username = validation.validateUsername(updatedData.username)
+                updatedData.username = validation.validateUsername(xss(updatedData.username))
             }catch (e) {
                 errors.push(`Username ${e}`);
             }
         }
-        if (updatedData.email){
+        if (xss(updatedData.email)){
             try{
-                updatedData.email = validation.validateEmail(updatedData.email);
+                updatedData.email = validation.validateEmail(xss(updatedData.email));
             }catch (e) {
                 errors.push(`Email ${e}`);
             }
         }
-        if (updatedData.password){
+        if (xss(updatedData.password)){
             try{
                 //TODO: Currently, there is no password validation (2 ints and 2 special chars should be required)
-                // updatedData.password = validation.validatePassword(updatedData.password);
-                updatedData.password = validation.validateString(updatedData.password);
+                // updatedData.password = validation.validatePassword(xss(updatedData.password));
+                updatedData.password = validation.validateString(xss(updatedData.password));
             }catch (e) {
                 errors.push(`Password ${e}`);
             }

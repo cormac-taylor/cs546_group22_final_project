@@ -3,12 +3,12 @@ const router = Router();
 import * as validation from "../utilities/validation.js";
 import * as gamesapi from "../data/gamesAPI.js"
 import * as games from "../data/games.js"
-
+import xss from "xss"
 // main page for managing a user's games
 router.route("/").get(async (req, res) => {
     let signedin = false;
     try {
-        if (req.session.user) {
+        if (xss(req.session.user)) {
             signedin = true;
         }
     } catch (e) {
@@ -16,7 +16,7 @@ router.route("/").get(async (req, res) => {
     }
     try {
         if (signedin) {
-            res.render("manageGames", { pageTitle: "Manage Games", user: req.session.user.username });
+            res.render("manageGames", { pageTitle: "Manage Games", user: xss(req.session.user.username) });
         }
         else {
             res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
@@ -30,7 +30,7 @@ router.route("/").get(async (req, res) => {
 router.route("/addGame").get(async (req,res) => {
     let signedin = false;
     try {
-        if (req.session.user) {
+        if (xss(req.session.user)) {
             signedin = true;
         }
     } catch (e) {
@@ -51,12 +51,12 @@ router.route("/addGame").get(async (req,res) => {
 // routed here after user selects a specific game from the api, continues process to add game
 router.route("/addGame1").post(async (req,res) => {
     try {
-        if(!req.body.gid) {throw 'Error: Game not selected'}
+        if(!xss(req.body.gid)) {throw 'Error: Game not selected'}
     } catch (e) {
         res.status(404).json({ error: e });
     }
     try {
-        res.render("addGame", { pageTitle: "Add Game", gid: req.body.gid, title: req.body.title, status1: " Selected! Please enter the condition of the game." });
+        res.render("addGame", { pageTitle: "Add Game", gid: xss(req.body.gid), title: xss(req.body.title), status1: " Selected! Please enter the condition of the game." });
     } catch (e) {
         res.status(500).json({ error: e });
     }
@@ -64,12 +64,12 @@ router.route("/addGame1").post(async (req,res) => {
 
 router.route("/addGame2").post(async (req,res) => {
     try {
-        if(!req.body.gid) {throw 'Error: Game not selected'}
+        if(!xss(req.body.gid)) {throw 'Error: Game not selected'}
     } catch (e) {
         res.status(404).json({ error: e });
     }
     try {
-        let game = await gamesapi.searchGamesByID(parseInt(req.body.gid));
+        let game = await gamesapi.searchGamesByID(parseInt(xss(req.body.gid)));
         let gimg;
         if (game.image){
             gimg = game.image._text;
@@ -77,7 +77,7 @@ router.route("/addGame2").post(async (req,res) => {
         else {
             gimg = "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
         }
-        await games.createGame(req.session.user.userId, {
+        await games.createGame(xss(req.session.user.userId), {
             type: "Feature",
             geometry: {
                 type: "Point",
@@ -103,7 +103,7 @@ router.route("/addGame2").post(async (req,res) => {
                 ShortString: "Bank, 30 Montgomery St, Jersey City, NJ, US, Hudson 07302",
                 TimeZone: "GMT-5:00 EST"
             }
-        }, req.body.title, game.description._text, req.body.cond, gimg) 
+        }, xss(req.body.title), game.description._text, xss(req.body.cond), gimg) 
         res.render("addGame", { pageTitle: "Add Game", status2: "Game added! Add another or navigate back using the button below." });
     } catch (e) {
         res.status(500).json({ error: e });
@@ -113,14 +113,14 @@ router.route("/addGame2").post(async (req,res) => {
 // displays all search results from api, this page allows the user to select which game they want to add
 router.route("/apigamesearch").post(async (req,res) => {
     try {
-        if(!req.body.searchByTitle.trim()) {throw 'You must enter a search term!'}
+        if(!xss(req.body.searchByTitle).trim()) {throw 'You must enter a search term!'}
     } catch (e) {
         // return res.status(400).render('error', {er: "400", c: "error", message: e})
         return res.status(400).json({error: e});
     }
     try {
-        let g = await gamesapi.searchGamesByTitle(req.body.searchByTitle);
-        res.render("apisearchresults", { pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle });
+        let g = await gamesapi.searchGamesByTitle(xss(req.body.searchByTitle));
+        res.render("apisearchresults", { pageTitle: "Search Results", games: g, searchByTitle: xss(req.body.searchByTitle) });
     } catch (e) {
         res.status(500).json({ error: e });
     }
@@ -129,7 +129,7 @@ router.route("/apigamesearch").post(async (req,res) => {
 router.route("/removeGame").get(async (req,res) => {
     let signedin = false;
     try {
-        if (req.session.user) {
+        if (xss(req.session.user)) {
             signedin = true;
         }
     } catch (e) {
@@ -137,7 +137,7 @@ router.route("/removeGame").get(async (req,res) => {
     }
     try {
         if (signedin) {
-            let g = await games.getGamesByOwnerID(req.session.user.userId)
+            let g = await games.getGamesByOwnerID(xss(req.session.user.userId))
             res.render("removeGame", { pageTitle: "Remove Game", games: g });
         }
         else {
@@ -150,8 +150,8 @@ router.route("/removeGame").get(async (req,res) => {
 
 router.route("/removeGame").post(async (req,res) => {
     try {
-        let deleted = await games.removeGameById(req.body.gameID);
-        let g = await games.getGamesByOwnerID(req.session.user.userId);
+        let deleted = await games.removeGameById(xss(req.body.gameID));
+        let g = await games.getGamesByOwnerID(xss(req.session.user.userId));
         res.render("removeGame", { pageTitle: "Remove Game", games: g });
     } catch (e) {
         res.status(500).json({ error: e });
@@ -160,7 +160,7 @@ router.route("/removeGame").post(async (req,res) => {
 
 router.route("/modifyGame").post(async (req,res) => {
     try {
-        res.render("updateGamePosting", { pageTitle: "Modify Posting", gid: req.body.gid });
+        res.render("updateGamePosting", { pageTitle: "Modify Posting", gid: xss(req.body.gid) });
     } catch (e) {
         res.status(500).json({ error: e });
     }
@@ -171,7 +171,7 @@ router.route("/modifyGameUpdate").post(async (req,res) => {
     let errors = [];
     if (updatedData.condition){
         try{
-            updatedData.condition = validation.validateCondition(updatedData.condition);
+            updatedData.condition = validation.validateCondition(xss(updatedData.condition));
         }catch (e) {
             errors.push(`Condition ${e}`);
         }
@@ -179,7 +179,7 @@ router.route("/modifyGameUpdate").post(async (req,res) => {
     // TODO: allow user enetered location
     if (updatedData.location){
         try{
-            updatedData.condition = validation.validateGeoJson(updatedData.location);
+            updatedData.condition = validation.validateGeoJson(xss(updatedData.location));
         }catch (e) {
             errors.push(`Location ${e}`);
         }
@@ -195,7 +195,7 @@ router.route("/modifyGameUpdate").post(async (req,res) => {
     }
 
     try{
-        const updatedGame = await games.updateGame(req.body.gid, updatedData);
+        const updatedGame = await games.updateGame(xss(req.body.gid), updatedData);
         res.render('updateGamePosting', {
             pageTitle: 'Update Game',
             success: true
