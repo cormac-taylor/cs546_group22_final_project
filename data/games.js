@@ -278,9 +278,10 @@ export const returnRequest = async (gameId, reqUserId) => {
     return reqBody;
 };
 
-export const sortByClosestLocation = async (userLoc, userId) => {
+export const sortByClosestLocation = async (userLoc, userId, gameList) => {
   userLoc = validateGeoJson(userLoc);
-  let gameList = await getAllGames();
+  if(!gameList) {gameList = await getAllGames()}
+  // let gameList = await getAllGames();
   gameList = gameList.filter((game) => game.ownerID.toString() !== userId);
   gameList.sort((a,b) => turf.distance(a.location.geometry, userLoc, {units: 'miles'}) - turf.distance(b.location.geometry, userLoc, {units: 'miles'}));
   return gameList;
