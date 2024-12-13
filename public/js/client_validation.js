@@ -53,17 +53,16 @@ export const validateEmail = (email) => {
 
 export const validatePassword = (password) => {
   // https://www.geeksforgeeks.org/javascript-program-to-validate-password-using-regular-expressions/
-  //   const PASSWORD_REGEX =
-  //     /^(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]+$/;
+  // const PASSWORD_REGEX =
+  //   /^(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]+$/;
 
-  //   const res = validateStrOfLen(password, MIN_PASSWORD_LEN, Infinity);
-  //   if (!PASSWORD_REGEX.test(res))
-  //     throw "not strong enough. Include a uppercase, digit, and special character.";
-  //   return res;
+  // const res = validateStrOfLen(password, MIN_PASSWORD_LEN, Infinity);
+  // if (!PASSWORD_REGEX.test(res))
+  //   throw "not strong enough. Include a uppercase, digit, and special character.";
+  // return res;
 
   // temp till testing done
   const res = password.trim();
   if (!res) throw "must not be empty! (ANY PASSWORD FOR TESTING)";
-
   return res;
 };

@@ -1,10 +1,5 @@
 import { Router } from "express";
-import {
-  usersData,
-  locationData,
-  isUniqueUsername,
-  isUniqueEmail,
-} from "../data/index.js";
+import { usersData, locationData } from "../data/index.js";
 import { utils } from "../utilities/utilityIndex.js";
 import * as validation from "../utilities/validation.js";
 import xss from "xss";
@@ -50,7 +45,9 @@ router
       errors.push(`Username ${e}`);
     }
     try {
-      userSignupData.email = validation.validateEmail(xss(userSignupData.email));
+      userSignupData.email = validation.validateEmail(
+        xss(userSignupData.email)
+      );
     } catch (e) {
       errors.push(`Email ${e}`);
     }
@@ -100,24 +97,24 @@ router
     }
   });
 
-router.route("/uniqueUsername").post(async (req, res) => {
+router.route("/unique/username").post(async (req, res) => {
   try {
     const username = validation.validateUsername(xss(req.body.username));
-    res.json({ isUniqueUsername: isUniqueUsername(username) });
+    res.json({ isUniqueUsername: await usersData.isUniqueUsername(username) });
   } catch (e) {
     //TODO: After creating an error page, present that with error instead
     res.status(500).json({ error: e });
   }
 });
 
-router.route("/uniqueEmail").post(async (req, res) => {
-    try {
-      const email = validation.validateEmail(xss(req.body.email));
-      res.json({ isUniqueEmail: isUniqueEmail(username) });
-    } catch (e) {
-      //TODO: After creating an error page, present that with error instead
-      res.status(500).json({ error: e });
-    }
-  });
-  
+router.route("/unique/email").post(async (req, res) => {
+  try {
+    const email = validation.validateEmail(xss(req.body.email));
+    res.json({ isUniqueEmail: usersData.isUniqueEmail(username) });
+  } catch (e) {
+    //TODO: After creating an error page, present that with error instead
+    res.status(500).json({ error: e });
+  }
+});
+
 export default router;
