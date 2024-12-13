@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
-import {getConnection} from '../config/mongoConnection.js'
-import {users, gameReviews, userReviews} from "../config/mongoCollections.js";
+import { getConnection } from "../config/mongoConnection.js";
+import { users, gameReviews, userReviews } from "../config/mongoCollections.js";
 import {
   validateObjectID,
   validateEmail,
@@ -17,7 +17,7 @@ import {
   updateUsername,
 } from "./helpers/updatePostingUserName.js";
 import { removeUserReviewsByReviewedId } from "./userReviews.js";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 import session from "express-session";
 
 export const createUser = async (
@@ -72,6 +72,28 @@ export const createUser = async (
   return await getUserById(newId);
 };
 
+export const isUniqueUsername = async (username) => {
+  username = validateUsername(username);
+  
+  const usersCollection = await users();
+  const accountWithUsername = await usersCollection.findOne({
+    username: username,
+  });
+
+  return !accountWithUsername
+};
+
+export const isUniqueEmail = async (email) => {
+  email = validateEmail(email);
+  
+  const usersCollection = await users();
+  const accountWithEmail = await usersCollection.findOne({
+    email: email,
+  });
+  
+  return !accountWithEmail
+};
+
 export const removeUser = async (id) => {
   id = validateObjectID(id);
 
@@ -123,79 +145,85 @@ export const getUserById = async (id) => {
  * @param username The user entered username.
  */
 export const getUserByUsername = async (username) => {
-    username = validateUsername(username);
-  
-    const usersCollection = await users();
-    const user = await usersCollection.findOne({
-      username: username,
-    });
-    if (!user) throw `no user with username: ${username}.`;
-    
-    return user;
+  username = validateUsername(username);
+
+  const usersCollection = await users();
+  const user = await usersCollection.findOne({
+    username: username,
+  });
+  if (!user) throw `no user with username: ${username}.`;
+
+  return user;
 };
 
 /* Patch format update. Takes an updateObj and only updates what's provided */
 // TODO: Add the functions to update the affected User Reviews and Game Reviews
 export const updateUser = async (id, updateObj) => {
-    if (Object.keys(updateObj).length === 0) throw `Error: No fields to update.`;
+  if (Object.keys(updateObj).length === 0) throw `Error: No fields to update.`;
 
-    // Retrieve collection pointers
-    const usersCollection = await users();
-    const userReviewsCollection = await userReviews();
-    const gameReviewsCollection = await gameReviews();
+  // Retrieve collection pointers
+  const usersCollection = await users();
+  const userReviewsCollection = await userReviews();
+  const gameReviewsCollection = await gameReviews();
 
-    //Build the update objects
-    const updatedUser = {};
-    const updatedGameReview = {};
-    const updatedUserReview = {};
-    if (updateObj.firstName) {
-        updatedUser.firstName = validateName(updateObj.firstName);
-        updatedGameReview.firstName = validateName(updateObj.firstName);
-        updatedUserReview.firstName = validateName(updateObj.firstName);
-    }
-    if (updateObj.lastName){
-        updatedUser.lastName = validateName(updateObj.lastName);
-        updatedGameReview.lastName = validateName(updateObj.lastName);
-        updatedUserReview.lastName = validateName(updateObj.lastName);
-    }
-    if (updateObj.username){
-        const existingUsername = await usersCollection.findOne({username: updateObj.username});
-        if (existingUsername) throw `Error: Sorry, username: ${updateObj.username} is taken.`;
-        updatedUser.username = validateUsername(updateObj.username);
-        updatedGameReview.username = validateUsername(updateObj.username);
-        updatedUserReview.username = validateUsername(updateObj.username);
-    };
-    if (updateObj.email){
-        const existingEmail = await usersCollection.findOne({email: updateObj.email});
-        if (existingEmail) throw `Error: Sorry, email address: ${updateObj.email} is taken.`;
-        updatedUser.email = validateEmail(updateObj.email);
-    };
-    if (updateObj.password){
-        const saltRounds = 10;
-        const hash = await bcrypt.hash(updateObj.password, saltRounds);
-        updatedUser.hashedPassword = hash;
-    };
-    if (updateObj.location) updatedUser.location = validateGeoJson(updateObj.location);
+  //Build the update objects
+  const updatedUser = {};
+  const updatedGameReview = {};
+  const updatedUserReview = {};
+  if (updateObj.firstName) {
+    updatedUser.firstName = validateName(updateObj.firstName);
+    updatedGameReview.firstName = validateName(updateObj.firstName);
+    updatedUserReview.firstName = validateName(updateObj.firstName);
+  }
+  if (updateObj.lastName) {
+    updatedUser.lastName = validateName(updateObj.lastName);
+    updatedGameReview.lastName = validateName(updateObj.lastName);
+    updatedUserReview.lastName = validateName(updateObj.lastName);
+  }
+  if (updateObj.username) {
+    const existingUsername = await usersCollection.findOne({
+      username: updateObj.username,
+    });
+    if (existingUsername)
+      throw `Error: Sorry, username: ${updateObj.username} is taken.`;
+    updatedUser.username = validateUsername(updateObj.username);
+    updatedGameReview.username = validateUsername(updateObj.username);
+    updatedUserReview.username = validateUsername(updateObj.username);
+  }
+  if (updateObj.email) {
+    const existingEmail = await usersCollection.findOne({
+      email: updateObj.email,
+    });
+    if (existingEmail)
+      throw `Error: Sorry, email address: ${updateObj.email} is taken.`;
+    updatedUser.email = validateEmail(updateObj.email);
+  }
+  if (updateObj.password) {
+    const saltRounds = 10;
+    const hash = await bcrypt.hash(updateObj.password, saltRounds);
+    updatedUser.hashedPassword = hash;
+  }
+  if (updateObj.location)
+    updatedUser.location = validateGeoJson(updateObj.location);
 
-    // Finds the user to update
-    const patchedUser = await usersCollection.findOneAndUpdate(
-        {_id: new ObjectId(id)},
-        {$set: {...updatedUser}},
-        {returnDocument: 'after'}
+  // Finds the user to update
+  const patchedUser = await usersCollection.findOneAndUpdate(
+    { _id: new ObjectId(id) },
+    { $set: { ...updatedUser } },
+    { returnDocument: "after" }
+  );
+  // If there were requested changes to any *name fields
+  // push them to all user and game reviews
+  if (updatedUserReview) {
+    const patchedUserReview = await userReviewsCollection.updateMany(
+      { postingUser: new ObjectId(id) },
+      { $set: { ...updatedUserReview } }
     );
-    // If there were requested changes to any *name fields
-    // push them to all user and game reviews
-    if (updatedUserReview){
-        const patchedUserReview = await userReviewsCollection.updateMany(
-            {postingUser: new ObjectId(id)},
-            {$set: {...updatedUserReview}}
-        );
-        const patchedGameReview = await gameReviewsCollection.updateMany(
-            {postingUser: new ObjectId(id)},
-            {$set: {...updatedUserReview}}
-        );
-    };
-    if (!patchedUser) throw `Error: Could not update database successfully`;
-    return patchedUser; 
-    
+    const patchedGameReview = await gameReviewsCollection.updateMany(
+      { postingUser: new ObjectId(id) },
+      { $set: { ...updatedUserReview } }
+    );
+  }
+  if (!patchedUser) throw `Error: Could not update database successfully`;
+  return patchedUser;
 };
