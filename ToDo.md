@@ -24,15 +24,15 @@
 
 ### Missing Requirements
     - AJAX form with error handling (client-side as well as server side)
-    - XSS
     - Full seed file
 
 ### Requirements to test
     - input validation, site-wide
-    - invalid HTML
+    - valid HTML
     - bugs/usability issues
     - server crash
     - confirm user can only leave one review and delete review
+    - XSS
 
 ### Cormac's Notes
     Route                           Description
