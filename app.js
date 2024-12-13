@@ -17,7 +17,7 @@ app.use(
 
 // Verify the user is logged in before they attempt to access the dashboard route
 app.use('/dashboard', (req, res, next) => {
-    if (!xss(req.session.user)){
+    if (!req.session.user){
         return res.redirect('/signin');
     } else {
         next();
@@ -27,7 +27,7 @@ app.use('/dashboard', (req, res, next) => {
 // If the user is already logged in and they go to the signin page:
 // reroute to the dashboard
 app.use('/signin', (req, res, next) =>{
-    if (xss(req.session.user)){
+    if (req.session.user){
         return res.redirect('/dashboard');
     } else {
         next();

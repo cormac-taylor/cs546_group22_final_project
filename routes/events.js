@@ -34,10 +34,10 @@ router
   .post(async (req, res) => {
     const createEventFormInfo = body;
     let errors = [];
-    if (!xss(req.session.user)) {
+    if (!req.session.user) {
       return res.status(401).send("You must be logged in to view this page.");
     }
-    let ownerID = xss(req.session.user.userId);
+    let ownerID = req.session.user.userId;
     try {
       createEventFormInfo.username = validation.validateUsername(
         xss(createEventFormInfo.username)
@@ -83,14 +83,14 @@ router
   .route("/updateEvent")
   .get(async (req, res) => {
     try {
-      if (!xss(req.session.user)) {
+      if (!req.session.user) {
         return res.status(401).send("You must be logged in to view this page.");
       }
-      let ownerID = xss(req.session.user.userId);
+      let ownerID = req.session.user.userId;
       const eventList = await findAllEvents(ownerID);
       res.render("updateEvent", {
         pageTitle: "Update Event",
-        userId: xss(req.session.user.userId),
+        userId: req.session.user.userId,
         events: eventList,
       });
     } catch (e) {
@@ -100,7 +100,7 @@ router
   .patch(async (req, res) => {
     const eventName = xss(req.body.eventName);
     const email = xss(req.body.email);
-    const location = xss(req.body.location);
+    const location = req.body.location;
     const description = xss(req.body.description);
 
     const updateFields = {};
@@ -122,15 +122,15 @@ router
   .route("/deleteEvent")
   .get(async (req, res) => {
     try {
-      if (!xss(req.session.user)) {
+      if (!req.session.user) {
         return res.status(401).send("You must be logged in to view this page.");
       }
-      let ownerID = xss(req.session.user.userId);
+      let ownerID = req.session.user.userId;
       const eventList = await findAllEvents(ownerID);
       // console.log(eventList)
       res.render("deleteEvent", {
         pageTitle: "Delete Event",
-        userId: xss(req.session.user.userId),
+        userId: req.session.user.userId,
         events: eventList,
       });
     } catch (e) {

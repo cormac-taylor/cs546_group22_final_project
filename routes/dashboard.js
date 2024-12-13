@@ -11,8 +11,8 @@ router
 // TODO: Handle user going to /dashboard without /'username'
     .route('/')
     .get(async (req, res) => {
-    if (xss(req.session.user)){
-        return res.redirect(`/dashboard/${xss(req.session.user.username)}`);
+    if (req.session.user){
+        return res.redirect(`/dashboard/${req.session.user.username}`);
     } else {
         return res.redirect('/signin');
     }
@@ -21,11 +21,11 @@ router
 router
     .route('/viewrequest')
     .post(async (req, res) =>{
-        if (!xss(req.session.user)){
+        if (!req.session.user){
             return res.status(401).send('You must be logged in to view this page.')
         }
         try{
-            let userId = xss(req.session.user.userId);
+            let userId = req.session.user.userId;
             let reqId = validation.validateObjectID(xss(req.body.reqUserId));
             let gameId = validation.validateObjectID(xss(req.body.reqGame));
             let reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
@@ -49,11 +49,11 @@ router
 router
     .route('/viewrequest/approve')
     .post(async (req, res) =>{
-        if (!xss(req.session.user)){
+        if (!req.session.user){
             return res.status(401).send('You must be logged in to view this page.')
         }
         try{
-            let userId = xss(req.session.user.userId);
+            let userId = req.session.user.userId;
             let reqId = validation.validateObjectID(xss(req.body.reqUserId));
             let gameId = validation.validateObjectID(xss(req.body.reqGame));
             let reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
@@ -88,10 +88,10 @@ router
     .route('/:username')
     .get(async (req, res) => {
         try{
-            if (!xss(req.session.user)){
+            if (!req.session.user){
                 return res.status(401).send('You must be logged in to view this page.')
             }
-            let userId = xss(req.session.user.userId);
+            let userId = req.session.user.userId;
             let currUser = await usersData.getUserById(userId);
             let currGames = await gamesData.getGamesByOwnerID(userId);
             let hasGames = false;
@@ -116,7 +116,7 @@ router
                 }
             }
             // Ensure session name matches URL
-            if (xss(req.params.username) !== xss(req.session.user.username)){
+            if (xss(req.params.username) !== req.session.user.username){
                 return res.status(403).json({error: e});
             }
             res.render('dashboard', {
@@ -138,14 +138,14 @@ router
     .route('/:username/update')
     .get(async (req, res) => {
         try{
-            if (!xss(req.session.user)){
+            if (!req.session.user){
                 return res.status(401).send('You must be logged in to view this page.')
             }
-            let userId = xss(req.session.user.userId);
+            let userId = req.session.user.userId;
             let currUser = await usersData.getUserById(userId);
 
             // Ensure session name matches URL
-            if (xss(req.params.username) !== xss(req.session.user.username)){
+            if (xss(req.params.username) !== req.session.user.username){
                 return res.status(403).json({error: e});
             }
             res.render('updateProfile', {
@@ -163,14 +163,14 @@ router
         let currUser;
         try{
             // Ensure there is a valid session for user
-            if (!xss(req.session.user)){
+            if (!req.session.user){
                 return res.status(401).send('You must be logged in to view this page.')
             }
-            userId = xss(req.session.user.userId);
+            userId = req.session.user.userId;
             currUser = await usersData.getUserById(userId);
 
             // Ensure session name matches URL
-            if (xss(req.params.username) !== xss(req.session.user.username)){
+            if (xss(req.params.username) !== req.session.user.username){
                 return res.status(403).json({error: e});
             }
         } catch(e){

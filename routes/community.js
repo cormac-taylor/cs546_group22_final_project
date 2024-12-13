@@ -59,7 +59,7 @@ router.route("/writeUserReview/:userId").get(async (req, res) => {
     }
     try{
         user = await users.getUserById(xss(req.params.userId));
-        res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", reviewed: user.username, uid: req.params.userId});
+        res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", reviewed: user.username, uid: xss(req.params.userId)});
     } catch (e) {
         return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "User not found"});
     }
@@ -90,22 +90,22 @@ router.route("/writeUserReview/:userId").post(async (req, res) => {
         return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "User not found"});
     }
     try{
-        validation.validateTitle(req.body.reviewingTitle)
+        validation.validateTitle(xss(req.body.reviewingTitle))
     } catch(e) {
         return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Title must be between 1 and 64 characters long"});
     }
     try{
-        validation.validateBody(req.body.reviewingBody)
+        validation.validateBody(xss(req.body.reviewingBody))
     } catch(e) {
         return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Body must be between 16 and 2048 characters long"});
     }
     try{
-        validation.validateRating(parseInt(req.body.reviewingRating))
+        validation.validateRating(parseInt(xss(req.body.reviewingRating)))
     } catch(e) {
         return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Rating must be an integer between 1 and 5"});
     }
     try{
-        review = await userReviews.createUserReview(xss(req.session.user.userId), xss(req.params.userId), xss(req.body.reviewingTitle), xss(req.body.reviewingBody), parseInt(xss(req.body.reviewingRating)));
+        review = await userReviews.createUserReview(req.session.user.userId, xss(req.params.userId), xss(req.body.reviewingTitle), xss(req.body.reviewingBody), parseInt(xss(req.body.reviewingRating)));
     } catch (e) {
         return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Could not Create Review"});
     }
@@ -135,7 +135,7 @@ router.route("/writeGameReview/:gameId").get(async (req, res) => {
     }
     try{
         game = await games.getGameById(xss(req.params.gameId));
-        res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", reviewed: game.gameTitle, gid: req.params.gameId});
+        res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", reviewed: game.gameTitle, gid: xss(req.params.gameId)});
     } catch (e) {
         return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "Game not found"});
     }
@@ -171,18 +171,18 @@ router.route("/writeGameReview/:gameId").post(async (req, res) => {
         return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Title must be between 1 and 64 characters long"});
     }
     try{
-        validation.validateBody(req.body.reviewingBody)
+        validation.validateBody(xss(req.body.reviewingBody))
     } catch(e) {
         return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Body must be between 16 and 2048 characters long"});
     }
     try{
-        validation.validateRating(parseInt(req.body.reviewingRating))
+        validation.validateRating(parseInt(xss(req.body.reviewingRating)))
     } catch(e) {
         return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Rating must be an integer between 1 and 5"});
     }
     try{
-        review = await gameReviews.createGameReview(xss(req.session.user.userId), xss(req.params.gameId), xss(req.body.reviewingTitle), xss(req.body.reviewingBody), parseInt(xss(req.body.reviewingRating)));
-        res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", gid: req.params.gameId, backToGame: true});
+        review = await gameReviews.createGameReview(req.session.user.userId, xss(req.params.gameId), xss(req.body.reviewingTitle), xss(req.body.reviewingBody), parseInt(xss(req.body.reviewingRating)));
+        res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", gid: xss(req.params.gameId), backToGame: true});
     } catch (e) {
         return res.render("error", {signedIn: signedIn, pageTitle: "Error", errorStatus: "500", errorMsg: "Could not Create Review"});
     }

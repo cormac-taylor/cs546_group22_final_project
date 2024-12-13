@@ -8,25 +8,25 @@ import * as gameReviewData from "../data/gameReviews.js"
 import xss from "xss"
 
 router.route("/").get(async (req, res) => {
-    if(!xss(req.session.user)){
+    if(!req.session.user){
         return res.render("signin", { pageTitle: "Sign In", status: "Please Sign In Before Managing Games!"})
     }
 
     let user;
     try {
-        user = await userData.getUserById(xss(req.session.user.userId));
+        user = await userData.getUserById(req.session.user.userId);
     } catch (e) {
         return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: e});
     }
     try {
         let g;
-        g = await games.sortByClosestLocation(user.location.geometry, xss(req.session.user.userId));
+        g = await games.sortByClosestLocation(user.location.geometry, req.session.user.userId);
         if(req.session.user){
             if(g.length === 0) {
-                res.render("gamesHome", {signedIn: true, pageTitle: "Discover", games: g, user: xss(req.session.user.username), gamesFound: false});
+                res.render("gamesHome", {signedIn: true, pageTitle: "Discover", games: g, user: req.session.user.username, gamesFound: false});
             }
             else{
-                res.render("gamesHome", {signedIn: true, pageTitle: "Discover", games: g, user: xss(req.session.user.username), gamesFound: true});
+                res.render("gamesHome", {signedIn: true, pageTitle: "Discover", games: g, user: req.session.user.username, gamesFound: true});
             }
         }
         else{
@@ -37,13 +37,13 @@ router.route("/").get(async (req, res) => {
     }
 });
 router.route("/").post(async (req, res) => {
-    if(!xss(req.session.user)){
+    if(!req.session.user){
         res.render("signin", { pageTitle: "BokenBoards" });
         return;
     }
     let user;
     try {
-        user = await userData.getUserById(xss(req.session.user.userId));
+        user = await userData.getUserById(req.session.user.userId);
     } catch (e) {
         return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: e});
     }
@@ -52,20 +52,20 @@ router.route("/").post(async (req, res) => {
         if(!xss(req.body.sortBy) || (xss(req.body.sortBy) !== "closest" && xss(req.body.sortBy) !== "rating")) {throw 'Please select a Sorting Metric'}
 
         if(xss(req.body.sortBy) === "closest"){
-            g = await games.sortByClosestLocation(user.location.geometry, xss(req.session.user.userId));
+            g = await games.sortByClosestLocation(user.location.geometry, req.session.user.userId);
         }
         if(xss(req.body.sortBy) === "rating") {
-            g = await games.sortByRating(user.location.geometry, xss(req.session.user.userId));
+            g = await games.sortByRating(user.location.geometry, req.session.user.userId);
         }
         if(xss(req.body.searchTerm)) {
             g = g.filter((game) => game.gameTitle === xss(req.body.searchTerm));
         }
-        if(xss(req.session.user)){
+        if(req.session.user){
             if(g.length === 0) {
-                res.render("gamesHome", {signedIn: true, pageTitle: "Discover", games: g, user: xss(req.session.user.username), gamesFound: false});
+                res.render("gamesHome", {signedIn: true, pageTitle: "Discover", games: g, user: req.session.user.username, gamesFound: false});
             }
             else{
-                res.render("gamesHome", {signedIn: true, pageTitle: "Discover", games: g, user: xss(req.session.user.username), gamesFound: true});
+                res.render("gamesHome", {signedIn: true, pageTitle: "Discover", games: g, user: req.session.user.username, gamesFound: true});
             }
         }
         else{
@@ -76,7 +76,7 @@ router.route("/").post(async (req, res) => {
     }
 });
 router.route("/gameDetails").post(async (req, res) => {
-    if(xss(req.session.user)){
+    if(req.session.user){
         let game;
         let reviewList ;
         try {

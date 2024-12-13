@@ -10,7 +10,7 @@ import * as users from "../data/users.js"
 router.route("/").get(async (req, res) => {
     let signedin = false;
     try {
-        if (xss(req.session.user)) {
+        if (req.session.user) {
             signedin = true;
         }
     } catch (e) {
@@ -18,7 +18,7 @@ router.route("/").get(async (req, res) => {
     }
     try {
         if (signedin) {
-            res.render("manageGames", { signedin: true, pageTitle: "Manage Games", user: xss(req.session.user.username) });
+            res.render("manageGames", { signedin: true, pageTitle: "Manage Games", user: req.session.user.username });
         }
         else {
             res.render("signin", { pageTitle: "Sign In", status: "Please Sign In Before Managing Games!"})
@@ -32,7 +32,7 @@ router.route("/").get(async (req, res) => {
 router.route("/addGame").get(async (req,res) => {
     let signedin = false;
     try {
-        if (xss(req.session.user)) {
+        if (req.session.user) {
             signedin = true;
         }
     } catch (e) {
@@ -52,7 +52,7 @@ router.route("/addGame").get(async (req,res) => {
 
 // routed here after user selects a specific game from the api, continues process to add game
 router.route("/addGame1").post(async (req,res) => {
-    if(xss(req.session.user)){
+    if(req.session.user){
         try {
             if(!xss(req.body.gid)) {throw 'Error: Game not selected'}
         } catch (e) {
@@ -70,10 +70,10 @@ router.route("/addGame1").post(async (req,res) => {
 });
 
 router.route("/addGame2").post(async (req,res) => {
-    if(xss(req.session.user)){
+    if(req.session.user){
         let user;
         try{
-            user = await users.getUserById(xss(req.session.user.userId))
+            user = await users.getUserById(req.session.user.userId)
         } catch(e) {
             return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});
         }
@@ -91,7 +91,7 @@ router.route("/addGame2").post(async (req,res) => {
             else {
                 gimg = "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
             }
-            await games.createGame(xss(req.session.user.userId), user.location.geometry, xss(req.body.title), game.description._text, xss(req.body.cond), gimg) 
+            await games.createGame(req.session.user.userId, user.location.geometry, xss(req.body.title), game.description._text, xss(req.body.cond), gimg) 
             res.render("addGame", { signedIn: true, pageTitle: "Add Game", status2: "Game added! Add another or navigate back using the button below." });
         } catch (e) {
             return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
@@ -104,7 +104,7 @@ router.route("/addGame2").post(async (req,res) => {
 
 // displays all search results from api, this page allows the user to select which game they want to add
 router.route("/apigamesearch").post(async (req,res) => {
-    if(xss(req.session.user)){
+    if(req.session.user){
         try {
             if(!xss(req.body.searchByTitle.trim())) {throw 'You must enter a search term!'}
             validation.validateString(xss(req.body.searchByTitle));
@@ -133,7 +133,7 @@ router.route("/apigamesearch").post(async (req,res) => {
 router.route("/removeGame").get(async (req,res) => {
     let signedin = false;
     try {
-        if (xss(req.session.user)) {
+        if (req.session.user) {
             signedin = true;
         }
     } catch (e) {
@@ -141,7 +141,7 @@ router.route("/removeGame").get(async (req,res) => {
     }
     try {
         if (signedin) {
-            let g = await games.getGamesByOwnerID(xss(req.session.user.userId))
+            let g = await games.getGamesByOwnerID(req.session.user.userId)
             res.render("removeGame", { pageTitle: "Remove Game", games: g });
         }
         else {
@@ -153,10 +153,10 @@ router.route("/removeGame").get(async (req,res) => {
 });
 
 router.route("/removeGame").post(async (req,res) => {
-    if(xss(req.session.user)){
+    if(req.session.user){
         try {
             let deleted = await games.removeGameById(xss(req.body.gameID));
-            let g = await games.getGamesByOwnerID(xss(req.session.user.userId));
+            let g = await games.getGamesByOwnerID(req.session.user.userId);
             res.render("removeGame", { signedIn: true, pageTitle: "Remove Game", games: g });
         } catch (e) {
             return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
@@ -168,7 +168,7 @@ router.route("/removeGame").post(async (req,res) => {
 });
 
 router.route("/modifyGame").post(async (req,res) => {
-    if(xss(req.session.user)){    
+    if(req.session.user){    
         try {
             validation.validateObjectID(xss(req.body.gid))
             if(!xss(req.body.gid)) {throw 'Game must be selected'}
@@ -183,9 +183,9 @@ router.route("/modifyGame").post(async (req,res) => {
 });
 
 router.route("/modifyGameUpdate").post(async (req,res) => {
-    if(xss(req.session.user)){
+    if(req.session.user){
 
-        const updatedData = xss(req.body);
+        const updatedData = req.body;
         let errors = [];
         if (updatedData.condition){
             try{

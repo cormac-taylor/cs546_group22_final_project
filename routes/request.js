@@ -9,11 +9,11 @@ const router = Router();
 router
     .route('/')
     .post(async (req, res) =>{
-        if (!xss(req.session.user)){
+        if (!req.session.user){
             return res.redirect('/signin');
         }
         try{
-            let currUserId = xss(req.session.user.userId);
+            let currUserId = req.session.user.userId;
             let currGameId = xss(req.body.gid)
             let currUser = await usersData.getUserById(currUserId);
             let currGame = await gamesData.getGameById(currGameId);
@@ -32,13 +32,13 @@ router
     router
     .route('/confirm')
     .post(async (req, res) =>{
-        if (!xss(req.session.user)){
+        if (!req.session.user){
             return res.redirect('/signin');
         }
         let errors = [];
         let currGame;
         try{
-            let userId = xss(req.session.user.userId);
+            let userId = req.session.user.userId;
             let gameId = xss(req.body.gid)
             let reqMsg = xss(req.body.msgbody)
             let currUser = await usersData.getUserById(userId);
