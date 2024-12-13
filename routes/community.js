@@ -14,7 +14,14 @@ router.route("/").get(async (req, res) => {
 router.route("/:userId").get(async (req, res) => {
     let reviewList;
     let user;
-
+    let signedIn;
+    if(req.session.user) {
+        signedIn = true
+    }
+    else {
+        res.render("signin", { pageTitle: "BokenBoards" });
+        return;
+    }
     try{
         validation.validateObjectID(req.params.userId);
     } catch (e) {
@@ -27,7 +34,7 @@ router.route("/:userId").get(async (req, res) => {
     }
     try{
         reviewList = await userReviews.getUserReviewsByReviewedUserId(req.params.userId)
-        res.render("viewUserReviews", {pageTitle: "User Reviews", name: user.username, avgRating: user.averageRating, uid: user._id, reviews: reviewList});
+        res.render("viewUserReviews", {signedIn: signedIn, pageTitle: "User Reviews", name: user.username, avgRating: user.averageRating, uid: user._id, reviews: reviewList});
     } catch (e) {
         return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "User not found"});
     }
@@ -35,6 +42,14 @@ router.route("/:userId").get(async (req, res) => {
 
 router.route("/writeUserReview/:userId").get(async (req, res) => {
     let user;
+    let signedIn;
+    if(req.session.user) {
+        signedIn = true
+    }
+    else {
+        res.render("signin", { pageTitle: "BokenBoards" });
+        return;
+    }
 
     try{
         validation.validateObjectID(req.params.userId);
@@ -43,7 +58,7 @@ router.route("/writeUserReview/:userId").get(async (req, res) => {
     }
     try{
         user = await users.getUserById(req.params.userId);
-        res.render("writeReview", {pageTitle: "Write a Review", reviewed: user.username, uid: req.params.userId});
+        res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", reviewed: user.username, uid: req.params.userId});
     } catch (e) {
         return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "User not found"});
     }
@@ -54,6 +69,14 @@ router.route("/writeUserReview/:userId").post(async (req, res) => {
     let user;
     let review;
     let reviewList;
+    let signedIn;
+    if(req.session.user) {
+        signedIn = true
+    }
+    else {
+        res.render("signin", { pageTitle: "BokenBoards" });
+        return;
+    }
 
     try{
         validation.validateObjectID(req.params.userId);
@@ -87,7 +110,7 @@ router.route("/writeUserReview/:userId").post(async (req, res) => {
     }
     try{
         reviewList = await userReviews.getUserReviewsByReviewedUserId(req.params.userId)
-        res.render("viewUserReviews", {pageTitle: "User Reviews", name: user.username, avgRating: user.averageRating, uid: user._id, reviews: reviewList});
+        res.render("viewUserReviews", {signedIn: signedIn, pageTitle: "User Reviews", name: user.username, avgRating: user.averageRating, uid: user._id, reviews: reviewList});
     } catch (e) {
         return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "User not found"});
     }
@@ -95,6 +118,14 @@ router.route("/writeUserReview/:userId").post(async (req, res) => {
 
 router.route("/writeGameReview/:gameId").get(async (req, res) => {
     let game;
+    let signedIn;
+    if(req.session.user) {
+        signedIn = true
+    }
+    else {
+        res.render("signin", { pageTitle: "BokenBoards" });
+        return;
+    }
 
     try{
         validation.validateObjectID(req.params.gameId);
@@ -103,7 +134,7 @@ router.route("/writeGameReview/:gameId").get(async (req, res) => {
     }
     try{
         game = await games.getGameById(req.params.gameId);
-        res.render("writeReview", {pageTitle: "Write a Review", reviewed: game.gameTitle, gid: req.params.gameId});
+        res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", reviewed: game.gameTitle, gid: req.params.gameId});
     } catch (e) {
         return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "Game not found"});
     }
@@ -114,6 +145,14 @@ router.route("/writeGameReview/:gameId").post(async (req, res) => {
     let game;
     let review;
     let reviewList;
+    let signedIn;
+    if(req.session.user) {
+        signedIn = true
+    }
+    else {
+        res.render("signin", { pageTitle: "BokenBoards" });
+        return;
+    }
 
     try{
         validation.validateObjectID(req.params.gameId);
@@ -142,9 +181,9 @@ router.route("/writeGameReview/:gameId").post(async (req, res) => {
     }
     try{
         review = await gameReviews.createGameReview(req.session.user.userId, req.params.gameId, req.body.reviewingTitle, req.body.reviewingBody, parseInt(req.body.reviewingRating));
-        res.render("writeReview", {gid: req.params.gameId, backToGame: true});
+        res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", gid: req.params.gameId, backToGame: true});
     } catch (e) {
-        return res.render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Could not Create Review"});
+        return res.render("error", {signedIn: signedIn, pageTitle: "Error", errorStatus: "500", errorMsg: "Could not Create Review"});
     }
 });
 

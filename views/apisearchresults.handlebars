@@ -20,6 +20,7 @@
                 <form method="POST" action="/games">
                     <input type="hidden" name="gid" value={{ _attributes.objectid }}>
                     <input type="hidden" name="searchTerm" value="{{name._text}}">
+                    <input type="hidden" name="sortBy" value="{{../sortBy}}">
                     <button type="submit">Search for this Game</button>
                 </form>
                 {{/if}}
