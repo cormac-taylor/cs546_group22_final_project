@@ -71,27 +71,15 @@ if (signUpForm) {
   });
 
   emailInput.addEventListener("input", (event) => {
-    const errors = [];
     const email = emailInput.value;
 
     try {
       emailInput.value = validateEmail(email);
     } catch (e) {
-      emailInput.value = email.trim();
-      errors.push(`Email ${e}`);
+      return;
     }
 
     clientErrorList.innerHTML = "";
-    if (errors.length > 0) {
-      for (let e of errors) {
-        let li = document.createElement("li");
-        li.innerHTML = e;
-        clientErrorList.appendChild(li);
-      }
-      clientErrorList.hidden = false;
-      if (serverErrorList) serverErrorList.hidden = true;
-      return;
-    }
 
     let requestConfig = {
       url: "/signup/unique/email",
