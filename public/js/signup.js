@@ -183,9 +183,11 @@ if (signUpForm) {
     if (!invalidPassword) {
       try {
         confirmPasswordInput.value = validatePassword(confirmPassword);
+        if (passwordInput.value !== confirmPasswordInput.value)
+          throw "Confirm Password doesn't match.";
       } catch (e) {
         confirmPasswordInput.value = confirmPassword.trim();
-        errors.push(`Confirm Password doesn't match.`);
+        errors.push("Confirm Password doesn't match.");
       }
     }
 
