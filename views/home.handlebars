@@ -11,4 +11,8 @@ signed in --}}
 <button onclick="window.location.href= '/signup'">Create Account</button>
 <button onclick="window.location.href= '/events'">See Events Near Me</button>
 
+{{#if errorMessage}}
+  <div class="error-message">{{errorMessage}}</div>
+{{/if}}
+
 {{!-- add a banner; add images --}}

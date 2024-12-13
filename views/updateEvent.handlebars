@@ -1,6 +1,6 @@
 <h1>Update Events Here</h1>
 {{!-- Use a drop down menu for the user to pick what they would like to change --}}
-{{!-- <ul id="eventsOwnedByUser">
+<ul id="eventsOwnedByUser">
     {{#if events}}
     <ul>
       {{#each events}}
@@ -19,9 +19,10 @@
   {{else}}
     <p>You have no events.</p>
   {{/if}}
-</ul> --}}
+  <a href="/events">Events Homepage</a>
+</ul>
 
-<form id="updateEventForm">
+{{!-- <form id="updateEventForm">
   <label for="eventName">Event Name:</label>
   <input type="text" id="eventName" name="eventName" placeholder="Enter new event name">
     <h2></h2>
@@ -35,4 +36,4 @@
   <textarea id="description" name="description" placeholder="Enter new description"></textarea>
 <h2></h2>
   <button type="submit">Update Event</button>
-</form>
+</form> --}}

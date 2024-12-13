@@ -13,7 +13,6 @@ app.use(
         resave: false,
     })
 );
-
 // Verify the user is logged in before they attempt to access the dashboard route
 app.use('/dashboard', (req, res, next) => {
     if (!req.session.user){
