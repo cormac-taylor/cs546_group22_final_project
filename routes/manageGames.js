@@ -91,7 +91,7 @@ router.route("/addGame2").post(async (req,res) => {
                 gimg = "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
             }
             await games.createGame(req.session.user.userId, user.location.geometry, req.body.title, game.description._text, req.body.cond, gimg) 
-            res.render("addGame", { signedIn: signedIn, pageTitle: "Add Game", status2: "Game added! Add another or navigate back using the button below." });
+            res.render("addGame", { signedIn: true, pageTitle: "Add Game", status2: "Game added! Add another or navigate back using the button below." });
         } catch (e) {
             return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
@@ -109,7 +109,7 @@ router.route("/apigamesearch").post(async (req,res) => {
             validation.validateString(req.body.searchByTitle);
         } catch (e) {
             // return res.status(400).render('error', {er: "400", c: "error", message: e})
-            return res.status(400).render("error", {signedIn: signedIn, pageTitle: "Error", errorStatus: "400", errorMsg: e});
+            return res.status(400).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "400", errorMsg: e});
         }
         try {
             let g = await gamesapi.searchGamesByTitle(req.body.searchByTitle);
@@ -121,7 +121,7 @@ router.route("/apigamesearch").post(async (req,res) => {
                 res.render("apisearchresults", { signedIn: true, pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle, postGame: true });
             }
         } catch (e) {
-            return res.status(500).render("error", {signedIn: signedIn, pageTitle: "Error", errorStatus: "500", errorMsg: e});
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
     }
     else {
