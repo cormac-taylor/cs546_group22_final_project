@@ -56,8 +56,15 @@ if (signUpForm) {
           } else {
             ajaxErrors.push("Could not check username availability.");
           }
-          // TO DO: append the ajaxErrors to the clientErrorList list
-          // $("#clientErrorList").appendChild;
+
+          if (ajaxErrors.length > 0) {
+            for (let e of ajaxErrors) {
+              let li = $("<li></li>").text(e);
+              $("#client-error-list").append(li);
+            }
+          }
+          $("#client-error-list").show();
+          $("#server-error-list").hide();
         });
       })(jQuery);
     }
