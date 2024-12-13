@@ -3,18 +3,18 @@ import {usersData, locationData, gamesData} from '../data/index.js';
 import {utils} from '../utilities/utilityIndex.js'
 import * as validation from "../utilities/validation.js"
 import { games } from '../config/mongoCollections.js';
-
+import xss from "xss"
 const router = Router();
 
 router
     .route('/')
     .post(async (req, res) =>{
-        if (!req.session.user){
+        if (!xss(req.session.user)){
             return res.redirect('/signin');
         }
         try{
-            let currUserId = req.session.user.userId;
-            let currGameId = req.body.gid
+            let currUserId = xss(req.session.user.userId);
+            let currGameId = xss(req.body.gid)
             let currUser = await usersData.getUserById(currUserId);
             let currGame = await gamesData.getGameById(currGameId);
             res.render('makeRequest', {
@@ -32,15 +32,15 @@ router
     router
     .route('/confirm')
     .post(async (req, res) =>{
-        if (!req.session.user){
+        if (!xss(req.session.user)){
             return res.redirect('/signin');
         }
         let errors = [];
         let currGame;
         try{
-            let userId = req.session.user.userId;
-            let gameId = req.body.gid
-            let reqMsg = req.body.msgbody
+            let userId = xss(req.session.user.userId);
+            let gameId = xss(req.body.gid)
+            let reqMsg = xss(req.body.msgbody)
             let currUser = await usersData.getUserById(userId);
             currGame = await gamesData.getGameById(gameId);
             let updatedGame = await gamesData.requestGame(gameId, userId, reqMsg);

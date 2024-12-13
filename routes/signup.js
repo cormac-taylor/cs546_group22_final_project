@@ -2,6 +2,7 @@ import {Router} from 'express';
 import {usersData, locationData} from '../data/index.js';
 import {utils} from '../utilities/utilityIndex.js'
 import * as validation from "../utilities/validation.js"
+import xss from 'xss';
 
 const router = Router();
 
@@ -24,29 +25,29 @@ router
         let errors = [];
         let plainTextPass;
         try{
-            userSignupData.firstName = validation.validateName(userSignupData.firstName)
+            userSignupData.firstName = validation.validateName(xss(userSignupData.firstName))
         }catch (e) {
             errors.push(`First name ${e}`);
         }
         try{
-            userSignupData.lastName = validation.validateName(userSignupData.lastName)
+            userSignupData.lastName = validation.validateName(xss(userSignupData.lastName))
         }catch (e) {
             errors.push(`Last name ${e}`);
         }
         try{
-            userSignupData.username = validation.validateUsername(userSignupData.username)
+            userSignupData.username = validation.validateUsername(xss(userSignupData.username))
         }catch (e) {
             errors.push(`Username ${e}`);
         }
         try{
-            userSignupData.email = validation.validateEmail(userSignupData.email)
+            userSignupData.email = validation.validateEmail(xss(userSignupData.email))
         }catch (e) {
             errors.push(`Email ${e}`);
         }
         try{
             //TODO: Currently, there is no password validation (2 ints and 2 special chars should be required)
             // userSignupData.password = validation.validatePassword(userSignupData.password)
-            userSignupData.password = validation.validateString(userSignupData.password)
+            userSignupData.password = validation.validateString(xss(userSignupData.password))
         }catch (e) {
             errors.push(`Password ${e}`);
         }
