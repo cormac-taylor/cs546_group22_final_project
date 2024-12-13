@@ -187,17 +187,17 @@ router.route("/modifyGameUpdate").post(async (req,res) => {
 
         const updatedData = req.body;
         let errors = [];
-        if (updatedData.condition){
+        if (xss(updatedData.condition)){
             try{
-                updatedData.condition = validation.validateCondition(updatedData.condition);
+                updatedData.condition = validation.validateCondition(xss(updatedData.condition));
             }catch (e) {
                 errors.push(`Condition ${e}`);
             }
         }
         // TODO: allow user enetered location
-        if (updatedData.location){
+        if (xss(updatedData.location)){
             try{
-                updatedData.condition = validation.validateGeoJson(updatedData.location);
+                updatedData.condition = validation.validateGeoJson(xss(updatedData.location));
             }catch (e) {
                 errors.push(`Location ${e}`);
             }

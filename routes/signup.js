@@ -1,84 +1,123 @@
-import {Router} from 'express';
-import {usersData, locationData} from '../data/index.js';
-import {utils} from '../utilities/utilityIndex.js'
-import * as validation from "../utilities/validation.js"
-import xss from 'xss';
-
+import { Router } from "express";
+import {
+  usersData,
+  locationData,
+  isUniqueUsername,
+  isUniqueEmail,
+} from "../data/index.js";
+import { utils } from "../utilities/utilityIndex.js";
+import * as validation from "../utilities/validation.js";
+import xss from "xss";
 const router = Router();
 
 //  If user is signed in, app.js routes to the main logged in page
 router
-    .route('/')
-    .get(async (req, res) => {
-        try{
-            res.render('signup', {
-                pageTitle: 'Sign Up'
-            });
-        } catch(e){
-            //TODO: After creating an error page, present that with error instead
-            res.status(500).json({error: e});
-        }
-    })
-    .post(async (req, res) => {
-        /* User signup verification */
-        const userSignupData = req.body;
-        let errors = [];
-        let plainTextPass;
-        try{
-            userSignupData.firstName = validation.validateName(xss(userSignupData.firstName))
-        }catch (e) {
-            errors.push(`First name ${e}`);
-        }
-        try{
-            userSignupData.lastName = validation.validateName(xss(userSignupData.lastName))
-        }catch (e) {
-            errors.push(`Last name ${e}`);
-        }
-        try{
-            userSignupData.username = validation.validateUsername(xss(userSignupData.username))
-        }catch (e) {
-            errors.push(`Username ${e}`);
-        }
-        try{
-            userSignupData.email = validation.validateEmail(xss(userSignupData.email))
-        }catch (e) {
-            errors.push(`Email ${e}`);
-        }
-        try{
-            //TODO: Currently, there is no password validation (2 ints and 2 special chars should be required)
-            // userSignupData.password = validation.validatePassword(userSignupData.password)
-            userSignupData.password = validation.validateString(xss(userSignupData.password))
-        }catch (e) {
-            errors.push(`Password ${e}`);
-        }
-        /* Error Display*/
-        if (errors.length > 0){
-            res.render('signup', {
-                pageTitle: 'Sign Up',
-                errors: errors,
-                hasErrors: true,
-                signup: userSignupData
-            });
-            return;
-        }
+  .route("/")
+  .get(async (req, res) => {
+    try {
+      res.render("signup", {
+        pageTitle: "Sign Up",
+      });
+    } catch (e) {
+      //TODO: After creating an error page, present that with error instead
+      res.status(500).json({ error: e });
+    }
+  })
+  .post(async (req, res) => {
+    /* User signup verification */
+    const userSignupData = req.body;
+    let errors = [];
+    let plainTextPass;
+    try {
+      userSignupData.firstName = validation.validateName(
+        xss(userSignupData.firstName)
+      );
+    } catch (e) {
+      errors.push(`First name ${e}`);
+    }
+    try {
+      userSignupData.lastName = validation.validateName(
+        xss(userSignupData.lastName)
+      );
+    } catch (e) {
+      errors.push(`Last name ${e}`);
+    }
+    try {
+      userSignupData.username = validation.validateUsername(
+        xss(userSignupData.username)
+      );
+    } catch (e) {
+      errors.push(`Username ${e}`);
+    }
+    try {
+      userSignupData.email = validation.validateEmail(xss(userSignupData.email));
+    } catch (e) {
+      errors.push(`Email ${e}`);
+    }
+    try {
+      //TODO: Currently, there is no password validation (2 ints and 2 special chars should be required)
+      // userSignupData.password = validation.validatePassword(xss(userSignupData.password))
+      userSignupData.password = validation.validateString(
+        xss(userSignupData.password)
+      );
+    } catch (e) {
+      errors.push(`Password ${e}`);
+    }
+    /* Error Display*/
+    if (errors.length > 0) {
+      res.render("signup", {
+        pageTitle: "Sign Up",
+        errors: errors,
+        hasErrors: true,
+        signup: userSignupData,
+      });
+      return;
+    }
 
-        try{
-            let location = locationData.defaultLocation();
-            const {firstName, lastName, username, email, password} = userSignupData
+    try {
+      let location = locationData.defaultLocation();
+      const { firstName, lastName, username, email, password } = userSignupData;
 
-            let hashedPassword = await utils.hashPassword(password)
-            const newUser = await usersData.createUser(firstName, lastName, username, email, hashedPassword, location);
-            //TODO: Redirect to login page with notification of successful user account creation
-            res.redirect(`/home`);
-        } catch (e) {
-            res.status(500).render('signup', {
-                pageTitle: 'Sign Up',
-                errors: [e],
-                hasErrors: true,
-                signup: userSignupData
-            });
-            return;
-        }
-    });
+      let hashedPassword = await utils.hashPassword(password);
+      const newUser = await usersData.createUser(
+        firstName,
+        lastName,
+        username,
+        email,
+        hashedPassword,
+        location
+      );
+      //TODO: Redirect to login page with notification of successful user account creation
+      res.redirect(`/signin`);
+    } catch (e) {
+      res.status(500).render("signup", {
+        pageTitle: "Sign Up",
+        errors: [e],
+        hasErrors: true,
+        signup: userSignupData,
+      });
+      return;
+    }
+  });
 
+router.route("/uniqueUsername").post(async (req, res) => {
+  try {
+    const username = validation.validateUsername(xss(req.body.username));
+    res.json({ isUniqueUsername: isUniqueUsername(username) });
+  } catch (e) {
+    //TODO: After creating an error page, present that with error instead
+    res.status(500).json({ error: e });
+  }
+});
+
+router.route("/uniqueEmail").post(async (req, res) => {
+    try {
+      const email = validation.validateEmail(xss(req.body.email));
+      res.json({ isUniqueEmail: isUniqueEmail(username) });
+    } catch (e) {
+      //TODO: After creating an error page, present that with error instead
+      res.status(500).json({ error: e });
+    }
+  });
+  
 export default router;

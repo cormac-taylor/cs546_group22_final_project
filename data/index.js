@@ -1,5 +1,7 @@
 import {
   createUser,
+  isUniqueUsername,
+  isUniqueEmail,
   removeUser,
   getAllUsers,
   getUserById,
@@ -83,6 +85,8 @@ export const userReviewsData = {
 
 export const usersData = {
   createUser,
+  isUniqueUsername,
+  isUniqueEmail,
   removeUser,
   getAllUsers,
   getUserById,
