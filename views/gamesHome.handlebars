@@ -3,12 +3,21 @@
     <button>Back to Dashboard</button>
 </form>
 
-{{!-- <form method="POST" action="/games">     
+<form method="POST" action="/manage/apigamesearch">     
     <label for="searchByTitle">Search for a game:</label>
-        <input type="text" name="searchByTitle" id="searchByTitle"/>
-        <input type="submit" />
-</form>  --}}
+    <input type="hidden" name="searchDiscover" value="true">
+    <input type="text" name="searchByTitle" id="searchByTitle"/>
+    <br>
+    <label for="sortBy">Sort By:</label>
+    <select name="sortBy" id="sortBy">
+        <option value="closest">Closest to you</option>
+        <option value="rating">Highest Rating</option>
+    </select>
+    <input id="discoverSubmitButton" type="submit" />
+</form>
 
+
+{{#if gamesFound}}
 <ol>
 {{#each games}}
     <li>
@@ -23,3 +32,8 @@
 
 {{/each}}
 </ol>
+
+{{else}}
+    <h3>Sorry there are no postings for that game.</h3>
+    <a href="/games" class="games-link">See all Game Postings</a>
+{{/if}}

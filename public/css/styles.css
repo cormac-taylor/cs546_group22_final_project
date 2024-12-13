@@ -121,7 +121,7 @@ button:hover,
     border-radius: 4px;
 }
 
-#gameIMG {
+.gameIMG {
     width: 400px;
     height: auto;
     border-radius: 4px;
