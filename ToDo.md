@@ -7,24 +7,31 @@
     --------------------------------------------------------------------------------------------------------------------------
     User Profile:               ?
     --------------------------------------------------------------------------------------------------------------------------
-    Manage Games Page:          ?
+    Manage Games Page:          Waiting Approval
     --------------------------------------------------------------------------------------------------------------------------
-    Game Profile/Reviews:       ?
+    Game Profile/Reviews:       Waiting Approval
     --------------------------------------------------------------------------------------------------------------------------
-    Discover Games:             ?
+    Discover Games:             Waiting Approval
     --------------------------------------------------------------------------------------------------------------------------
-    Find Games:                 ?
+    Find Games:                 Needs location data (I believe Marcel was cooking on the geo-spatial querying)
     --------------------------------------------------------------------------------------------------------------------------
     Community blog/Events page: ?
     --------------------------------------------------------------------------------------------------------------------------
-    User Profile/Reviews:       ?
+    User Profile/Reviews:       Waiting Approval
 
 ### Core Features Done
-    - Log In User Page                
+    - Log In User Page
+
+### Core Features Done (Should get approved by 1 or more other members)
+    - Manage Games Page
+    - Game Profile/Reviews
+    - Discover Games
+    - User Reviews
 
 ### Missing Requirements
-    - AJAX form with error handling (client-side as well as server side)
+    - AJAX form with error handling (client-side as well as server side)  -> (currently in-progress by Cormac)
     - Full seed file
+    - Returning a request  -> (currently in-progress by Vraj)
 
 ### Requirements to test
     - input validation, site-wide
