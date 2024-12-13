@@ -138,7 +138,7 @@ export const getUserByUsername = async (username) => {
 /* Patch format update. Takes an updateObj and only updates what's provided */
 // TODO: Add the functions to update the affected User Reviews and Game Reviews
 export const updateUser = async (id, updateObj) => {
-    //if (Object.keys(updateObj).length === 0) throw `Error: No fields to update.`;
+    if (Object.keys(updateObj).length === 0) throw `Error: No fields to update.`;
 
     // Retrieve collection pointers
     const usersCollection = await users();
@@ -177,9 +177,7 @@ export const updateUser = async (id, updateObj) => {
         updatedUser.hashedPassword = hash;
     };
     if (updateObj.location) updatedUser.location = validateGeoJson(updateObj.location);
-    // console.log(updateObj)
     if (updateObj.eventsCreated) updatedUser.eventsCreated = updateObj.eventsCreated;
-    //console.log(updatedUser)
     // Finds the user to update
     const patchedUser = await usersCollection.findOneAndUpdate(
         {_id: new ObjectId(id)},
