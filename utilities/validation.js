@@ -149,8 +149,12 @@ export const validatePassword = (password) => {
   const PASSWORD_REGEX =
     /^(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]+$/;
 
-  const res = validateStrOfLen(RegExp.escape(password), MIN_PASSWORD_LEN, Infinity);
+  const res = validateStrOfLen(regExEscape(password), MIN_PASSWORD_LEN, Infinity);
   if (!PASSWORD_REGEX.test(res))
-    throw "not strong enough. Include a uppercase, digit, and special character.";
+    throw "too weak. Include at least one of each: [A-Z], [0-9], and [@.#$!%*?&].";
   return res;
+};
+
+const regExEscape = (regEx) => {
+  return regEx.replace(/[-[\]{}()*+?.,\\^$|]/g, "\\$&");
 };

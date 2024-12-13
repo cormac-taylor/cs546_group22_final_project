@@ -84,7 +84,7 @@ export const isUniqueUsername = async (username) => {
 };
 
 export const isUniqueEmail = async (username) => {
-  username = validateUsername(username);
+  username = validateEmail(username);
   
   const usersCollection = await users();
   const accountWithEmail = await usersCollection.findOne({

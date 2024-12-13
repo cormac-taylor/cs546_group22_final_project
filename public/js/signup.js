@@ -36,51 +36,51 @@ if (signUpForm) {
       }
       clientErrorList.hidden = false;
       if (serverErrorList) serverErrorList.hidden = true;
-    } else {
-      let requestConfig = {
-        url: "/signup/unique/username",
-        method: "POST",
-        data: { username: username },
-      };
-
-      (function ($) {
-        $.ajax(requestConfig).then(function (responseMessage) {
-          const ajaxErrors = [];
-          if (
-            responseMessage &&
-            responseMessage.isUniqueUsername !== undefined
-          ) {
-            if (!responseMessage.isUniqueUsername) {
-              ajaxErrors.push("Username already taken.");
-            }
-          } else {
-            ajaxErrors.push("Could not check username availability.");
-          }
-
-          if (ajaxErrors.length > 0) {
-            for (let e of ajaxErrors) {
-              let li = $("<li></li>").text(e);
-              $("#client-error-list").append(li);
-            }
-          }
-          $("#client-error-list").show();
-          $("#server-error-list").hide();
-        });
-      })(jQuery);
+      return;
     }
+
+    let requestConfig = {
+      url: "/signup/unique/username",
+      method: "POST",
+      data: { username: username },
+    };
+
+    (function ($) {
+      $.ajax(requestConfig).then(function (responseMessage) {
+        const ajaxErrors = [];
+        if (responseMessage && responseMessage.isUniqueUsername !== undefined) {
+          if (!responseMessage.isUniqueUsername) {
+            ajaxErrors.push("Username already taken.");
+          }
+        } else {
+          ajaxErrors.push("Could not check username availability.");
+        }
+
+        if (ajaxErrors.length > 0) {
+          for (let e of ajaxErrors) {
+            let li = $("<li></li>").text(e);
+            $("#client-error-list").append(li);
+          }
+        }
+        $("#client-error-list").show();
+        $("#server-error-list").hide();
+      });
+    })(jQuery);
+
     return;
   });
 
-  passwordInput.addEventListener("input", (event) => {
+  emailInput.addEventListener("input", (event) => {
     const errors = [];
-    const password = passwordInput.value;
+    const email = emailInput.value;
 
     try {
-      passwordInput.value = validatePassword(password);
+      emailInput.value = validateEmail(email);
     } catch (e) {
-      passwordInput.value = password.trim();
-      errors.push(`Password ${e}`);
+      emailInput.value = email.trim();
+      errors.push(`Email ${e}`);
     }
+
     clientErrorList.innerHTML = "";
     if (errors.length > 0) {
       for (let e of errors) {
@@ -90,8 +90,61 @@ if (signUpForm) {
       }
       clientErrorList.hidden = false;
       if (serverErrorList) serverErrorList.hidden = true;
+      return;
     }
+
+    let requestConfig = {
+      url: "/signup/unique/email",
+      method: "POST",
+      data: { email: email },
+    };
+
+    (function ($) {
+      $.ajax(requestConfig).then(function (responseMessage) {
+        const ajaxErrors = [];
+        if (responseMessage && responseMessage.isUniqueEmail !== undefined) {
+          if (!responseMessage.isUniqueEmail) {
+            ajaxErrors.push("Email already taken.");
+          }
+        } else {
+          ajaxErrors.push("Could not check email availability.");
+        }
+
+        if (ajaxErrors.length > 0) {
+          for (let e of ajaxErrors) {
+            let li = $("<li></li>").text(e);
+            $("#client-error-list").append(li);
+          }
+        }
+        $("#client-error-list").show();
+        $("#server-error-list").hide();
+      });
+    })(jQuery);
+
+    return;
   });
+
+  // passwordInput.addEventListener("input", (event) => {
+  //   const errors = [];
+  //   const password = passwordInput.value;
+
+  //   try {
+  //     passwordInput.value = validatePassword(password);
+  //   } catch (e) {
+  //     passwordInput.value = password.trim();
+  //     errors.push(`Password ${e}`);
+  //   }
+  //   clientErrorList.innerHTML = "";
+  //   if (errors.length > 0) {
+  //     for (let e of errors) {
+  //       let li = document.createElement("li");
+  //       li.innerHTML = e;
+  //       clientErrorList.appendChild(li);
+  //     }
+  //     clientErrorList.hidden = false;
+  //     if (serverErrorList) serverErrorList.hidden = true;
+  //   }
+  // });
 
   signUpForm.addEventListener("submit", (event) => {
     const errors = [];

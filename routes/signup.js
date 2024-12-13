@@ -110,7 +110,7 @@ router.route("/unique/username").post(async (req, res) => {
 router.route("/unique/email").post(async (req, res) => {
   try {
     const email = validation.validateEmail(xss(req.body.email));
-    res.json({ isUniqueEmail: usersData.isUniqueEmail(username) });
+    res.json({ isUniqueEmail: await usersData.isUniqueEmail(email) });
   } catch (e) {
     //TODO: After creating an error page, present that with error instead
     res.status(500).json({ error: e });
