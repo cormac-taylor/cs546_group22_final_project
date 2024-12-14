@@ -18,7 +18,7 @@ router.route("/").get(async (req, res) => {
     }
     try {
         if (signedin) {
-            res.render("manageGames", { signedin: true, pageTitle: "Manage Games", user: req.session.user.username });
+            res.render("manageGames", { signedIn: true, pageTitle: "Manage Games", user: req.session.user.username });
         }
         else {
             res.render("signin", { pageTitle: "Sign In", status: "Please Sign In Before Managing Games!"})
