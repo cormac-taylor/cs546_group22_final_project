@@ -2,7 +2,7 @@
 {{!-- Use a drop down menu for the user to pick what they would like to change --}}
 <ul id="eventsOwnedByUser">
     {{#if events}}
-    <ul>
+    <ol>
       {{#each events}}
         <li>
           <strong>{{eventName}}</strong><br>
@@ -10,30 +10,14 @@
           Description: {{description}}<br>
           Contact: {{email}}
         </li>
-        <form action="events/updateEvent" method="POST">
-            <input type="hidden" name="eventId" value="{{eventId}}">
+        <form action="/events/updateEvent" method="POST">
+            <input type="hidden" name="eventId" value="{{_id}}">
             <button type="submit">Update</button>
         </form>
       {{/each}}
-    </ul>
+    </ol>
   {{else}}
     <p>You have no events.</p>
   {{/if}}
   <a href="/events">Events Homepage</a>
 </ul>
-
-{{!-- <form id="updateEventForm">
-  <label for="eventName">Event Name:</label>
-  <input type="text" id="eventName" name="eventName" placeholder="Enter new event name">
-    <h2></h2>
-  <label for="email">Email:</label>
-  <input type="email" id="email" name="email" placeholder="Enter new email">
-<h2></h2>
-  <label for="location">Location:</label>
-  <input type="text" id="location" name="location" placeholder="Enter new location">
-<h2></h2>
-  <label for="description">Description:</label>
-  <textarea id="description" name="description" placeholder="Enter new description"></textarea>
-<h2></h2>
-  <button type="submit">Update Event</button>
-</form> --}}

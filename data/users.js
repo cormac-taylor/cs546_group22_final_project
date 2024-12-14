@@ -47,7 +47,6 @@ export const createUser = async (
     date,
     averageRating,
     numReviews,
-    eventsCreated: []
   };
 
   const usersCollection = await users();
@@ -177,7 +176,6 @@ export const updateUser = async (id, updateObj) => {
         updatedUser.hashedPassword = hash;
     };
     if (updateObj.location) updatedUser.location = validateGeoJson(updateObj.location);
-    if (updateObj.eventsCreated) updatedUser.eventsCreated = updateObj.eventsCreated;
     // Finds the user to update
     const patchedUser = await usersCollection.findOneAndUpdate(
         {_id: new ObjectId(id)},

@@ -13,27 +13,25 @@
     document.addEventListener('DOMContentLoaded', function () {
       const calendarEl = document.getElementById('calendar');
 
-      const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-          left: 'prev,next today', 
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay',
-        },
-        events: [
-          {
-            title: 'Board Game Night',
-            start: '2024-12-15T18:00:00',
-            end: '2024-12-15T21:00:00',
-            description: 'An evening of board games!',
+      fetch('/events') // This should match your backend route
+      .then(response => response.json())
+      .then(eventsData => {
+        // Initialize FullCalendar with the fetched events
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay',
           },
-          {
-            title: 'Strategy Meeting',
-            start: '2024-12-18T14:00:00',
-            description: 'Planning the next big event.',
+          events: eventsData, // Populate the calendar with events from the backend
+          eventClick: function (info) {
+            alert(`Event: ${info.event.title}\nDescription: ${info.event.extendedProps.description}`);
           },
-        ],
-      });
+        });
+
+        calendar.render();
+      })
 
       calendar.render();
     });
