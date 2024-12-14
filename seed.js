@@ -5,7 +5,7 @@ import {
   gameReviewsData,
 } from "./data/index.js";
 import { dbConnection, closeConnection } from "./config/mongoConnection.js";
-import {utils} from './utilities/utilityIndex.js'
+import { utils } from "./utilities/utilityIndex.js";
 
 //lets drop the database each time this is run
 const db = await dbConnection();
@@ -16,6 +16,12 @@ let u2;
 let u3;
 let u4;
 let u5;
+let u6;
+let u7;
+let u8;
+let u9;
+let u10;
+
 let ur1;
 let ur2;
 let ur3;
@@ -28,9 +34,372 @@ let gr1;
 let gr2;
 let gr3;
 let gr4;
-let password = await utils.hashPassword('Password1@');
-let notpass = await utils.hashPassword('Password1@');
+let password = await utils.hashPassword("Password1@");
 
+/*
+ * Fake users
+ */
+try {
+  u1 = await usersData.createUser(
+    "John",
+    "Doe",
+    "j_doe",
+    "john.doe@example.com",
+    password,
+    {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [-122.4194, 37.7749],
+      },
+      properties: {
+        Address: {
+          StreetAddress: "1 Market St",
+          City: "San Francisco",
+          State: "CA",
+          StateName: "California",
+          Zip: "94105",
+          County: "San Francisco",
+          Country: "US",
+          CountryFullName: "United States",
+          SPLC: null,
+        },
+        Region: 6,
+        POITypeID: 104,
+        PersistentPOIID: -1,
+        SiteID: -1,
+        ResultType: 10,
+        ShortString:
+          "Office, 1 Market St, San Francisco, CA, US, San Francisco 94105",
+        TimeZone: "GMT-8:00 PST",
+      },
+    }
+  );
+
+  u2 = await usersData.createUser(
+    "Jane",
+    "Smith",
+    "j_smith",
+    "jane.smith@example.com",
+    password,
+    {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [-122.4013, 37.7952],
+      },
+      properties: {
+        Address: {
+          StreetAddress: "101 California St",
+          City: "San Francisco",
+          State: "CA",
+          StateName: "California",
+          Zip: "94111",
+          County: "San Francisco",
+          Country: "US",
+          CountryFullName: "United States",
+          SPLC: null,
+        },
+        Region: 6,
+        POITypeID: 104,
+        PersistentPOIID: -1,
+        SiteID: -1,
+        ResultType: 10,
+        ShortString:
+          "Office, 101 California St, San Francisco, CA, US, San Francisco 94111",
+        TimeZone: "GMT-8:00 PST",
+      },
+    }
+  );
+
+  u3 = await usersData.createUser(
+    "Alice",
+    "Johnson",
+    "alice_j",
+    "alice.j@example.com",
+    password,
+    {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [-122.3975, 37.7917],
+      },
+      properties: {
+        Address: {
+          StreetAddress: "555 Mission St",
+          City: "San Francisco",
+          State: "CA",
+          StateName: "California",
+          Zip: "94105",
+          County: "San Francisco",
+          Country: "US",
+          CountryFullName: "United States",
+          SPLC: null,
+        },
+        Region: 6,
+        POITypeID: 104,
+        PersistentPOIID: -1,
+        SiteID: -1,
+        ResultType: 10,
+        ShortString:
+          "Office, 555 Mission St, San Francisco, CA, US, San Francisco 94105",
+        TimeZone: "GMT-8:00 PST",
+      },
+    }
+  );
+
+  u4 = await usersData.createUser(
+    "Bob",
+    "Brown",
+    "bob_b",
+    "bob.brown@example.com",
+    password,
+    {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [-74.0337, 40.7178],
+      },
+      properties: {
+        Address: {
+          StreetAddress: "30 Montgomery St",
+          City: "Jersey City",
+          State: "NJ",
+          StateName: "New Jersey",
+          Zip: "07302",
+          County: "Hudson",
+          Country: "US",
+          CountryFullName: "United States",
+          SPLC: null,
+        },
+        Region: 4,
+        POITypeID: 104,
+        PersistentPOIID: -1,
+        SiteID: -1,
+        ResultType: 10,
+        ShortString:
+          "Office, 30 Montgomery St, Jersey City, NJ, US, Hudson 07302",
+        TimeZone: "GMT-5:00 EST",
+      },
+    }
+  );
+
+  u5 = await usersData.createUser(
+    "Charlie",
+    "Williams",
+    "charlie_w",
+    "charlie.w@example.com",
+    password,
+    {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [-74.0358, 40.7465],
+      },
+      properties: {
+        Address: {
+          StreetAddress: "1 Hudson Pl",
+          City: "Hoboken",
+          State: "NJ",
+          StateName: "New Jersey",
+          Zip: "07030",
+          County: "Hudson",
+          Country: "US",
+          CountryFullName: "United States",
+          SPLC: null,
+        },
+        Region: 4,
+        POITypeID: 104,
+        PersistentPOIID: -1,
+        SiteID: -1,
+        ResultType: 10,
+        ShortString: "Station, 1 Hudson Pl, Hoboken, NJ, US, Hudson 07030",
+        TimeZone: "GMT-5:00 EST",
+      },
+    }
+  );
+
+  u6 = await usersData.createUser(
+    "Diana",
+    "Taylor",
+    "d_taylor",
+    "diana.taylor@example.com",
+    password,
+    {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [-74.0447, 40.7114],
+      },
+      properties: {
+        Address: {
+          StreetAddress: "1 Path Plaza",
+          City: "Jersey City",
+          State: "NJ",
+          StateName: "New Jersey",
+          Zip: "07306",
+          County: "Hudson",
+          Country: "US",
+          CountryFullName: "United States",
+          SPLC: null,
+        },
+        Region: 4,
+        POITypeID: 104,
+        PersistentPOIID: -1,
+        SiteID: -1,
+        ResultType: 10,
+        ShortString: "Station, 1 Path Plaza, Jersey City, NJ, US, Hudson 07306",
+        TimeZone: "GMT-5:00 EST",
+      },
+    }
+  );
+
+  u7 = await usersData.createUser(
+    "Edward",
+    "Martinez",
+    "edward_m",
+    "edward.m@example.com",
+    password,
+    {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [-74.006, 40.7128],
+      },
+      properties: {
+        Address: {
+          StreetAddress: "285 Fulton St",
+          City: "New York",
+          State: "NY",
+          StateName: "New York",
+          Zip: "10007",
+          County: "New York",
+          Country: "US",
+          CountryFullName: "United States",
+          SPLC: null,
+        },
+        Region: 2,
+        POITypeID: 104,
+        PersistentPOIID: -1,
+        SiteID: -1,
+        ResultType: 10,
+        ShortString:
+          "Landmark, 285 Fulton St, New York, NY, US, New York 10007",
+        TimeZone: "GMT-5:00 EST",
+      },
+    }
+  );
+
+  u8 = await usersData.createUser(
+    "Fiona",
+    "Garcia",
+    "fio_gar",
+    "fiona.garcia@example.com",
+    password,
+    {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [-74.0351, 40.7366],
+      },
+      properties: {
+        Address: {
+          StreetAddress: "123 Washington St",
+          City: "Hoboken",
+          State: "NJ",
+          StateName: "New Jersey",
+          Zip: "07030",
+          County: "Hudson",
+          Country: "US",
+          CountryFullName: "United States",
+          SPLC: null,
+        },
+        Region: 4,
+        POITypeID: 104,
+        PersistentPOIID: -1,
+        SiteID: -1,
+        ResultType: 10,
+        ShortString: "Shop, 123 Washington St, Hoboken, NJ, US, Hudson 07030",
+        TimeZone: "GMT-5:00 EST",
+      },
+    }
+  );
+
+  u9 = await usersData.createUser(
+    "George",
+    "Wilson",
+    "george",
+    "george.wilson@example.com",
+    password,
+    {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [-73.994, 40.7527],
+      },
+      properties: {
+        Address: {
+          StreetAddress: "4 Pennsylvania Plaza",
+          City: "New York",
+          State: "NY",
+          StateName: "New York",
+          Zip: "10121",
+          County: "New York",
+          Country: "US",
+          CountryFullName: "United States",
+          SPLC: null,
+        },
+        Region: 2,
+        POITypeID: 104,
+        PersistentPOIID: -1,
+        SiteID: -1,
+        ResultType: 10,
+        ShortString:
+          "Arena, 4 Pennsylvania Plaza, New York, NY, US, New York 10121",
+        TimeZone: "GMT-5:00 EST",
+      },
+    }
+  );
+
+  u10 = await usersData.createUser(
+    "Hannah",
+    "Lee",
+    "h_lee",
+    "hannah.lee@example.com",
+    password,
+    {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [-74.0341, 40.7175],
+      },
+      properties: {
+        Address: {
+          StreetAddress: "150 Warren St",
+          City: "Jersey City",
+          State: "NJ",
+          StateName: "New Jersey",
+          Zip: "07302",
+          County: "Hudson",
+          Country: "US",
+          CountryFullName: "United States",
+          SPLC: null,
+        },
+        Region: 4,
+        POITypeID: 104,
+        PersistentPOIID: -1,
+        SiteID: -1,
+        ResultType: 10,
+        ShortString: "Park, 150 Warren St, Jersey City, NJ, US, Hudson 07302",
+        TimeZone: "GMT-5:00 EST",
+      },
+    }
+  );
+} catch (e) {
+  console.log(e);
+}
+
+/*
 try {
   u1 = await usersData.createUser(
     "user",
@@ -226,7 +595,7 @@ try {
   } catch (e) {
     console.log(e);
   }
-
+ */
 try {
   ur1 = await userReviewsData.createUserReview(
     u1._id.toString(),
@@ -377,23 +746,23 @@ try {
 
 /* Request Seeding */
 let currGame;
-let userRequest = (user) =>{
-    let updateObj = {
-        userRequest: {
-            reqUserId: user._id.toString(),  // u1 is requesting
-            message: `Im user ${user.username}. Id like to borrow this game.`
-        }
-    }
-    return updateObj
+let userRequest = (user) => {
+  let updateObj = {
+    userRequest: {
+      reqUserId: user._id.toString(), // u1 is requesting
+      message: `Im user ${user.username}. Id like to borrow this game.`,
+    },
+  };
+  return updateObj;
+};
+try {
+  currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u1));
+} catch (e) {
+  console.log(e);
 }
 try {
-    currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u1));
-} catch(e){
-    console.log(e);
-}
-try {
-    currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u3));
-} catch(e){
-    console.log(e);
+  currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u3));
+} catch (e) {
+  console.log(e);
 }
 await closeConnection();

@@ -211,9 +211,7 @@ router
         }
         if (xss(updatedData.password)){
             try{
-                //TODO: Currently, there is no password validation (2 ints and 2 special chars should be required)
-                // updatedData.password = validation.validatePassword(xss(updatedData.password));
-                updatedData.password = validation.validateString(xss(updatedData.password));
+                updatedData.password = validation.validatePassword(xss(updatedData.password));
             }catch (e) {
                 errors.push(`Password ${e}`);
             }
