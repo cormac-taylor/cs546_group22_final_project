@@ -183,7 +183,7 @@ export const updateUser = async (id, updateObj) => {
   const user = await getUserById(id);
   if (updateObj.username) {
     const username = validateUsername(updateObj.username);
-    if (user.username === username) throw "That is your current username."
+    if (user.username === username) throw "That is your current username.";
 
     const existingUsername = await usersCollection.findOne({
       username: username,
@@ -196,7 +196,7 @@ export const updateUser = async (id, updateObj) => {
   }
   if (updateObj.email) {
     const email = validateEmail(updateObj.email);
-    if (user.email === email) throw "That is your current email."
+    if (user.email === email) throw "That is your current email.";
 
     const existingEmail = await usersCollection.findOne({
       email: email,
