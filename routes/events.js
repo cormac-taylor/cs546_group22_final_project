@@ -213,12 +213,13 @@ router.route("/deleteEvent").get(async (req, res) => {
         let ownerID = req.session.user.userId
         try{
             const eventList = await getEventsByOwnerId(ownerID)
+            res.render("deleteEvent", { pageTitle: "Delete Event", userId: req.session.user.userId, events: eventList})
         }
         catch(e){
             res.render("error", {errorStatus: 500, errorMsg:e})
         }
         // console.log(eventList)
-        res.render("deleteEvent", { pageTitle: "Delete Event", userId: req.session.user.userId, events: eventList})
+        
 
     })
 export default router;

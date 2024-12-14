@@ -146,3 +146,92 @@ button:hover,
     background-color: #0056b3;
     color: white;
 }
+
+.homePage-banner{
+    background-color: #157c99;
+}
+
+.welcome-text {
+    text-align: right;
+    /* margin: 0 auto;
+    padding: 20px 0;
+    width: 100%; */
+  }
+  
+
+.homePage-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+}
+
+.side-banners {
+  display: grid;
+  grid-template-columns: 1fr 1fr; 
+  grid-template-rows: auto auto; 
+  grid-gap: 20px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+
+.side-banners .banner:nth-child(3) {
+  grid-column: span 2; 
+}
+
+.banner {
+  background: #f3f0fa;
+  border: 2px solid #d1c4e9;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.banner h2 {
+  font-size: 1.2rem;
+  color: #5e4c7f;
+  margin-bottom: 10px;
+}
+
+.banner p {
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #5e4c7f;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #46365b;
+}
+
+.btn-secondary {
+  background-color: #f39c12;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #d87b0b;
+}
+
+.btn-tertiary {
+  background-color: #16a085;
+  color: #fff;
+}
+
+.btn-tertiary:hover {
+  background-color: #12876c;
+}
