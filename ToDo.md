@@ -3,36 +3,43 @@
 ### Core Features In Progress
     Landing Page:               Needs content
     --------------------------------------------------------------------------------------------------------------------------
-    Sign In User Page:          Needs location data
+    User Profile:               Needs update location function
     --------------------------------------------------------------------------------------------------------------------------
-    User Profile:               ?
+    Manage Games Page:          Waiting Approval
     --------------------------------------------------------------------------------------------------------------------------
-    Manage Games Page:          ?
+    Game Profile/Reviews:       Waiting Approval
     --------------------------------------------------------------------------------------------------------------------------
-    Game Profile/Reviews:       ?
-    --------------------------------------------------------------------------------------------------------------------------
-    Discover Games:             ?
+    Discover Games:             Waiting Approval
     --------------------------------------------------------------------------------------------------------------------------
     Find Games:                 ?
     --------------------------------------------------------------------------------------------------------------------------
     Community blog/Events page: ?
     --------------------------------------------------------------------------------------------------------------------------
-    User Profile/Reviews:       ?
+    User Profile/Reviews:       Waiting Approval
+    --------------------------------------------------------------------------------------------------------------------------
+    Return Borrowed Games       Not started
+
+### Core Features Awaiting Approval
+    - Manage Games Page
+    - Game Profile/Reviews
+    - Discover Games
+    - User Reviews
 
 ### Core Features Done
-    - Log In User Page                
+    - Sign in page
+    - Sign up page
 
 ### Missing Requirements
-    - AJAX form with error handling (client-side as well as server side)
-    - XSS
     - Full seed file
+    - Returning a request  -> (currently in-progress by Vraj)
 
 ### Requirements to test
     - input validation, site-wide
-    - invalid HTML
+    - valid HTML
     - bugs/usability issues
     - server crash
     - confirm user can only leave one review and delete review
+    - XSS
 
 ### Cormac's Notes
     Route                           Description

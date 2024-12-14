@@ -1,46 +1,51 @@
-{{!--
+{{!
 * Cormac Taylor
 * I pledge my honor that I have abided by the Stevens Honor System.
---}}
-<!DOCTYPE html>
+}}
+
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{pageTitle}}</title>
-    <link rel="stylesheet" href="/public/css/styles.css">
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/public/images/favicon.ico" />
+    <link rel="stylesheet" href="/public/css/styles.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css"
+      rel="stylesheet"
+    />
     <style>
-        /* Optional: Add some padding around the calendar */
-        #calendar {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 20px;
-        }
+      /* Optional: Add some padding around the calendar */ #calendar {
+      max-width: 900px; margin: 0 auto; padding: 20px; }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <header>
-        {{!-- site wide header to go here --}}
-        <div class="navigation">
-            <a href="/home">Home</a>
-            <a href="/games">Discover</a>
-            <a href="/community">Community</a>
-            {{#if signedIn}}
-            <a href="/logout">Log Out</a>
-            {{/if}}
-            {{!-- add buttons as needed --}}
-        </div>
+      <div class="logo">
+        <a href="/home"><img
+            src="/public/images/bokenBoardsLogo.png"
+            alt="BokenBoards Logo"
+            style="width:42px;height:42px;"
+          /></a>
+      </div>
+      <nav class="navigation">
+        <a href="/games">Discover Games</a>
+        <a href="/community">Community Blog</a>
+        <a href="/events">Events</a>
+        {{#if signedIn}}
+          <a href="/logout">Log Out</a>
+        {{else}}
+          <a href="/signin">Sign In</a>
+          <a href="/signup">Sign Up</a>
+        {{/if}}
+      </nav>
     </header>
     {{{body}}}
-    <footer>
         <footer class="footer">
             <p>© 2024 BokenBoards | Bringing board gamers together, one move at a time.</p>
         </footer>
-        {{!-- site wide footer to go here --}}
-    </footer>
-</body>
+  </body>
 
 </html>

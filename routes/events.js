@@ -4,7 +4,7 @@ import * as validation from "../utilities/validation.js";
 import { addEvent, deleteEvent, getEventById, getEventsByOwnerId, updateEvent } from "../data/events.js";
 import { getUserById, updateUser } from "../data/users.js";
 import { events } from "../config/mongoCollections.js";
-
+import xss from "xss"
 
 // Main page for people to see events
 router.route("/").get(async (req, res) => {
@@ -57,14 +57,14 @@ router.route("/createEvent").get(async (req, res) => {
         }
         let ownerID = req.session.user.userId
         try{
-            createEventFormInfo.username = validation.validateUsername(createEventFormInfo.username)
+            createEventFormInfo.username = validation.validateUsername(xss(createEventFormInfo.username))
         }
         catch(e){
             errors.push(`Username ${e}`)
         }
 
         try{
-            createEventFormInfo.email = validation.validateEmail(createEventFormInfo.email)
+            createEventFormInfo.email = validation.validateEmail(xss(createEventFormInfo.email))
         }
         catch(e){
             errors.push(`Email ${e}`)
@@ -77,12 +77,12 @@ router.route("/createEvent").get(async (req, res) => {
         // }
         //console.log("yo")
         try{
-            createEventFormInfo.description = validation.validateString(createEventFormInfo.description)
+            createEventFormInfo.description = validation.validateString(xss(createEventFormInfo.description))
         }
         catch(e){
             errors.push(`Description ${e}`)
         }
-        let result = await addEvent(ownerID, createEventFormInfo.username, createEventFormInfo.eventName, createEventFormInfo.email, createEventFormInfo.location, createEventFormInfo.description, createEventFormInfo.startDate, createEventFormInfo.endDate)
+        let result = await addEvent(ownerID, createEventFormInfo.username, xss(createEventFormInfo.eventName), createEventFormInfo.email, createEventFormInfo.location, createEventFormInfo.description, xss(createEventFormInfo.startDate), xss(createEventFormInfo.endDate))
         // let user = await getUserById(ownerID)
         // user.eventsCreated.push(result.insertedId.toString())
         // console.log(user)
@@ -109,7 +109,7 @@ router.route("/updateEvent").get(async (req, res) => {
     .post(async (req, res) => {
         let ownerID = req.session.user.userId
         const eventList = await getEventsByOwnerId(ownerID)
-        res.render("eventForm", { pageTitle: "Update Event Form", userId: req.session.user.userId, events: eventList, eventId: req.body.eventId})
+        res.render("eventForm", { pageTitle: "Update Event Form", userId: req.session.user.userId, events: eventList, eventId: xss(req.body.eventId)})
     })
 
 router.route("/updateEventWithId").get(async (req, res) => {
@@ -136,10 +136,13 @@ router.route("/updateEventWithId").get(async (req, res) => {
             //return res.status(401).send('You must be logged in to view this page.')
         }
         const { eventId, eventName, email, location, description } = req.body
-        console.log(eventId)
+        eventId = xss();
+        eventName = xss(eventName);
+        email = xss(email);
+        description = xss(description);
+
         const updateFields = {}
         let event = await getEventById(eventId)
-        console.log(event)
         try{
             if (eventName){
                 updateFields.eventName = eventName
@@ -208,7 +211,7 @@ router.route("/deleteEvent").get(async (req, res) => {
 })
 
     .post(async (req, res) => {
-        let deleted = await deleteEvent(req.body.eventId)
+        let deleted = await deleteEvent(xss(req.body.eventId))
 
         let ownerID = req.session.user.userId
         try{

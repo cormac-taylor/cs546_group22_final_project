@@ -3,7 +3,7 @@ import {usersData} from '../data/index.js';
 import {utils} from '../utilities/utilityIndex.js'
 import * as validation from "../utilities/validation.js"
 import bcrypt from 'bcrypt';
-
+import xss from "xss"
 const router = Router();
 
 //TODO: Implement a middleware that checks if the user is signed in.
@@ -27,13 +27,13 @@ router
         let errors = [];
         let plainTextPass;
         try{
-            userSigninData.username = validation.validateString(userSigninData.username)
+            userSigninData.username = validation.validateString(xss(userSigninData.username))
         }catch (e) {
             errors.push(`Username ${e}`);
         }
         try{
             // plainTextPass = validation.validatePassword(userSigninData.password)
-            plainTextPass = validation.validateString(userSigninData.password)
+            plainTextPass = validation.validateString(xss(userSigninData.password))
         }catch (e) {
             errors.push(`Password ${e}`);
         }

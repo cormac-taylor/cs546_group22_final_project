@@ -1,47 +1,41 @@
-{{!-- add a banner; add images --}}
-{{!-- Home Page --}}
-<header class="homePage-banner">
-  <h1 class="homePage-banner-text">🎲 Welcome to BokenBoards 🎲</h1>
-  <p class="tagline">Connect with fellow board game enthusiasts, discover new games, and host or join exciting events near you!</p>
-</header>
+<h1 id="homeTitle">BokenBoards</h1>
+<p id="homeWelcomeMessage">
+  Welcome to BokenBoards, your ultimate destination for all things board games!
+  Whether you're looking to share games with others, discover community events,
+  or explore insightful reviews, BokenBoards connects board game enthusiasts in
+  one vibrant hub. Dive into a growing network of gamers, find your next
+  favorite game, and join events that bring people together around the tabletop.
+  Let's make your board game experience unforgettable!
+</p>
 
-<div class="homePage-container">
-  <main class="main-content">
-    {{!-- Main Buttons --}}
-    {{!-- <div id="userOptions" class="user-options">
-      <p class="welcome-text">Join the community and start your board game journey today!</p>
-      <div class="button-container">
-        <button class="btn btn-primary" onclick="window.location.href='/signup'">Create Account</button>
-        <button class="btn btn-secondary" onclick="window.location.href='/signin'">Log In</button>
-        <button class="btn btn-tertiary" onclick="window.location.href='/events'">Find Events Near Me</button>
-      </div>
-    </div> --}}
-
-    {{#if errorMessage}}
-      <div class="error-message">
-        <p>{{errorMessage}}</p>
-      </div>
-    {{/if}}
-  </main>
-
-  <aside class="side-banners">
-    <div class="banner">
-      <h2>🌟 Discover New Games</h2>
-      <p>Browse a curated list of the most popular board games ranked by the community! Showcase what you own and share it with others! Start your board game adventure by creating an account!</p>
-      <button class="btn btn-tertiary" onclick="window.location.href='/signup'">Sign Up</button>
-    </div>
-
-    <div class="banner">
-      <h2>🎮 Manage Your Collection</h2>
-      <p>Log in to reconnect with the community, explore exciting new events, and pick up right where you left off in your board game journey. Discover new games, join meetups, and share your experiences with fellow enthusiasts!</p>
-      <button class="btn btn-secondary" onclick="window.location.href='/signin'">Sign In</button>
-    </div>
+<h2 id="someGamesTitle">Some Games Other Gammers are Offering</h2>
+<div class="homeImage">
+  {{!-- TO DO: insert 5 games dynamiclly --}}
+  {{!-- {{#each games}}
+    <a href="/games">
+    <img src={{games.src}} alt={{games.alt}} />
+    </a>
+  {{/each}} --}}
+  <a href="/games">
+    <img src="/public/images/bokenBoardsPoster.png" alt="BokenBoards Logo" />
+  </a>
+  <a href="/games">
+    <img src="/public/images/bokenBoardsPoster.png" alt="BokenBoards Logo" />
+  </a>
+  <a href="/games">
+    <img src="/public/images/bokenBoardsPoster.png" alt="BokenBoards Logo" />
+  </a>
+    <a href="/games">
+    <img src="/public/images/bokenBoardsPoster.png" alt="BokenBoards Logo" />
+  </a>
+  </a>
+    <a href="/games">
+    <img src="/public/images/bokenBoardsPoster.png" alt="BokenBoards Logo" />
+  </a>
+</div>
 
     <div class="banner">
-      <h2>📅 Join or Host Events</h2>
+      <h2>Join or Host Events</h2>
       <p>Find gaming meetups near you or host your own. RSVP to events and connect with like-minded players!</p>
       <button class="btn btn-primary" onclick="window.location.href='/events'">Browse Events</button>
     </div>
-  </aside>
-</div>
-

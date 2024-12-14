@@ -5,6 +5,7 @@ import * as gamesapi from "../data/gamesAPI.js"
 import * as games from "../data/games.js"
 import * as userData from "../data/users.js"
 import * as gameReviewData from "../data/gameReviews.js"
+import xss from "xss"
 
 router.route("/").get(async (req, res) => {
     if(!req.session.user){
@@ -48,16 +49,16 @@ router.route("/").post(async (req, res) => {
     }
     try {
         let g;
-        if(!req.body.sortBy || (req.body.sortBy !== "closest" && req.body.sortBy !== "rating")) {throw 'Please select a Sorting Metric'}
+        if(!xss(req.body.sortBy) || (xss(req.body.sortBy) !== "closest" && xss(req.body.sortBy) !== "rating")) {throw 'Please select a Sorting Metric'}
 
-        if(req.body.sortBy === "closest"){
+        if(xss(req.body.sortBy) === "closest"){
             g = await games.sortByClosestLocation(user.location.geometry, req.session.user.userId);
         }
-        if(req.body.sortBy === "rating") {
+        if(xss(req.body.sortBy) === "rating") {
             g = await games.sortByRating(user.location.geometry, req.session.user.userId);
         }
-        if(req.body.searchTerm) {
-            g = g.filter((game) => game.gameTitle === req.body.searchTerm);
+        if(xss(req.body.searchTerm)) {
+            g = g.filter((game) => game.gameTitle === xss(req.body.searchTerm));
         }
         if(req.session.user){
             if(g.length === 0) {
@@ -79,12 +80,12 @@ router.route("/gameDetails").post(async (req, res) => {
         let game;
         let reviewList ;
         try {
-            game = await games.getGameById(req.body.gid);
+            game = await games.getGameById(xss(req.body.gid));
         } catch (e) {
             return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: e});
         }
         try {
-            reviewList = await gameReviewData.getGameReviewsByReviewedGameId(req.body.gid);
+            reviewList = await gameReviewData.getGameReviewsByReviewedGameId(xss(req.body.gid));
         } catch (e) {
             return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: e});
         }

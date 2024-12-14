@@ -3,6 +3,7 @@ const router = Router();
 import * as validation from "../utilities/validation.js";
 import * as gamesapi from "../data/gamesAPI.js"
 import * as games from "../data/games.js"
+import xss from "xss"
 import * as users from "../data/users.js"
 
 // main page for managing a user's games
@@ -17,7 +18,7 @@ router.route("/").get(async (req, res) => {
     }
     try {
         if (signedin) {
-            res.render("manageGames", { signedin: true, pageTitle: "Manage Games", user: req.session.user.username });
+            res.render("manageGames", { signedIn: true, pageTitle: "Manage Games", user: req.session.user.username });
         }
         else {
             res.render("signin", { pageTitle: "Sign In", status: "Please Sign In Before Managing Games!"})
@@ -53,12 +54,12 @@ router.route("/addGame").get(async (req,res) => {
 router.route("/addGame1").post(async (req,res) => {
     if(req.session.user){
         try {
-            if(!req.body.gid) {throw 'Error: Game not selected'}
+            if(!xss(req.body.gid)) {throw 'Error: Game not selected'}
         } catch (e) {
             return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: e});
         }
         try {
-            res.render("addGame", { signedIn: true, pageTitle: "Add Game", gid: req.body.gid, title: req.body.title, status1: " Selected! Please enter the condition of the game." });
+            res.render("addGame", { signedIn: true, pageTitle: "Add Game", gid: xss(req.body.gid), title: xss(req.body.title), status1: " Selected! Please enter the condition of the game." });
         } catch (e) {
             return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
@@ -77,12 +78,12 @@ router.route("/addGame2").post(async (req,res) => {
             return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});
         }
         try {
-            if(!req.body.gid) {throw 'Error: Game not selected'}
+            if(!xss(req.body.gid)) {throw 'Error: Game not selected'}
         } catch (e) {
             return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: e});
         }
         try {
-            let game = await gamesapi.searchGamesByID(parseInt(req.body.gid));
+            let game = await gamesapi.searchGamesByID(parseInt(xss(req.body.gid)));
             let gimg;
             if (game.image){
                 gimg = game.image._text;
@@ -90,8 +91,8 @@ router.route("/addGame2").post(async (req,res) => {
             else {
                 gimg = "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
             }
-            await games.createGame(req.session.user.userId, user.location.geometry, req.body.title, game.description._text, req.body.cond, gimg) 
-            res.render("addGame", { signedIn: signedIn, pageTitle: "Add Game", status2: "Game added! Add another or navigate back using the button below." });
+            await games.createGame(req.session.user.userId, user.location.geometry, xss(req.body.title), game.description._text, xss(req.body.cond), gimg) 
+            res.render("addGame", { signedIn: true, pageTitle: "Add Game", status2: "Game added! Add another or navigate back using the button below." });
         } catch (e) {
             return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
@@ -105,23 +106,23 @@ router.route("/addGame2").post(async (req,res) => {
 router.route("/apigamesearch").post(async (req,res) => {
     if(req.session.user){
         try {
-            if(!req.body.searchByTitle.trim()) {throw 'You must enter a search term!'}
-            validation.validateString(req.body.searchByTitle);
+            if(!xss(req.body.searchByTitle.trim())) {throw 'You must enter a search term!'}
+            validation.validateString(xss(req.body.searchByTitle));
         } catch (e) {
             // return res.status(400).render('error', {er: "400", c: "error", message: e})
-            return res.status(400).render("error", {signedIn: signedIn, pageTitle: "Error", errorStatus: "400", errorMsg: e});
+            return res.status(400).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "400", errorMsg: e});
         }
         try {
-            let g = await gamesapi.searchGamesByTitle(req.body.searchByTitle);
-            if(req.body.searchDiscover){
-                if(!req.body.sortBy || (req.body.sortBy !== "closest" && req.body.sortBy !== "rating")) {throw 'Please select a Sorting Metric'}
-                res.render("apisearchresults", { signedIn: true, pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle, searchDiscover: true, sortBy: req.body.sortBy });
+            let g = await gamesapi.searchGamesByTitle(xss(req.body.searchByTitle));
+            if(xss(req.body.searchDiscover)){
+                if(!xss(req.body.sortBy) || (xss(req.body.sortBy) !== "closest" && xss(req.body.sortBy) !== "rating")) {throw 'Please select a Sorting Metric'}
+                res.render("apisearchresults", { signedIn: true, pageTitle: "Search Results", games: g, searchByTitle: xss(req.body.searchByTitle), searchDiscover: true, sortBy: xss(req.body.sortBy) });
             }
             else{
-                res.render("apisearchresults", { signedIn: true, pageTitle: "Search Results", games: g, searchByTitle: req.body.searchByTitle, postGame: true });
+                res.render("apisearchresults", { signedIn: true, pageTitle: "Search Results", games: g, searchByTitle: xss(req.body.searchByTitle), postGame: true });
             }
         } catch (e) {
-            return res.status(500).render("error", {signedIn: signedIn, pageTitle: "Error", errorStatus: "500", errorMsg: e});
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
     }
     else {
@@ -141,10 +142,10 @@ router.route("/removeGame").get(async (req,res) => {
     try {
         if (signedin) {
             let g = await games.getGamesByOwnerID(req.session.user.userId)
-            res.render("removeGame", { pageTitle: "Remove Game", games: g });
+            res.render("removeGame", { signedIn: true, pageTitle: "Remove Game", games: g });
         }
         else {
-            res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
+            res.render("home", {signedIn: false, pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
         }
     } catch (e) {
         return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
@@ -154,7 +155,7 @@ router.route("/removeGame").get(async (req,res) => {
 router.route("/removeGame").post(async (req,res) => {
     if(req.session.user){
         try {
-            let deleted = await games.removeGameById(req.body.gameID);
+            let deleted = await games.removeGameById(xss(req.body.gameID));
             let g = await games.getGamesByOwnerID(req.session.user.userId);
             res.render("removeGame", { signedIn: true, pageTitle: "Remove Game", games: g });
         } catch (e) {
@@ -169,9 +170,9 @@ router.route("/removeGame").post(async (req,res) => {
 router.route("/modifyGame").post(async (req,res) => {
     if(req.session.user){    
         try {
-            validation.validateObjectID(req.body.gid)
-            if(!req.body.gid) {throw 'Game must be selected'}
-            res.render("updateGamePosting", { signedIn: true, pageTitle: "Modify Posting", gid: req.body.gid });
+            validation.validateObjectID(xss(req.body.gid))
+            if(!xss(req.body.gid)) {throw 'Game must be selected'}
+            res.render("updateGamePosting", { signedIn: true, pageTitle: "Modify Posting", gid: xss(req.body.gid) });
         } catch (e) {
             return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
@@ -186,17 +187,17 @@ router.route("/modifyGameUpdate").post(async (req,res) => {
 
         const updatedData = req.body;
         let errors = [];
-        if (updatedData.condition){
+        if (xss(updatedData.condition)){
             try{
-                updatedData.condition = validation.validateCondition(updatedData.condition);
+                updatedData.condition = validation.validateCondition(xss(updatedData.condition));
             }catch (e) {
                 errors.push(`Condition ${e}`);
             }
         }
         // TODO: allow user enetered location
-        if (updatedData.location){
+        if (xss(updatedData.location)){
             try{
-                updatedData.condition = validation.validateGeoJson(updatedData.location);
+                updatedData.condition = validation.validateGeoJson(xss(updatedData.location));
             }catch (e) {
                 errors.push(`Location ${e}`);
             }
@@ -213,7 +214,7 @@ router.route("/modifyGameUpdate").post(async (req,res) => {
         }
         
         try{
-            const updatedGame = await games.updateGame(req.body.gid, updatedData);
+            const updatedGame = await games.updateGame(xss(req.body.gid), updatedData);
             res.render('updateGamePosting', {
                 pageTitle: 'Update Game',
                 success: true,
