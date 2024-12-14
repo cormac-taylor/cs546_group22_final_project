@@ -132,7 +132,7 @@ router
         signedIn: signedIn
       });
     } catch (e) {
-      res.status(500).json({ error: e });
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
     }
   })
   .post(async (req, res) => {
@@ -167,7 +167,7 @@ router
         signedIn: signedIn
       });
     } catch (e) {
-      res.status(500).json({ error: e });
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
     }
   })
   .post(async (req, res) => {
@@ -250,7 +250,7 @@ router
         signedIn: signedIn,
       });
     } catch (e) {
-      res.status(500).json({ error: e });
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
     }
   })
 

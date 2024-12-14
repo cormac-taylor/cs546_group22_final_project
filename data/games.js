@@ -300,7 +300,7 @@ export const returnGame = async (gameId) => {
 
   const res = gamesCollection.updateOne(
     { _id: new ObjectId(gameId) },
-    { $unset: {borrowed: "" } }
+    { $set: {borrowed: false } }
   )
   if(!res){
     throw 'Could not return game'

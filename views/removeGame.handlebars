@@ -2,8 +2,9 @@
 
 <main>
     {{!-- list of games posted by user --}}
-    <ol>
+    <ol class="gameSearchResults">
         {{#each games}}
+        <div>
         <li id="gameList">
             <h3>{{gameTitle}}</h3>
             <p>Posted on {{datePosted}}</p>
@@ -13,6 +14,7 @@
                 <button name="gameID" value={{_id}}>Remove this Game</button>
             </form>
         </li>
+        </div>
         {{/each}}
     </ol>
 
