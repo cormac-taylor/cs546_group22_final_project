@@ -17,13 +17,14 @@
     --------------------------------------------------------------------------------------------------------------------------
     User Profile/Reviews:       Waiting Approval
     --------------------------------------------------------------------------------------------------------------------------
-    Return Borrowed Games       Not started
+    Return Borrowed Games       Waiting Approval
 
 ### Core Features Awaiting Approval
     - Manage Games Page
     - Game Profile/Reviews
     - Discover Games
     - User Reviews
+    - Return Borrowed Game
 
 ### Core Features Done
     - Sign in page
