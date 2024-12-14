@@ -9,7 +9,8 @@ import * as users from "../data/users.js"
 import xss from "xss"
 
 router.route("/").get(async (req, res) => {
-    return res.render("communityHome");
+    let signedIn = req.session.user ? true : false;
+    return res.render("communityHome", { signedIn: signedIn });
 });
 
 router.route("/:userId").get(async (req, res) => {
@@ -20,7 +21,8 @@ router.route("/:userId").get(async (req, res) => {
         signedIn = true
     }
     else {
-        res.render("signin", { pageTitle: "BokenBoards" });
+        let signedIn = req.session.user ? true : false;
+        res.render("signin", { pageTitle: "BokenBoards", signedIn: signedIn });
         return;
     }
     try{
@@ -48,7 +50,8 @@ router.route("/writeUserReview/:userId").get(async (req, res) => {
         signedIn = true
     }
     else {
-        res.render("signin", { pageTitle: "BokenBoards" });
+        let signedIn = req.session.user ? true : false;
+        res.render("signin", { pageTitle: "BokenBoards", signedIn: signedIn });
         return;
     }
 
@@ -75,7 +78,8 @@ router.route("/writeUserReview/:userId").post(async (req, res) => {
         signedIn = true
     }
     else {
-        res.render("signin", { pageTitle: "BokenBoards" });
+        let signedIn = req.session.user ? true : false;
+        res.render("signin", { pageTitle: "BokenBoards", signedIn: signedIn });
         return;
     }
 
@@ -124,7 +128,8 @@ router.route("/writeGameReview/:gameId").get(async (req, res) => {
         signedIn = true
     }
     else {
-        res.render("signin", { pageTitle: "BokenBoards" });
+        let signedIn = req.session.user ? true : false;
+        res.render("signin", { pageTitle: "BokenBoards", signedIn: signedIn });
         return;
     }
 
@@ -151,7 +156,8 @@ router.route("/writeGameReview/:gameId").post(async (req, res) => {
         signedIn = true
     }
     else {
-        res.render("signin", { pageTitle: "BokenBoards" });
+        let signedIn = req.session.user ? true : false;
+        res.render("signin", { pageTitle: "BokenBoards", signedIn: signedIn });
         return;
     }
 

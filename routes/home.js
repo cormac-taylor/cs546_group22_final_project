@@ -5,12 +5,14 @@ import {} from "../utilities/validation.js";
 
 router.route("/").get(async (req, res) => {
   try {
-    res.render("home", { pageTitle: "BokenBoards" });
+    let signedIn = req.session.user ? true : false;
+    res.render("home", { pageTitle: "BokenBoards", signedIn: signedIn });
     // if (req.session.user){
     //   res.redirect(`/dashboard`)
     // }
     // else{
-    //   res.render("home", { pageTitle: "BokenBoards" })
+    //     let signedIn = req.session.user ? true : false;
+    //   res.render("home", { pageTitle: "BokenBoards", signedIn })
     // }
   } catch (e) {
     res.status(500).json({ error: e });

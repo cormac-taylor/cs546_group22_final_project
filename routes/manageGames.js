@@ -142,10 +142,10 @@ router.route("/removeGame").get(async (req,res) => {
     try {
         if (signedin) {
             let g = await games.getGamesByOwnerID(req.session.user.userId)
-            res.render("removeGame", { pageTitle: "Remove Game", games: g });
+            res.render("removeGame", { signedIn: true, pageTitle: "Remove Game", games: g });
         }
         else {
-            res.render("home", { pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
+            res.render("home", {signedIn: false, pageTitle: "Home", status: "Please Sign In Before Managing Games!"})
         }
     } catch (e) {
         return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});

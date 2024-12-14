@@ -34,6 +34,14 @@ app.use('/signin', (req, res, next) =>{
     }
 });
 
+app.use('/signup', (req, res, next) =>{
+    if (req.session.user){
+        return res.redirect('/dashboard');
+    } else {
+        next();
+    }
+});
+
 /* Regular Express Code */
 app.use("/public", express.static("public"));
 app.use(express.json());
