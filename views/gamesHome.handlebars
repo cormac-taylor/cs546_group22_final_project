@@ -1,7 +1,4 @@
 <h1>Discover or Lookup Games</h1>
-<form action="/dashboard/{{user}}">
-    <button>Back to Dashboard</button>
-</form>
 
 <form method="POST" action="/manage/apigamesearch">     
     <label for="searchByTitle">Search for a game:</label>
@@ -18,18 +15,19 @@
 
 
 {{#if gamesFound}}
-<ol>
+<ol id="gameSearchResults">
 {{#each games}}
-    <li>
-        <h2>{{gameTitle}}</h2>
-        <img class="searchResultImage" alt="{{gameTitle}}" src="{{imgURL}}">
-        <p>Posted in: {{location.properties.Address.City}}</p>
-    </li>
-    <form method="POST" action="/games/gameDetails">
-        <input type="hidden" name="gid" value={{_id}}>
-        <button type="submit">View Details</button>
-    </form>
-
+    <div>
+        <li>
+            <h2>{{gameTitle}}</h2>
+            <img class="searchResultImage" alt="{{gameTitle}}" src="{{imgURL}}">
+            <p>Posted in: {{location.properties.Address.City}}</p>
+        </li>
+        <form method="POST" action="/games/gameDetails">
+            <input type="hidden" name="gid" value={{_id}}>
+            <button type="submit">View Details</button>
+        </form>
+    </div>
 {{/each}}
 </ol>
 

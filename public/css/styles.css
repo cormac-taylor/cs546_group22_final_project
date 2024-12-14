@@ -32,6 +32,9 @@ footer {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+
 }
 
 .container,
@@ -53,6 +56,10 @@ footer {
 .content-container {
   display: flex;
   justify-content: space-around;
+}
+
+.content-container div + div {
+  margin-left: 20px;
 }
 
 h1,
@@ -223,4 +230,14 @@ button:hover,
 
 #eventTitle {
   padding-top: 10px;
+}
+
+#gameSearchResults div {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding-left: 40px;
 }

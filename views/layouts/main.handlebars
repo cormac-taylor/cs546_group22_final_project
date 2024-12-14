@@ -37,6 +37,9 @@
           /></a>
       </div>
       <nav class="navigation">
+        {{#if signedIn}}
+        <a href="/home">Home</a>
+        {{/if}}
         <a href="/games">Discover Games</a>
         <a href="/community">Community Blog</a>
         <a href="/events">Events</a>
