@@ -17,8 +17,7 @@ router
                 pageTitle: 'Sign In'
             });
         } catch(e){
-            //TODO: After creating an error page, present that with error instead
-            res.status(500).json({error: e});
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
         }
     })
     .post(async (req, res) => {

@@ -23,7 +23,7 @@ router.route("/").get(async (req, res) => {
           res.render("events", { pageTitle: "Local Events", events: JSON.stringify(formattedEvents) });
         
     } catch (e) {
-        res.status(500).json({ error: e })
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
     }
 });
 
@@ -44,7 +44,7 @@ router.route("/createEvent").get(async (req, res) => {
         
         
     } catch (e) {
-        res.status(500).json({ error: e })
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
     }
 })
     .post(async (req, res) => {
@@ -103,7 +103,7 @@ router.route("/updateEvent").get(async (req, res) => {
         
         
     } catch (e) {
-        res.status(500).json({ error: e })
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
     }
 })
     .post(async (req, res) => {
@@ -126,7 +126,7 @@ router.route("/updateEventWithId").get(async (req, res) => {
         
     } 
     catch (e) {
-        res.status(500).json({ error: e })
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
     }
 })
     .post(async (req, res) => {
@@ -206,7 +206,7 @@ router.route("/deleteEvent").get(async (req, res) => {
         res.render("deleteEvent", { pageTitle: "Delete Event", userId: req.session.user.userId, events: eventList})
         
     } catch (e) {
-        res.status(500).json({ error: e })
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
     }
 })
 

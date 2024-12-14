@@ -14,7 +14,7 @@ router.route("/").get(async (req, res) => {
             signedin = true;
         }
     } catch (e) {
-        res.status(500).json({ error: e });
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
     }
     try {
         if (signedin) {
@@ -231,8 +231,56 @@ router.route("/modifyGameUpdate").post(async (req,res) => {
         }
     }
     else {
-        res.render("signin", { pageTitle: "Sign In", status: "Please Sign In Before Managing Games!"})
+        res.render("signin", { pageTitle: "Sign In", status: "Please Sign In Before Managing Games!"});
     }
+});
+
+router.route("/borrowedGames").get(async (req,res) => {
+    if(req.session.user){
+        try {
+            let borrowed = await games.getBorrowedGames(req.session.user.userId);
+            res.render("borrowed", {signedin: true, pageTitle: "Borrowed Games", games: borrowed});
+        } catch(e) {
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
+        }
+    }
+    else {
+        res.render("signin", { pageTitle: "Sign In" });
+    }
+
+});
+
+router.route("/returnBorrowed").post(async (req,res) => {
+    if(req.session.user){
+        let game;
+        try{
+            game = await games.getGameById(xss(req.body.gid));
+        } catch(e) {
+            return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Game not found"});
+        }
+        try{
+            if(!xss(req.body.gid)) {
+                throw 'Error: Game not selected'
+            }
+            validation.validateObjectID(xss(req.body.gid));
+            if(req.session.user.userId !== game.borrowed.toString()) {
+                throw 'Error: You are not currently borrowing this game.'
+            }
+        } catch(e) {
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
+        }
+
+        try {
+            let returned = await games.returnGame(xss(req.body.gid));
+            res.render("borrowed", {signedin: true, pageTitle: "Borrowed Games", returned: "Succesfully Returned!"});
+        } catch(e) {
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
+        }
+    }
+    else {
+        res.render("signin", { pageTitle: "Sign In" });
+    }
+
 });
 
 export default router;
