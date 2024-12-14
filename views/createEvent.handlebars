@@ -12,24 +12,38 @@ Range (if we are getting creative)
 <form action="/events/createEvent" method = "POST">
         <div class="form-group">
             <label for="username">Username:</label>
-            <input type="text" id="username" name="username" value="{{createEvent.username}}">
+            <input type="text" id="username" name="username" required>
+        </div>
+
+        <div class="form-group">
+            <label for="eventName">Event Name:</label>
+            <input type="text" id="eventName" name="eventName" required>
         </div>
 
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="{{createEvent.email}}">
+            <input type="email" id="email" name="email" required>
         </div>
 
         <div class="form-group">
             <label for="location">Location:</label>
-            <input type="text" id="location" name="location" value="{{createEmail.location}}">
+            <input type="text" id="location" name="location" required>
         </div>
         <div class="form-group">
             <label for="description">Event Description:</label>
-            <input type="text" id="description" name="description" value="{{createEmail.description}}">
+            <input type="text" id="description" name="description" required>
+        </div>
+        <div>
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate" name="startDate" required>
+        </div>
+        <div>
+            <label for="endDate">Start Date:</label>
+            <input type="date" id="endDate" name="endDate" required>
         </div>
 
         <div class="form-group">
             <button type="submit" class="submit-button">Create Event</button>
         </div>
+        <a href="/events">Events Homepage</a>
     </form>

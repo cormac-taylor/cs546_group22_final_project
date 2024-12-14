@@ -1,150 +1,228 @@
 import { Router } from "express";
 const router = Router();
 import * as validation from "../utilities/validation.js";
-import { addEvent, findAllEvents } from "../data/events.js";
+import { addEvent, deleteEvent, getEventById, getEventsByOwnerId, updateEvent } from "../data/events.js";
+import { getUserById, updateUser } from "../data/users.js";
+import { events } from "../config/mongoCollections.js";
 import xss from "xss"
 
 // Main page for people to see events
 router.route("/").get(async (req, res) => {
-  // Anyone can see this so no check for cookies
-  //console.log("let me see events")
-  
-  try {
-    let signedIn = req.session.user ? true : false;
-    res.render("events", { pageTitle: "Local Events", signedIn: signedIn });
-  } catch (e) {
-    res.status(500).json({ error: e });
-  }
-});
-
-// You have to add the post thing here
-router
-  .route("/createEvent")
-  .get(async (req, res) => {
     // Anyone can see this so no check for cookies
     //console.log("let me see events")
     try {
-      if (!xss(session.user)) {
-        return res.status(401).send("You must be logged in to view this page.");
-      }
-      let ownerID = xss(session.user.userId);
-      let signedIn = req.session.user ? true : false;
-      res.render("createEvent", { pageTitle: "Create Event", signedIn: signedIn });
+        const eventsCollection = await events();
+        const allEvents = await eventsCollection.find({}).toArray();
+        const formattedEvents = allEvents.map(event => ({
+            title: event.eventName,
+            start: event.startDate,
+            end: event.endDate || null,
+            description: event.description || '',
+            id: event._id
+          }));
+          res.render("events", { pageTitle: "Local Events", events: JSON.stringify(formattedEvents) });
+        
     } catch (e) {
-      res.status(500).json({ error: e });
+        res.status(500).json({ error: e })
     }
-  })
-  .post(async (req, res) => {
-    const createEventFormInfo = body;
-    let errors = [];
-    if (!req.session.user) {
-      return res.status(401).send("You must be logged in to view this page.");
-    }
-    let ownerID = req.session.user.userId;
-    try {
-      createEventFormInfo.username = validation.validateUsername(
-        xss(createEventFormInfo.username)
-      );
-    } catch (e) {
-      errors.push(`Username ${e}`);
-    }
+});
 
+// You have to add the post thing here
+router.route("/createEvent").get(async (req, res) => {
+    //console.log("let me see events")
     try {
-      createEventFormInfo.email = validation.validateEmail(
-        xss(createEventFormInfo.email)
-      );
+        if (!req.session.user){
+            //req.session.errorMessage = null; // Clear the error message after displaying
+            res.redirect('/signin');
+            //return res.status(401).send('You must be logged in to view this page.')
+            // Think about rendering a page here that has a link to go to the log in page
+        }
+        else{
+            let ownerID = req.session.user.userId
+            res.render("createEvent", { pageTitle: "Create Event" })
+        }
+        
+        
     } catch (e) {
-      errors.push(`Email ${e}`);
+        res.status(500).json({ error: e })
     }
-    // try{
-    //     createEventFormInfo.location = validation.validateGeoJson(xss(createEventFormInfo.location))
-    // }
-    // catch(e){
-    //     errors.push(`Location ${e}`)
-    // }
-    //console.log("yo")
+})
+    .post(async (req, res) => {
+        const createEventFormInfo = req.body
+        let errors = []
+        if (!req.session.user){
+            res.redirect('/signin');
+            return
+            // return res.status(401).send('You must be logged in to view this page.')
+        }
+        let ownerID = req.session.user.userId
+        try{
+            createEventFormInfo.username = validation.validateUsername(xss(createEventFormInfo.username))
+        }
+        catch(e){
+            errors.push(`Username ${e}`)
+        }
+
+        try{
+            createEventFormInfo.email = validation.validateEmail(xss(createEventFormInfo.email))
+        }
+        catch(e){
+            errors.push(`Email ${e}`)
+        }
+        // try{
+        //     createEventFormInfo.location = validation.validateGeoJson(createEventFormInfo.location)
+        // }
+        // catch(e){
+        //     errors.push(`Location ${e}`)
+        // }
+        //console.log("yo")
+        try{
+            createEventFormInfo.description = validation.validateString(xss(createEventFormInfo.description))
+        }
+        catch(e){
+            errors.push(`Description ${e}`)
+        }
+        let result = await addEvent(ownerID, createEventFormInfo.username, xss(createEventFormInfo.eventName), createEventFormInfo.email, createEventFormInfo.location, createEventFormInfo.description, xss(createEventFormInfo.startDate), xss(createEventFormInfo.endDate))
+        // let user = await getUserById(ownerID)
+        // user.eventsCreated.push(result.insertedId.toString())
+        // console.log(user)
+        // let updatecurrUser = await updateUser(ownerID, {eventsCreated: user.eventsCreated})
+        res.redirect("/events")
+    });
+
+router.route("/updateEvent").get(async (req, res) => {
     try {
-      createEventFormInfo.description = validation.validateString(
-        xss(createEventFormInfo.description)
-      );
+        if (!req.session.user){
+            res.redirect('/signin');
+            return
+            //return res.status(401).send('You must be logged in to view this page.')
+        }
+        let ownerID = req.session.user.userId
+        const eventList = await getEventsByOwnerId(ownerID)
+        res.render("updateEvent", { pageTitle: "Update Event", userId: req.session.user.userId, events: eventList})
+        
+        
     } catch (e) {
-      errors.push(`Description ${e}`);
+        res.status(500).json({ error: e })
     }
-    let result = await addEvent(
-      ownerID,
-      createEventFormInfo.username,
-      createEventFormInfo.email,
-      createEventFormInfo.location,
-      createEventFormInfo.description
-    );
-    // const eventId = result.insertedId
-    // I can do something like the above but idk how to make the button delete that specific item
-    let signedIn = req.session.user ? true : false;
-    res.render("events", { pageTitle: "Local Events", signedIn: signedIn });
-  });
+})
+    .post(async (req, res) => {
+        let ownerID = req.session.user.userId
+        const eventList = await getEventsByOwnerId(ownerID)
+        res.render("eventForm", { pageTitle: "Update Event Form", userId: req.session.user.userId, events: eventList, eventId: xss(req.body.eventId)})
+    })
 
-router
-  .route("/updateEvent")
-  .get(async (req, res) => {
+router.route("/updateEventWithId").get(async (req, res) => {
     try {
-      if (!req.session.user) {
-        return res.status(401).send("You must be logged in to view this page.");
-      }
-      let ownerID = req.session.user.userId;
-      const eventList = await findAllEvents(ownerID);
-      let signedIn = req.session.user ? true : false;
-      res.render("updateEvent", {
-        pageTitle: "Update Event",
-        userId: req.session.user.userId,
-        events: eventList,
-        signedIn: signedIn
-      });
-    } catch (e) {
-      res.status(500).json({ error: e });
+        if (!req.session.user){
+            res.redirect('/signin');
+            return
+            //return res.status(401).send('You must be logged in to view this page.')
+        }
+        let ownerID = req.session.user.userId
+        const eventList = await getEventsByOwnerId(ownerID)
+        res.render("updateEvent", { pageTitle: "Update Event", userId: req.session.user.userId, events: eventList})
+        
+        
+    } 
+    catch (e) {
+        res.status(500).json({ error: e })
     }
-  })
-  .patch(async (req, res) => {
-    const eventName = xss(req.body.eventName);
-    const email = xss(req.body.email);
-    const location = req.body.location;
-    const description = xss(req.body.description);
+})
+    .post(async (req, res) => {
+        if (!req.session.user){
+            res.redirect('/signin');
+            return
+            //return res.status(401).send('You must be logged in to view this page.')
+        }
+        const { eventId, eventName, email, location, description } = req.body
+        eventId = xss();
+        eventName = xss(eventName);
+        email = xss(email);
+        description = xss(description);
 
-    const updateFields = {};
-    if (eventName) {
-      updateFields.eventName = eventName;
-    }
-    if (email) {
-      updateFields.email = email;
-    }
-    if (location) {
-      updateFields.location = location;
-    }
-    if (description) {
-      updateFields.description = description;
-    }
-  });
+        const updateFields = {}
+        let event = await getEventById(eventId)
+        try{
+            if (eventName){
+                updateFields.eventName = eventName
+            }
+            else{
+                updateFields.eventName = event[0].eventName
+            }
+            if (email){
+                updateFields.email = email
+            }
+            else{
+                updateFields.email = event[0].email
+            }
+            if (location){
+                updateFields.location = location
+            }
+            else{
+                updateFields.location = event[0].location
+            }
+            if (description){
+                updateFields.description = description
+            }
+            else{
+                updateFields.description = event[0].description
+            }
+        }
+        catch(e){
+            res.render("error", {errorStatus: 500, errorMsg:"There was a problem with the updating the event"}) 
+        }
+        
+        console.log(updateFields)
+        try{
+            let userUpdate = await updateEvent(eventId, updateFields)
+            console.log(userUpdate)
+        }
+        catch(e){
+            res.render("error", {errorStatus: 500, errorMsg:e})
+        }
+        
+        //let ownerID = req.session.user.userId
+        res.redirect('/events')
+    })
 
-router
-  .route("/deleteEvent")
-  .get(async (req, res) => {
+
+router.route("/deleteEvent").get(async (req, res) => {
     try {
-      if (!req.session.user) {
-        return res.status(401).send("You must be logged in to view this page.");
-      }
-      let ownerID = req.session.user.userId;
-      const eventList = await findAllEvents(ownerID);
-      // console.log(eventList)
-      let signedIn = req.session.user ? true : false;
-      res.render("deleteEvent", {
-        pageTitle: "Delete Event",
-        userId: req.session.user.userId,
-        events: eventList,
-        signedIn: signedIn,
-      });
+        if (!req.session.user){
+            res.redirect('/signin');
+            return
+            // return res.status(401).send('You must be logged in to view this page.')
+        }
+        let ownerID = req.session.user.userId
+        // try{
+        //     const eventList = await getEventsByOwnerId(ownerID)
+        // }
+        // catch(e){
+        //     res.render("error", {errorStatus: 500, errorMsg:e})
+        // }
+        const eventList = await getEventsByOwnerId(ownerID)
+        // console.log(eventList)
+        res.render("deleteEvent", { pageTitle: "Delete Event", userId: req.session.user.userId, events: eventList})
+        
     } catch (e) {
-      res.status(500).json({ error: e });
+        res.status(500).json({ error: e })
     }
-  })
+})
 
-  .delete(async (req, res) => {});
+    .post(async (req, res) => {
+        let deleted = await deleteEvent(xss(req.body.eventId))
+
+        let ownerID = req.session.user.userId
+        try{
+            const eventList = await getEventsByOwnerId(ownerID)
+            res.render("deleteEvent", { pageTitle: "Delete Event", userId: req.session.user.userId, events: eventList})
+        }
+        catch(e){
+            res.render("error", {errorStatus: 500, errorMsg:e})
+        }
+        // console.log(eventList)
+        
+
+    })
 export default router;

@@ -181,22 +181,24 @@ export const updateUser = async (id, updateObj) => {
     updatedUserReview.lastName = validateName(updateObj.lastName);
   }
   if (updateObj.username) {
+    const username = validateUsername(updateObj.username);
     const existingUsername = await usersCollection.findOne({
-      username: updateObj.username,
+      username: username,
     });
     if (existingUsername)
-      throw `Error: Sorry, username: ${updateObj.username} is taken.`;
-    updatedUser.username = validateUsername(updateObj.username);
-    updatedGameReview.username = validateUsername(updateObj.username);
-    updatedUserReview.username = validateUsername(updateObj.username);
+      throw `Error: Sorry, username: ${username} is taken.`;
+    updatedUser.username = username;
+    updatedGameReview.username = username;
+    updatedUserReview.username = username;
   }
   if (updateObj.email) {
+    const email = validateEmail(updateObj.email);
     const existingEmail = await usersCollection.findOne({
-      email: updateObj.email,
+      email: email,
     });
     if (existingEmail)
-      throw `Error: Sorry, email address: ${updateObj.email} is taken.`;
-    updatedUser.email = validateEmail(updateObj.email);
+      throw `Error: Sorry, email address: ${email} is taken.`;
+    updatedUser.email = email;
   }
   if (updateObj.password) {
     const saltRounds = 10;

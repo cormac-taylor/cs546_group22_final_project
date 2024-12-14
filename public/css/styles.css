@@ -148,6 +148,27 @@ button:hover,
   font-size: 15px;
 }
 
+.banner {
+  background: #f3f0fa;
+  border: 2px solid #d1c4e9;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.banner h2 {
+  font-size: 1.2rem;
+  color: #5e4c7f;
+  margin-bottom: 10px;
+}
+
+.banner p {
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
 .navigation a:hover {
   background-color: #0056b3;
   color: white;

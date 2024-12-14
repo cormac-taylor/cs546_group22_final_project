@@ -8,31 +8,32 @@
 <h2>See Upcoming Events Below</h2>
 <div id="calendar"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <header>
+    <h1>{{pageTitle}}</h1>
+  </header>
+
+  <main>
+    <div id="calendar"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const calendarEl = document.getElementById('calendar');
 
+      const eventsData = {{{events}}};
+
       const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         headerToolbar: {
-          left: 'prev,next today', 
+          left: 'prev,next today',
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay',
         },
-        events: [
-          {
-            title: 'Board Game Night',
-            start: '2024-12-15T18:00:00',
-            end: '2024-12-15T21:00:00',
-            description: 'An evening of board games!',
-          },
-          {
-            title: 'Strategy Meeting',
-            start: '2024-12-18T14:00:00',
-            description: 'Planning the next big event.',
-          },
-        ],
+        events: eventsData, 
+        eventClick: function (info) {
+          alert(`Event: ${info.event.title}\nDescription: ${info.event.extendedProps.description}`);
+        },
       });
 
       calendar.render();
