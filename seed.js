@@ -1739,12 +1739,12 @@ let userRequest = (user) => {
   return updateObj;
 };
 try {
-  currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u1));
+  currGame = await gamesData.updateGame(g4._id.toString(), userRequest(u1));
 } catch (e) {
   console.log(e);
 }
 try {
-  currGame = await gamesData.updateGame(g3._id.toString(), userRequest(u3));
+  currGame = await gamesData.updateGame(g2._id.toString(), userRequest(u3));
 } catch (e) {
   console.log(e);
 }
