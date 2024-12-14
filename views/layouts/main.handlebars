@@ -24,7 +24,13 @@
   <body>
     <header>
       <div class="logo">
-        <a href="/home"><img
+        <a href=
+        {{#if signedIn}}
+          "/dashboard"
+        {{else}}
+        "/home"
+        {{/if}}
+        ><img
             src="/public/images/bokenBoardsLogo.png"
             alt="BokenBoards Logo"
             style="width:42px;height:42px;"
