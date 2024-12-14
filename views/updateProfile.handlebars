@@ -4,7 +4,7 @@
         <div class="form-group">
             <label for="attribute">Choose an attribute to update:</label>
             <select id="attribute" name="attribute" onchange="showInputField()">
-                <option value="">Select an Attribute</option>
+                <option value="none" disabled selected>Select an Attribute</option>
                 <option value="firstName">First Name</option>
                 <option value="lastName">Last Name</option>
                 <option value="username">Username</option>
@@ -26,8 +26,6 @@
         <div class="form-group">
             <button type="submit" class="submit-button">Update Profile</button>
         </div>
-        <br>
-        <a href="/dashboard" class="home-link">Dashboard</a>
     </form>
 
     {{#if hasErrors}}
