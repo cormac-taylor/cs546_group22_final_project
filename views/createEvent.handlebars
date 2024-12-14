@@ -10,20 +10,20 @@ Range (if we are getting creative)
 
 {{!-- Might not need both Username and email, if I have one I can get the other --}}
 <form action="/events/createEvent" method = "POST">
-        <div class="form-group">
+        {{!-- <div class="form-group">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
-        </div>
+        </div> --}}
 
         <div class="form-group">
             <label for="eventName">Event Name:</label>
             <input type="text" id="eventName" name="eventName" required>
         </div>
 
-        <div class="form-group">
+        {{!-- <div class="form-group">
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
-        </div>
+        </div> --}}
 
         <div class="form-group">
             <label for="location">Location:</label>
@@ -34,14 +34,9 @@ Range (if we are getting creative)
             <input type="text" id="description" name="description" required>
         </div>
         <div>
-            <label for="startDate">Start Date:</label>
-            <input type="date" id="startDate" name="startDate" required>
+            <label for="Date">Start Date:</label>
+            <input type="date" id="Date" name="Date" required>
         </div>
-        <div>
-            <label for="endDate">Start Date:</label>
-            <input type="date" id="endDate" name="endDate" required>
-        </div>
-
         <div class="form-group">
             <button type="submit" class="submit-button">Create Event</button>
         </div>

@@ -11,8 +11,7 @@ export const addEvent = async (
     email, 
     location,
     description,
-    startDate,
-    endDate
+    Date,
 ) => {
     // console.log("yo")
     ownerUsername = validateString(ownerUsername)
@@ -30,8 +29,7 @@ export const addEvent = async (
         email,
         location,
         description,
-        startDate,
-        endDate
+        Date,
     }
     // console.log(newEvent)
 
