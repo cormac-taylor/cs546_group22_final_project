@@ -11,29 +11,18 @@ import { utils } from "./utilities/utilityIndex.js";
 const db = await dbConnection();
 await db.dropDatabase();
 
-let u1;
-let u2;
-let u3;
-let u4;
-let u5;
-let u6;
-let u7;
-let u8;
-let u9;
-let u10;
+let u1, u2, u3, u4, u5, u6, u7, u8, u9, u10;
 
-let ur1;
-let ur2;
-let ur3;
-let ur4;
-let g1;
-let g2;
-let g3;
-let g4;
-let gr1;
-let gr2;
-let gr3;
-let gr4;
+let ur1, ur2, ur3, ur4, ur5, ur6, ur7, ur8, ur9, ur10, ur11, ur12, ur13;
+let ur14, ur15, ur16, ur17, ur18, ur19, ur20, ur21, ur22, ur23, ur24, ur25;
+
+let g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15;
+
+let gr1, gr2, gr3, gr4, gr5, gr6, gr7, gr8, gr9, gr10, gr11, gr12, gr13, gr14;
+let gr15, gr16, gr17, gr18, gr19, gr20, gr21, gr22, gr23, gr24, gr25, gr26;
+let gr27, gr28, gr29, gr30, gr31, gr32, gr33, gr34, gr35, gr36, gr37, gr38;
+let gr39, gr40;
+
 let password = await utils.hashPassword("Password1@");
 
 /*
@@ -596,6 +585,312 @@ try {
     console.log(e);
   }
  */
+
+/*
+ * Fake users reviews
+ */
+
+try {
+  ur1 = await userReviewsData.createUserReview(
+    u1._id.toString(),
+    u2._id.toString(),
+    "AWESOME",
+    "Simply hilarious. Still can't get over some of the jokes!",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur2 = await userReviewsData.createUserReview(
+    u1._id.toString(),
+    u3._id.toString(),
+    "Helpful",
+    "Always there when needed. Fantastic listener!",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur3 = await userReviewsData.createUserReview(
+    u1._id.toString(),
+    u4._id.toString(),
+    "Talented",
+    "Their creativity is unmatched. Highly recommend!",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur4 = await userReviewsData.createUserReview(
+    u2._id.toString(),
+    u1._id.toString(),
+    "Great Energy",
+    "Always so positive and uplifting. Really great vibe.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur5 = await userReviewsData.createUserReview(
+    u2._id.toString(),
+    u3._id.toString(),
+    "Amazing",
+    "Super insightful and kind. Makes every interaction memorable.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur6 = await userReviewsData.createUserReview(
+    u2._id.toString(),
+    u4._id.toString(),
+    "Helpful",
+    "Great at solving problems. A go-to person for advice.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur7 = await userReviewsData.createUserReview(
+    u3._id.toString(),
+    u1._id.toString(),
+    "Fantastic",
+    "Always ready to lend a hand. A real team player.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur8 = await userReviewsData.createUserReview(
+    u3._id.toString(),
+    u2._id.toString(),
+    "Supportive",
+    "Goes out of their way to make people feel included.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur9 = await userReviewsData.createUserReview(
+    u3._id.toString(),
+    u5._id.toString(),
+    "Friendly",
+    "Always greets you with a smile. A wonderful person to be around.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur10 = await userReviewsData.createUserReview(
+    u4._id.toString(),
+    u1._id.toString(),
+    "Genuine",
+    "Always speaks their mind honestly. A pleasure to work with.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur11 = await userReviewsData.createUserReview(
+    u4._id.toString(),
+    u2._id.toString(),
+    "Great Communicator",
+    "Clear and concise in their messaging. Really helpful.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur12 = await userReviewsData.createUserReview(
+    u4._id.toString(),
+    u3._id.toString(),
+    "Dependable",
+    "Someone you can always count on. Highly reliable!",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur13 = await userReviewsData.createUserReview(
+    u5._id.toString(),
+    u1._id.toString(),
+    "Creative",
+    "Always has fresh ideas and unique perspectives.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur14 = await userReviewsData.createUserReview(
+    u5._id.toString(),
+    u4._id.toString(),
+    "Kind",
+    "Never fails to show kindness and compassion to everyone.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur15 = await userReviewsData.createUserReview(
+    u5._id.toString(),
+    u6._id.toString(),
+    "Professional",
+    "Very detail-oriented and professional. Always a pleasure to work with.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur16 = await userReviewsData.createUserReview(
+    u6._id.toString(),
+    u1._id.toString(),
+    "Innovative",
+    "Always thinking outside the box. Impressive creativity.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur17 = await userReviewsData.createUserReview(
+    u6._id.toString(),
+    u3._id.toString(),
+    "Motivating",
+    "Always keeps the team motivated. A great leader.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur18 = await userReviewsData.createUserReview(
+    u6._id.toString(),
+    u5._id.toString(),
+    "Energetic",
+    "Full of life and energy. Makes everything seem exciting.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur19 = await userReviewsData.createUserReview(
+    u7._id.toString(),
+    u2._id.toString(),
+    "Thoughtful",
+    "Really pays attention to details. Always considerate.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur20 = await userReviewsData.createUserReview(
+    u7._id.toString(),
+    u4._id.toString(),
+    "Efficient",
+    "Handles tasks with incredible efficiency and skill.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur21 = await userReviewsData.createUserReview(
+    u7._id.toString(),
+    u6._id.toString(),
+    "Focused",
+    "Always keeps the team on track. A true asset to any project.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur22 = await userReviewsData.createUserReview(
+    u8._id.toString(),
+    u1._id.toString(),
+    "Bright",
+    "Lights up every room they enter. Truly inspiring!",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur23 = await userReviewsData.createUserReview(
+    u8._id.toString(),
+    u5._id.toString(),
+    "Hardworking",
+    "Always puts in the extra effort to get things done.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur24 = await userReviewsData.createUserReview(
+    u8._id.toString(),
+    u7._id.toString(),
+    "Inspiring",
+    "A role model in every sense of the word. Highly motivating.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  ur25 = await userReviewsData.createUserReview(
+    u9._id.toString(),
+    u3._id.toString(),
+    "Optimistic",
+    "Always sees the bright side of every situation. Great energy!",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+/*
 try {
   ur1 = await userReviewsData.createUserReview(
     u1._id.toString(),
@@ -643,6 +938,7 @@ try {
 } catch (e) {
   console.log(e);
 }
+*/
 
 try {
   g1 = await gamesData.createGame(
@@ -696,6 +992,490 @@ try {
   console.log(e);
 }
 
+/*
+ * Game Reviews
+ */
+try {
+  gr1 = await gameReviewsData.createGameReview(
+    u2._id.toString(),
+    g4._id.toString(),
+    "Fun",
+    "Risk is fun. Risk is fun.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr2 = await gameReviewsData.createGameReview(
+    u3._id.toString(),
+    g1._id.toString(),
+    "Boring",
+    "The game dragged on way too long. Would not recommend.",
+    2
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr3 = await gameReviewsData.createGameReview(
+    u1._id.toString(),
+    g5._id.toString(),
+    "Engaging",
+    "A strategic masterpiece! The depth is incredible.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr4 = await gameReviewsData.createGameReview(
+    u4._id.toString(),
+    g3._id.toString(),
+    "Confusing",
+    "The rules were overly complicated and hard to follow.",
+    1
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr5 = await gameReviewsData.createGameReview(
+    u5._id.toString(),
+    g2._id.toString(),
+    "Fantastic",
+    "A truly entertaining game for the whole family.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr6 = await gameReviewsData.createGameReview(
+    u6._id.toString(),
+    g6._id.toString(),
+    "Mediocre",
+    "The mechanics are outdated. It could use a refresh.",
+    3
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr7 = await gameReviewsData.createGameReview(
+    u7._id.toString(),
+    g7._id.toString(),
+    "Exciting",
+    "An adrenaline-packed experience. Highly recommend.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr8 = await gameReviewsData.createGameReview(
+    u8._id.toString(),
+    g8._id.toString(),
+    "Dull",
+    "I couldn’t wait for the game to end. Very repetitive.",
+    1
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr9 = await gameReviewsData.createGameReview(
+    u9._id.toString(),
+    g9._id.toString(),
+    "Creative",
+    "Unique and thought-provoking gameplay. A gem.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr10 = await gameReviewsData.createGameReview(
+    u10._id.toString(),
+    g10._id.toString(),
+    "Amazing",
+    "A new favorite! I can’t wait to play again.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr11 = await gameReviewsData.createGameReview(
+    u3._id.toString(),
+    g11._id.toString(),
+    "Unbalanced",
+    "Certain strategies dominate the game, ruining the fun.",
+    2
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr12 = await gameReviewsData.createGameReview(
+    u4._id.toString(),
+    g12._id.toString(),
+    "Intriguing",
+    "Loved the twists and turns. Keeps you on your toes.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr13 = await gameReviewsData.createGameReview(
+    u5._id.toString(),
+    g13._id.toString(),
+    "Average",
+    "Not bad, but nothing special. It’s okay.",
+    3
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr14 = await gameReviewsData.createGameReview(
+    u6._id.toString(),
+    g14._id.toString(),
+    "Complex",
+    "Took a while to understand, but rewarding in the end.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr15 = await gameReviewsData.createGameReview(
+    u7._id.toString(),
+    g15._id.toString(),
+    "Tedious",
+    "Way too long for the payoff. Not worth the effort.",
+    2
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr16 = await gameReviewsData.createGameReview(
+    u2._id.toString(),
+    g4._id.toString(),
+    "Fun",
+    "Risk is fun. Risk is fun.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr17 = await gameReviewsData.createGameReview(
+    u5._id.toString(),
+    g7._id.toString(),
+    "Exciting",
+    "This game keeps me on the edge of my seat!",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr18 = await gameReviewsData.createGameReview(
+    u1._id.toString(),
+    g2._id.toString(),
+    "Challenging",
+    "Tough but rewarding gameplay. Highly recommended!",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr19 = await gameReviewsData.createGameReview(
+    u3._id.toString(),
+    g5._id.toString(),
+    "Average",
+    "Not bad, but could use more variety.",
+    3
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr20 = await gameReviewsData.createGameReview(
+    u4._id.toString(),
+    g1._id.toString(),
+    "Addictive",
+    "Once you start, you can’t stop playing!",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr21 = await gameReviewsData.createGameReview(
+    u7._id.toString(),
+    g8._id.toString(),
+    "Disappointing",
+    "Expected more content for the price.",
+    2
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr22 = await gameReviewsData.createGameReview(
+    u6._id.toString(),
+    g6._id.toString(),
+    "Immersive",
+    "Amazing world-building and storytelling.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr23 = await gameReviewsData.createGameReview(
+    u8._id.toString(),
+    g3._id.toString(),
+    "Frustrating",
+    "The controls are a bit clunky, but gameplay is okay.",
+    2
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr24 = await gameReviewsData.createGameReview(
+    u10._id.toString(),
+    g9._id.toString(),
+    "Solid",
+    "Good graphics and smooth mechanics.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr25 = await gameReviewsData.createGameReview(
+    u9._id.toString(),
+    g10._id.toString(),
+    "Entertaining",
+    "Great for passing time with friends.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr26 = await gameReviewsData.createGameReview(
+    u3._id.toString(),
+    g12._id.toString(),
+    "Repetitive",
+    "The gameplay loop gets stale after a while.",
+    3
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr27 = await gameReviewsData.createGameReview(
+    u5._id.toString(),
+    g11._id.toString(),
+    "Thrilling",
+    "Fast-paced action and great music!",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr28 = await gameReviewsData.createGameReview(
+    u7._id.toString(),
+    g13._id.toString(),
+    "Chill",
+    "Relaxing gameplay and soothing visuals.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr29 = await gameReviewsData.createGameReview(
+    u2._id.toString(),
+    g14._id.toString(),
+    "Boring",
+    "Lacks excitement and feels unfinished.",
+    1
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr30 = await gameReviewsData.createGameReview(
+    u6._id.toString(),
+    g15._id.toString(),
+    "Innovative",
+    "A fresh take on a classic genre.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr31 = await gameReviewsData.createGameReview(
+    u8._id.toString(),
+    g4._id.toString(),
+    "Satisfying",
+    "Great progression system that keeps you engaged.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr32 = await gameReviewsData.createGameReview(
+    u4._id.toString(),
+    g8._id.toString(),
+    "Too Short",
+    "Fun but doesn’t last very long.",
+    3
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr33 = await gameReviewsData.createGameReview(
+    u1._id.toString(),
+    g1._id.toString(),
+    "Epic",
+    "An unforgettable adventure from start to finish!",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr34 = await gameReviewsData.createGameReview(
+    u10._id.toString(),
+    g7._id.toString(),
+    "Laggy",
+    "Multiplayer experience is marred by server issues.",
+    2
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr35 = await gameReviewsData.createGameReview(
+    u9._id.toString(),
+    g5._id.toString(),
+    "Nostalgic",
+    "Reminds me of the classics, in a good way!",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr36 = await gameReviewsData.createGameReview(
+    u6._id.toString(),
+    g11._id.toString(),
+    "Overrated",
+    "Didn’t live up to the hype for me.",
+    2
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr37 = await gameReviewsData.createGameReview(
+    u3._id.toString(),
+    g15._id.toString(),
+    "Balanced",
+    "Perfect balance of challenge and fun.",
+    5
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr38 = await gameReviewsData.createGameReview(
+    u8._id.toString(),
+    g13._id.toString(),
+    "Relaxing",
+    "A great way to unwind after a long day.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr39 = await gameReviewsData.createGameReview(
+    u5._id.toString(),
+    g3._id.toString(),
+    "Clunky",
+    "The mechanics feel outdated and rough.",
+    2
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  gr40 = await gameReviewsData.createGameReview(
+    u7._id.toString(),
+    g9._id.toString(),
+    "Enjoyable",
+    "A solid game with lots to do.",
+    4
+  );
+} catch (e) {
+  console.log(e);
+}
+
+/*
 try {
   gr1 = await gameReviewsData.createGameReview(
     u2._id.toString(),
@@ -743,6 +1523,7 @@ try {
 } catch (e) {
   console.log(e);
 }
+*/
 
 /* Request Seeding */
 let currGame;
