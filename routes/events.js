@@ -18,9 +18,9 @@ router.route("/").get(async (req, res) => {
             start: event.startDate,
             end: event.endDate || null,
             description: event.description || '',
-            id: event._id // Add this if you want unique IDs for each event
+            id: event._id
           }));
-        res.render("events", { pageTitle: "Local Events" })
+          res.render("events", { pageTitle: "Local Events", events: JSON.stringify(formattedEvents) });
         
     } catch (e) {
         res.status(500).json({ error: e })
@@ -87,7 +87,7 @@ router.route("/createEvent").get(async (req, res) => {
         // user.eventsCreated.push(result.insertedId.toString())
         // console.log(user)
         // let updatecurrUser = await updateUser(ownerID, {eventsCreated: user.eventsCreated})
-        res.render("events", { pageTitle: "Local Events" })
+        res.redirect("/events")
     });
 
 router.route("/updateEvent").get(async (req, res) => {
