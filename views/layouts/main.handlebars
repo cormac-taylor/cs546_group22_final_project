@@ -24,12 +24,7 @@
   <body>
     <header>
       <div class="logo">
-        <a href=
-        {{#if signedIn}}
-          "/dashboard"
-        {{else}}
-        "/home"
-        {{/if}}
+        <a href="/home"
         ><img
             src="/public/images/bokenBoardsLogo.png"
             alt="BokenBoards Logo"
@@ -37,8 +32,10 @@
           /></a>
       </div>
       <nav class="navigation">
+        {{#if signedIn}}
+        <a href="/dashboard">Dashboard</a>
+        {{/if}}
         <a href="/games">Discover Games</a>
-        <a href="/community">Community Blog</a>
         <a href="/events">Events</a>
         {{#if signedIn}}
           <a href="/logout">Log Out</a>
