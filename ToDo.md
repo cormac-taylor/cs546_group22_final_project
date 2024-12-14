@@ -3,8 +3,6 @@
 ### Core Features In Progress
     Landing Page:               Needs content
     --------------------------------------------------------------------------------------------------------------------------
-    Sign In User Page:          Good
-    --------------------------------------------------------------------------------------------------------------------------
     User Profile:               Needs update location function
     --------------------------------------------------------------------------------------------------------------------------
     Manage Games Page:          Waiting Approval
@@ -13,7 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     Discover Games:             Waiting Approval
     --------------------------------------------------------------------------------------------------------------------------
-    Find Games:                 
+    Find Games:                 ?
     --------------------------------------------------------------------------------------------------------------------------
     Community blog/Events page: ?
     --------------------------------------------------------------------------------------------------------------------------
@@ -21,17 +19,17 @@
     --------------------------------------------------------------------------------------------------------------------------
     Return Borrowed Games       Not started
 
-### Core Features Done
-    - Log In User Page
-
-### Core Features Done (Should get approved by 1 or more other members)
+### Core Features Awaiting Approval
     - Manage Games Page
     - Game Profile/Reviews
     - Discover Games
     - User Reviews
 
+### Core Features Done
+    - Sign in page
+    - Sign up page
+
 ### Missing Requirements
-    - AJAX form with error handling (client-side as well as server side)  -> (currently in-progress by Cormac)
     - Full seed file
     - Returning a request  -> (currently in-progress by Vraj)
 
