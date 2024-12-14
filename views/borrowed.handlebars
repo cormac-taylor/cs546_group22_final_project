@@ -1,0 +1,23 @@
+<h1>My Borrowed Games:</h1>
+<a href="/dashboard" class="home-link">Dashboard</a>
+
+{{#if returned}}
+<h2>{{returned}}</h2>
+{{else}}
+    {{#if games}}
+    <ul class="games-list">
+        {{#each games}}
+        <li class="gameEntry">
+            <h2>{{gameTitle}}</h2>
+            <img class="searchResultImage" alt="{{gameTitle}}" src="{{imgURL}}">
+            <form method="POST" action="/manage/returnBorrowed">
+                <input type="hidden" name="gid" value={{_id}}>
+                <button type="submit">Return Game</button>
+            </form>
+        </li>
+        {{/each}}
+    </ul>
+    {{else}}
+    <h2>You have no games borrowed</h2>
+    {{/if}}
+{{/if}}

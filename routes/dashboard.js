@@ -22,14 +22,14 @@ router
     .route('/viewrequest')
     .post(async (req, res) =>{
         if (!req.session.user){
-            return res.status(401).send('You must be logged in to view this page.')
+            return res.render("signin", { pageTitle: "Sign In" });
         }
         try{
             let userId = req.session.user.userId;
             let reqId = validation.validateObjectID(xss(req.body.reqUserId));
             let gameId = validation.validateObjectID(xss(req.body.reqGame));
             let reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
-            let reqMsg = reqObj.message;
+            let reqMsg = reqObj.requests[0].message;
             let currUser = await usersData.getUserById(userId);
             let reqUser = await usersData.getUserById(reqId.toString());
             let reqGame = await gamesData.getGameById(gameId.toString());
@@ -41,8 +41,7 @@ router
                 reqMsg,
             });
         }catch(e){
-            //TODO: After creating an error page, present that with error instead
-            res.status(500).json({error: e});
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
         }
     });
 
@@ -50,24 +49,42 @@ router
     .route('/viewrequest/approve')
     .post(async (req, res) =>{
         if (!req.session.user){
-            return res.status(401).send('You must be logged in to view this page.')
+            return res.render("signin", { pageTitle: "Sign In" });
+        }
+        let userId;
+        let reqId;
+        let gameId;
+        let reqObj;
+        let reqMsg;
+        let approveStr;
+        let approveVal;
+        let currUser;
+        let reqUser;
+        let reqGame;
+        try{
+            userId = req.session.user.userId;
+            reqId = validation.validateObjectID(xss(req.body.reqUserId));
+            gameId = validation.validateObjectID(xss(req.body.reqGame));
+            reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
+            reqMsg = reqObj.requests[0].message;
+            approveStr = validation.validateString(xss(req.body.approve));
+            approveVal = ((str) => str === 'true')(approveStr);
+            currUser = await usersData.getUserById(userId);
+            reqUser = await usersData.getUserById(reqId.toString());
+            reqGame = await gamesData.getGameById(gameId.toString());
+        }catch(e){
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
         }
         try{
-            let userId = req.session.user.userId;
-            let reqId = validation.validateObjectID(xss(req.body.reqUserId));
-            let gameId = validation.validateObjectID(xss(req.body.reqGame));
-            let reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
-            let reqMsg = reqObj.message;
-            let approveStr = validation.validateString(xss(req.body.approve));
-            let approveVal = ((str) => str === 'true')(approveStr);
-            let currUser = await usersData.getUserById(userId);
-            let reqUser = await usersData.getUserById(reqId.toString());
-            let reqGame = await gamesData.getGameById(gameId.toString());
             if (reqGame.ownerID.toString() !== userId) throw `Error: This game does not belong to you!`;
+        } catch(e) {
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "Error: This game does not belong to you!"});
+        }
+        try{
 
             /* Updates the game object by removing the request and setting game borrowed status accordingly */
             reqGame = await gamesData.handleRequest(gameId.toString(), reqId.toString(), approveVal);
-
+            
             res.render('viewRequest', {
                 pageTitle: 'View Game Request',
                 signedIn: true,
@@ -77,9 +94,8 @@ router
                 reqGame,
                 reqMsg,
             });
-        }catch(e){
-            //TODO: After creating an error page, present that with error instead
-            res.status(500).json({error: e});
+        } catch(e) {
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "Error: This game is already being borrowed"});
         }
     });
 
@@ -89,7 +105,7 @@ router
     .get(async (req, res) => {
         try{
             if (!req.session.user){
-                return res.status(401).send('You must be logged in to view this page.')
+                return res.render("signin", { pageTitle: "Sign In" });
             }
             let userId = req.session.user.userId;
             let currUser = await usersData.getUserById(userId);
@@ -117,7 +133,7 @@ router
             }
             // Ensure session name matches URL
             if (xss(req.params.username) !== req.session.user.username){
-                return res.status(403).json({error: e});
+                return res.status(403).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "403", errorMsg: "You do not have access to view this page"});
             }
             res.render('dashboard', {
                 pageTitle: 'BokenBoards Dashboard',
@@ -129,8 +145,7 @@ router
                 requests: requests,
             });
         } catch(e){
-            //TODO: After creating an error page, present that with error instead
-            res.status(500).json({error: e});
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
         }
 });
 
@@ -139,14 +154,14 @@ router
     .get(async (req, res) => {
         try{
             if (!req.session.user){
-                return res.status(401).send('You must be logged in to view this page.')
+                return res.render("signin", { pageTitle: "Sign In" });
             }
             let userId = req.session.user.userId;
             let currUser = await usersData.getUserById(userId);
 
             // Ensure session name matches URL
             if (xss(req.params.username) !== req.session.user.username){
-                return res.status(403).json({error: e});
+                return res.status(403).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "403", errorMsg: "You do not have access to view this page"});
             }
             res.render('updateProfile', {
                 pageTitle: 'Update Profile',
@@ -154,8 +169,7 @@ router
                 user: currUser
             });
         } catch(e){
-            //TODO: After creating an error page, present that with error instead
-            res.status(500).json({error: e});
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
         }
     })
     .post(async (req, res) =>{
@@ -164,18 +178,17 @@ router
         try{
             // Ensure there is a valid session for user
             if (!req.session.user){
-                return res.status(401).send('You must be logged in to view this page.')
+                return res.render("signin", { pageTitle: "Sign In" });
             }
             userId = req.session.user.userId;
             currUser = await usersData.getUserById(userId);
 
             // Ensure session name matches URL
             if (xss(req.params.username) !== req.session.user.username){
-                return res.status(403).json({error: e});
+                render("error", {signedIn: true, pageTitle: "Error", errorStatus: "403", errorMsg: "You do not have access to view this page"});
             }
         } catch(e){
-            //TODO: After creating an error page, present that with error instead
-            res.status(500).json({error: e});
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
         }
 
         /* Verification of user updated data */
