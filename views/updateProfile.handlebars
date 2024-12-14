@@ -1,6 +1,6 @@
 <article class="profile-update-container">
     <h1>Update Profile</h1>
-    <form action="/dashboard/{{user.username}}/update" method="POST" class="profile-update-form">
+    <form action="/dashboard/{{user.username}}/update" method="POST" class="profile-update-form" id="profile-update-form">
         <div class="form-group">
             <label for="attribute">Choose an attribute to update:</label>
             <select id="attribute" name="attribute" onchange="showInputField()">
@@ -32,17 +32,18 @@
     </form>
 
     {{#if hasErrors}}
-    <ul class="error-list">
+    <ul class="error-list" id="server-list">
         {{#each errors}}
         <li>{{this}}</li>
         {{/each}}
     </ul>
     {{/if}}
     {{#if success}}
-    <ul class="success-list">
+    <ul class="success-list" id="server-list">
         <li>Profile was successfully updated!</li>
     </ul>
     {{/if}}
+    <ul id="client-error-list"></ul>
 
 </article>
 
@@ -70,4 +71,4 @@
       src="https://code.jquery.com/jquery-3.6.4.js"
       integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E="
       crossorigin="anonymous"></script>
-    <script src="/public/js/updateProfile.js"></script>
+    <script src="/public/js/updateProfile.js" type="module"></script>
