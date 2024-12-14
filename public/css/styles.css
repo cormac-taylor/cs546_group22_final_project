@@ -190,11 +190,11 @@ button:hover,
 .logo img {
   height: 40px;
   margin-right: 10px;
-  transform: scale(1.2);
+  transform: scale(1.4);
 }
 
 .logo img:hover {
-  transform: scale(1.4);
+  transform: scale(1.6);
 }
 
 .homeImage {
