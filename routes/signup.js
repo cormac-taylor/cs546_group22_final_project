@@ -51,11 +51,7 @@ router
       errors.push(`Email ${e}`);
     }
     try {
-      //TODO: Currently, there is no password validation (2 ints and 2 special chars should be required)
-      // userSignupData.password = validation.validatePassword(xss(userSignupData.password))
-      userSignupData.password = validation.validateString(
-        xss(userSignupData.password)
-      );
+      userSignupData.password = validation.validatePassword(xss(userSignupData.password))
     } catch (e) {
       errors.push(`Password ${e}`);
     }
