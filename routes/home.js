@@ -16,7 +16,8 @@ router.route("/").get(async (req, res) => {
     let i = 0,
       imgs = [];
     const games = await getAllGames();
-    for (let g of games) {
+    while (imgs.length < 5) {
+      let g = games[Math.floor(Math.random() * games.length)]
       if (!imgs.includes(g.imgURL)) {
         imgs.push(g.imgURL);
         gameThumbnails[i].src = g.imgURL;
