@@ -940,6 +940,26 @@ try {
 }
 */
 
+/*
+ * Games
+ */
+
+// TO DO
+try {
+  g1 = await gamesData.createGame(
+    u2._id.toString(),
+    u2.location,
+    "Risk",
+    "The ultimate game of strategy.",
+    "new",
+    "https://m.media-amazon.com/images/I/71GM6UFejTL._AC_SL1500_.jpg"
+  );
+} catch (e) {
+  console.log(e);
+}
+
+
+/*
 try {
   g1 = await gamesData.createGame(
     u2._id.toString(),
@@ -991,6 +1011,7 @@ try {
 } catch (e) {
   console.log(e);
 }
+*/
 
 /*
  * Game Reviews
