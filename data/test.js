@@ -86,16 +86,25 @@ let result;
 
 let monopolyId = '6750ed218558ce1c2ee99dbb';    // Monopoly owned by u2
 let connect4Id = '6750e72d2dd74aae564d862c';    // Connect 4 owned by u1
-let u1id = '6750ed218558ce1c2ee99db0'   // u1 user one
+let u1id = '675de78ac5ce97fadc80a90f'   // u1 user one
 let u2id = '6750e72d2dd74aae564d8621'   // u2 user two
 let u3id = '6750e72d2dd74aae564d8622'   // u3 user three
 let u4id = '6750e72d2dd74aae564d8623'   // u4 user four
 
 let approval = true;
-let currGame;
+let nearbyGames;
+let nearbyUsers;
+// try {
+//     currGame = await gamesData.handleRequest(monopolyId, u1id, approval);
+//     console.log(currGame);
+// } catch(e){
+//     console.log(e);
+// }
 try {
-    currGame = await gamesData.handleRequest(monopolyId, u1id, approval);
-    console.log(currGame);
+    nearbyGames = await locationData.nearbyGames(u1id, 5);
+    nearbyUsers = await locationData.nearbyUsers(u1id, 5);
+    console.log(nearbyGames);
+    console.log(nearbyUsers);
 } catch(e){
     console.log(e);
 }
