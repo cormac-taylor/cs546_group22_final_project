@@ -12,9 +12,14 @@ let newPasswordInput = document.getElementById("newPassword");
 let confirmNewPasswordInput = document.getElementById("confirmNewPassword");
 let clientErrorList = document.getElementById("client-error-list");
 let serverErrorList = document.getElementById("server-list");
+let subButton = document.getElementById("subButton");
 
 if (updateForm) {
   attribute.addEventListener("change", (event) => {
+    subButton.disabled = false;
+    newValueInput.value = "";
+    newPasswordInput.value = "";
+    confirmNewPasswordInput.value = "";
     clientErrorList.innerHTML = "";
     clientErrorList.hidden = true;
     if (serverErrorList) {
@@ -54,6 +59,7 @@ if (updateForm) {
       });
     } else if (attribute.value === "username") {
       newValueInput.addEventListener("input", (event) => {
+        subButton.disabled = false;
         const username = newValueInput.value;
 
         try {
@@ -83,6 +89,7 @@ if (updateForm) {
             }
 
             if (ajaxErrors.length > 0) {
+                $("#subButton").prop("disabled",true);
               for (let e of ajaxErrors) {
                 let li = $("<li></li>").text(e);
                 $("#client-error-list").append(li);
@@ -130,30 +137,14 @@ if (updateForm) {
       });
     } else if (attribute.value === "email") {
       newValueInput.addEventListener("input", (event) => {
-        // const errors = [];
+        subButton.disabled = false;
         const email = newValueInput.value;
 
         try {
           newValueInput.value = validateEmail(email);
         } catch (e) {
-          //   newValueInput.value = username.trim();
-          //   errors.push(`Username ${e}`);
           return;
         }
-
-        // if (errors.length > 0) {
-        //   event.preventDefault();
-
-        //   clientErrorList.innerHTML = "";
-        //   for (let e of errors) {
-        //     let li = document.createElement("li");
-        //     li.innerHTML = e;
-        //     clientErrorList.appendChild(li);
-        //   }
-        //   clientErrorList.hidden = false;
-        //   if (serverErrorList) serverErrorList.hidden = true;
-        //   return;
-        // }
 
         let requestConfig = {
           url: "/api/unique/email",
@@ -177,6 +168,7 @@ if (updateForm) {
 
             if (ajaxErrors.length > 0) {
               for (let e of ajaxErrors) {
+                $("#subButton").prop("disabled",true);
                 let li = $("<li></li>").text(e);
                 $("#client-error-list").append(li);
               }
