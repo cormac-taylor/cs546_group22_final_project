@@ -98,6 +98,15 @@ router
     } catch (e) {
       errors.push(`Description ${e}`);
     }
+
+    const today = new Date()
+    const formattedToday = today.toISOString().split('T')[0];
+    // console.log(formattedToday)
+    // console.log(createEventFormInfo.Date)
+    if (formattedToday > createEventFormInfo.Date){
+        res.render("error", { errorStatus: 500, errorMsg: "You cannot create an Event for the past" });
+        return
+    }
     let result = await addEvent(
       ownerID,
       owner.username,
@@ -133,7 +142,7 @@ router
         signedIn: signedIn
       });
     } catch (e) {
-      res.status(500).json({ error: e });
+      res.render("error", { errorStatus: 500, errorMsg: e });
     }
   })
   .post(async (req, res) => {
@@ -168,7 +177,7 @@ router
         signedIn: signedIn
       });
     } catch (e) {
-      res.status(500).json({ error: e });
+      res.render("error", { errorStatus: 500, errorMsg: e });
     }
   })
   .post(async (req, res) => {
@@ -273,4 +282,24 @@ router
     }
     // console.log(eventList)
   });
+
+router
+  .route("/eventDetails")
+  .get(async (req, res) => {
+    try{
+        console.log("yo")
+        const eventCollection = await events()
+        const event = await getEventById(req.params.id)
+    
+        if (!event){
+            res.render("error", { errorStatus: 404, errorMsg: 'Event not found' });
+            return
+        }
+        res.render('eventDetails', {pageTitle: "Event Details", eventName: event.name, eventDescripton: event.description, contact: event.email})
+    }
+    catch(e){
+        res.render("error", { errorStatus: 500, errorMsg: e });
+    }
+    
+  })
 export default router;
