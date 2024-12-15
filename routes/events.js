@@ -22,10 +22,11 @@ router.route("/").get(async (req, res) => {
     const allEvents = await eventsCollection.find({}).toArray();
     const formattedEvents = allEvents.map((event) => ({
       title: event.eventName,
-      start: event.startDate,
-      end: event.endDate || null,
+      start: event.Date,
+    //   end: event.endDate || null,
       description: event.description || "",
       id: event._id,
+      email: event.email
     }));
     let signedIn = req.session.user ? true : false;
     res.render("events", {
@@ -67,21 +68,22 @@ router
       // return res.status(401).send('You must be logged in to view this page.')
     }
     let ownerID = req.session.user.userId;
-    try {
-      createEventFormInfo.username = validation.validateUsername(
-        xss(createEventFormInfo.username)
-      );
-    } catch (e) {
-      errors.push(`Username ${e}`);
-    }
+    let owner = await getUserById(ownerID)
+    // try {
+    //   createEventFormInfo.username = validation.validateUsername(
+    //     xss(createEventFormInfo.username)
+    //   );
+    // } catch (e) {
+    //   errors.push(`Username ${e}`);
+    // }
 
-    try {
-      createEventFormInfo.email = validation.validateEmail(
-        xss(createEventFormInfo.email)
-      );
-    } catch (e) {
-      errors.push(`Email ${e}`);
-    }
+    // try {
+    //   createEventFormInfo.email = validation.validateEmail(
+    //     xss(createEventFormInfo.email)
+    //   );
+    // } catch (e) {
+    //   errors.push(`Email ${e}`);
+    // }
     // try{
     //     createEventFormInfo.location = validation.validateGeoJson(createEventFormInfo.location)
     // }
@@ -96,15 +98,23 @@ router
     } catch (e) {
       errors.push(`Description ${e}`);
     }
+
+    const today = new Date()
+    const formattedToday = today.toISOString().split('T')[0];
+    // console.log(formattedToday)
+    // console.log(createEventFormInfo.Date)
+    if (formattedToday > createEventFormInfo.Date){
+        res.render("error", { errorStatus: 500, errorMsg: "You cannot create an Event for the past" });
+        return
+    }
     let result = await addEvent(
       ownerID,
-      createEventFormInfo.username,
+      owner.username,
       xss(createEventFormInfo.eventName),
-      createEventFormInfo.email,
+      owner.email,
       createEventFormInfo.location,
       createEventFormInfo.description,
-      xss(createEventFormInfo.startDate),
-      xss(createEventFormInfo.endDate)
+      xss(createEventFormInfo.Date)
     );
     // let user = await getUserById(ownerID)
     // user.eventsCreated.push(result.insertedId.toString())
@@ -132,7 +142,7 @@ router
         signedIn: signedIn
       });
     } catch (e) {
-      res.status(500).json({ error: e });
+      res.render("error", { errorStatus: 500, errorMsg: e });
     }
   })
   .post(async (req, res) => {
@@ -167,7 +177,7 @@ router
         signedIn: signedIn
       });
     } catch (e) {
-      res.status(500).json({ error: e });
+      res.render("error", { errorStatus: 500, errorMsg: e });
     }
   })
   .post(async (req, res) => {
@@ -176,8 +186,8 @@ router
       return;
       //return res.status(401).send('You must be logged in to view this page.')
     }
-    const { eventId, eventName, email, location, description } = req.body;
-    eventId = xss();
+    let { eventId, eventName, email, location, description } = req.body;
+    eventId = xss(eventId);
     eventName = xss(eventName);
     email = xss(email);
     description = xss(description);
@@ -272,4 +282,24 @@ router
     }
     // console.log(eventList)
   });
+
+router
+  .route("/eventDetails")
+  .get(async (req, res) => {
+    try{
+        console.log("yo")
+        const eventCollection = await events()
+        const event = await getEventById(req.params.id)
+    
+        if (!event){
+            res.render("error", { errorStatus: 404, errorMsg: 'Event not found' });
+            return
+        }
+        res.render('eventDetails', {pageTitle: "Event Details", eventName: event.name, eventDescripton: event.description, contact: event.email})
+    }
+    catch(e){
+        res.render("error", { errorStatus: 500, errorMsg: e });
+    }
+    
+  })
 export default router;
