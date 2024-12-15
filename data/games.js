@@ -4,6 +4,7 @@ import * as turf from '@turf/turf'
 import {
   validateBody,
   validateCondition,
+  validateFloat,
   validateGeoJson,
   validateNonEmptyObject,
   validateObjectID,
@@ -326,5 +327,16 @@ export const sortByRating = async (userLoc, userId, gameList) => {
   // let gameList = await getAllGames();
   gameList = gameList.filter((game) => game.ownerID.toString() !== userId);
   gameList.sort((a,b) => b.averageRating - a.averageRating);
+  return gameList;
+}
+
+export const filterByDistance = async (userLoc, userId, sortDist, gameList) => {
+  sortDist = validateFloat(sortDist);
+  userLoc = validateGeoJson(userLoc);
+  validateObjectID(userId);
+  if(!gameList) {gameList = await getAllGames()}
+  // let gameList = await getAllGames();
+  gameList = gameList.filter((game) => game.ownerID.toString() !== userId);
+  gameList = gameList.filter((game) => turf.distance(game.location.geometry, userLoc, {units: 'miles'}) <= parseFloat(sortDist));
   return gameList;
 }

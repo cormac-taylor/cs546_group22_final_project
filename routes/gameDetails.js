@@ -9,14 +9,14 @@ import xss from "xss"
 
 router.route("/").get(async (req, res) => {
     if(!req.session.user){
-        return res.render("signin", { pageTitle: "Sign In", status: "Please Sign In Before Managing Games!"})
+        return res.render("signin", { pageTitle: "Sign In", errorStatus: "Please Sign In Before Managing Games!"})
     }
 
     let user;
     try {
         user = await userData.getUserById(req.session.user.userId);
     } catch (e) {
-        return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: e});
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
     try {
         let g;
@@ -33,7 +33,7 @@ router.route("/").get(async (req, res) => {
             res.render("signin", { pageTitle: "BokenBoards", status: "Sign in to see more!" })
         }
     } catch (e) {
-        return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: e});
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
 });
 router.route("/").post(async (req, res) => {
@@ -42,15 +42,28 @@ router.route("/").post(async (req, res) => {
         return;
     }
     let user;
+    let sortDist;
     try {
         user = await userData.getUserById(req.session.user.userId);
     } catch (e) {
-        return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: e});
+        return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});
+    }
+    try {
+        if(!xss(req.body.sortBy) || (xss(req.body.sortBy) !== "closest" && xss(req.body.sortBy) !== "rating")) {
+            throw 'Please select a Sorting Metric'
+        }
+    } catch(e) {
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Please Select Closest or By Rating to Sort"});
+    }
+    try {
+        if(xss(req.body.sortDist)) {
+            sortDist = validation.validateFloat(parseFloat(xss(req.body.sortDist)));
+        }
+    } catch(e) {
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Please enter a valid number for the search radius"});
     }
     try {
         let g;
-        if(!xss(req.body.sortBy) || (xss(req.body.sortBy) !== "closest" && xss(req.body.sortBy) !== "rating")) {throw 'Please select a Sorting Metric'}
-
         if(xss(req.body.sortBy) === "closest"){
             g = await games.sortByClosestLocation(user.location.geometry, req.session.user.userId);
         }
@@ -59,6 +72,9 @@ router.route("/").post(async (req, res) => {
         }
         if(xss(req.body.searchTerm)) {
             g = g.filter((game) => game.gameTitle === xss(req.body.searchTerm));
+        }
+        if(xss(req.body.sortDist)) {
+            g = await games.filterByDistance(user.location.geometry, req.session.user.userId, parseFloat(sortDist), g);
         }
         if(req.session.user){
             if(g.length === 0) {
@@ -72,7 +88,7 @@ router.route("/").post(async (req, res) => {
             res.render("signin", { pageTitle: "BokenBoards", status: "Sign in to see more!" })
         }
     } catch (e) {
-        return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: e});
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
     }
 });
 router.route("/gameDetails").post(async (req, res) => {
@@ -82,18 +98,18 @@ router.route("/gameDetails").post(async (req, res) => {
         try {
             game = await games.getGameById(xss(req.body.gid));
         } catch (e) {
-            return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: e});
+            return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
         try {
             reviewList = await gameReviewData.getGameReviewsByReviewedGameId(xss(req.body.gid));
         } catch (e) {
-            return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: e});
+            return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
         try {
             let postUser = await userData.getUserById(game.ownerID.toString());
             res.render("gameDetails", {signedIn: true, pageTitle: "Game Details", g: game, user: postUser.username, reviews: reviewList});
         } catch (e) {
-            return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: e});
+            return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
     }
     else {

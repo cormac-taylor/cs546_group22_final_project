@@ -28,18 +28,18 @@ router.route("/:userId").get(async (req, res) => {
     try{
         validation.validateObjectID(xss(req.params.userId));
     } catch (e) {
-        return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: "Invalid UserId"});
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Invalid UserId"});
     }
     try{
         user = await users.getUserById(xss(req.params.userId));
     } catch (e) {
-        return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "User not found"});
+        return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});
     }
     try{
         reviewList = await userReviews.getUserReviewsByReviewedUserId(xss(req.params.userId))
         res.render("viewUserReviews", {signedIn: signedIn, pageTitle: "User Reviews", name: user.username, avgRating: user.averageRating, uid: user._id, reviews: reviewList});
     } catch (e) {
-        return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "User not found"});
+        return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});
     }
 });
 
@@ -58,13 +58,13 @@ router.route("/writeUserReview/:userId").get(async (req, res) => {
     try{
         validation.validateObjectID(xss(req.params.userId));
     } catch (e) {
-        return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: "Invalid UserId"});
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Invalid UserId"});
     }
     try{
         user = await users.getUserById(xss(req.params.userId));
         res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", reviewed: user.username, uid: xss(req.params.userId)});
     } catch (e) {
-        return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "User not found"});
+        return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});
     }
 
 });
@@ -86,12 +86,12 @@ router.route("/writeUserReview/:userId").post(async (req, res) => {
     try{
         validation.validateObjectID(xss(req.params.userId));
     } catch (e) {
-        return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: "Invalid UserId"});
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Invalid UserId"});
     }
     try{
         user = await users.getUserById(xss(req.params.userId));
     } catch (e) {
-        return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "User not found"});
+        return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});
     }
     try{
         validation.validateTitle(xss(req.body.reviewingTitle))
@@ -117,7 +117,7 @@ router.route("/writeUserReview/:userId").post(async (req, res) => {
         reviewList = await userReviews.getUserReviewsByReviewedUserId(xss(req.params.userId))
         res.render("viewUserReviews", {signedIn: signedIn, pageTitle: "User Reviews", name: user.username, avgRating: user.averageRating, uid: user._id, reviews: reviewList});
     } catch (e) {
-        return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "User not found"});
+        return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});
     }
 });
 
@@ -136,13 +136,13 @@ router.route("/writeGameReview/:gameId").get(async (req, res) => {
     try{
         validation.validateObjectID(xss(req.params.gameId));
     } catch (e) {
-        return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: "Invalid GameId"});
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Invalid GameId"});
     }
     try{
         game = await games.getGameById(xss(req.params.gameId));
         res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", reviewed: game.gameTitle, gid: xss(req.params.gameId)});
     } catch (e) {
-        return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "Game not found"});
+        return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "Game not found"});
     }
 
 });
@@ -164,12 +164,12 @@ router.route("/writeGameReview/:gameId").post(async (req, res) => {
     try{
         validation.validateObjectID(xss(req.params.gameId));
     } catch (e) {
-        return res.status(500).render("error", {pageTitle: "Error", status: "500", errorMsg: "Invalid GameId"});
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Invalid GameId"});
     }
     try{
         game = await games.getGameById(xss(req.params.gameId));
     } catch (e) {
-        return res.status(404).render("error", {pageTitle: "Error", status: "404", errorMsg: "Game not found"});
+        return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "Game not found"});
     }
     try{
         validation.validateTitle(req.body.reviewingTitle)

@@ -112,17 +112,26 @@ router.route("/apigamesearch").post(async (req,res) => {
             // return res.status(400).render('error', {er: "400", c: "error", message: e})
             return res.status(400).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "400", errorMsg: e});
         }
+        try{
+            if(!xss(req.body.sortBy) || (xss(req.body.sortBy) !== "closest" && xss(req.body.sortBy) !== "rating")) {throw 'Please select a Sorting Metric'}
+        } catch(e){
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "Please select Closest To You or Highest Rating to Sort"});
+        }
+        try {
+            validation.validateFloat(xss(req.body.sortDist))
+        } catch(e) {
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "Search Radius Must be a Valid Number"});
+        }
         try {
             let g = await gamesapi.searchGamesByTitle(xss(req.body.searchByTitle));
             if(xss(req.body.searchDiscover)){
-                if(!xss(req.body.sortBy) || (xss(req.body.sortBy) !== "closest" && xss(req.body.sortBy) !== "rating")) {throw 'Please select a Sorting Metric'}
-                res.render("apisearchresults", { signedIn: true, pageTitle: "Search Results", games: g, searchByTitle: xss(req.body.searchByTitle), searchDiscover: true, sortBy: xss(req.body.sortBy) });
+                res.render("apisearchresults", { signedIn: true, pageTitle: "Search Results", games: g, searchByTitle: xss(req.body.searchByTitle), searchDiscover: true, sortBy: xss(req.body.sortBy), sortDist: xss(req.body.sortDist) });
             }
             else{
                 res.render("apisearchresults", { signedIn: true, pageTitle: "Search Results", games: g, searchByTitle: xss(req.body.searchByTitle), postGame: true });
             }
         } catch (e) {
-            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
         }
     }
     else {
