@@ -229,6 +229,14 @@ router
                 errors.push(`Password ${e}`);
             }
         }
+        if (xss(updatedData.location)){
+            try{
+                let trimbleLoc = await locationData.geocodeAddress(xss(updatedData.location))
+                updatedData.location = await locationData.makeGeoJSON(trimbleLoc);
+            }catch (e) {
+                errors.push(`Location ${e}`);
+            }
+        }
         /* Error Display*/
         if (errors.length > 0){
             res.render('updateProfile', {
