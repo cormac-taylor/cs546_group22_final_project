@@ -38,6 +38,7 @@ export const addEvent = async (
         location,
         description,
         Date,
+        rsvpedUsers: []
     }
     // console.log(newEvent)
 
@@ -58,11 +59,11 @@ export const updateEvent = async (
 
     if (!updateEventObject) throw "The update event object is empty"
 
-    const updateUser = await eventsCollection.findOneAndUpdate(
-        {_id: eventId},
-        {$set: {...updateEventObject}},
-        {returnDocument: 'after'}
-    )
+        const updateUser = await eventsCollection.findOneAndUpdate(
+            {_id: eventId},
+            {$set: {...updateEventObject}},
+            {returnDocument: 'after'}
+        )
     return updateUser
 }
 export const deleteEvent = async (

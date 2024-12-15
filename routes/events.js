@@ -294,22 +294,63 @@ router
   });
 
 router
-  .route("/eventDetails")
+  .route("/eventDetails/:id")
   .get(async (req, res) => {
     try{
-        console.log("yo")
-        const eventCollection = await events()
         const event = await getEventById(req.params.id)
     
         if (!event){
             res.render("error", { errorStatus: 404, errorMsg: 'Event not found' });
             return
         }
-        res.render('eventDetails', {pageTitle: "Event Details", eventName: event.name, eventDescripton: event.description, contact: event.email})
+        res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id})
     }
     catch(e){
         res.render("error", { errorStatus: 500, errorMsg: e });
     }
     
   })
+router
+  .route("/rsvp/:id")
+  .get(async (req, res) => {
+    try{
+        if (!req.session.user) {
+            res.redirect("/signin");
+            return;
+            // return res.status(401).send('You must be logged in to view this page.')
+        }
+        const eventsCollection = await events()
+        const event = await getEventById(req.params.id)
+        //const eventId = req.params.id;
+        const user = req.session.user.userId
+        let vpedUsers = event[0].rsvpedUsers
+        vpedUsers.push(user)
+        const updateEventObject = {
+            rsvpedUsers: vpedUsers
+        }
+        if (!event){
+            res.render("error", { errorStatus: 404, errorMsg: 'Event not found' });
+            return
+        }
+        if (event.rsvpedUsers && event.rsvpedUsers.includes(user)) {
+            res.render("eventDetails", {
+              pageTitle: "Event Details",
+              eventName: event.name,
+              eventDescription: event.description,
+              contact: event.email,
+              message: "You have already RSVP'd to this event!"
+            });
+            return;
+        }
+        const updateUser = await updateEvent(req.params.id, updateEventObject)
+        
+        res.redirect(`/events/eventDetails/${req.params.id}`);
+        // res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id})
+    }
+    catch(e){
+        res.render("error", { errorStatus: 500, errorMsg: e });
+    }
+    
+  })
+
 export default router;
