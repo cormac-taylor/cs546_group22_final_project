@@ -16,15 +16,26 @@ router.route("/").get(async (req, res) => {
     let i = 0,
       imgs = [];
     const games = await getAllGames();
-    while (imgs.length < 5) {
-      let g = games[Math.floor(Math.random() * games.length)]
-      if (!imgs.includes(g.imgURL)) {
-        imgs.push(g.imgURL);
-        gameThumbnails[i].src = g.imgURL;
-        gameThumbnails[i].alt = `${g.gameTitle} Poster`;
-        i++;
+    if (games.length > 5) {
+      while (imgs.length < 5) {
+        let g = games[Math.floor(Math.random() * games.length)];
+        if (!imgs.includes(g.imgURL)) {
+          imgs.push(g.imgURL);
+          gameThumbnails[i].src = g.imgURL;
+          gameThumbnails[i].alt = `${g.gameTitle} Poster`;
+          i++;
+        }
+        if (imgs.length >= 5) break;
       }
-      if (imgs.length >= 5) break;
+    } else {
+      for(let g of games){
+        if (!imgs.includes(g.imgURL)) {
+          imgs.push(g.imgURL);
+          gameThumbnails[i].src = g.imgURL;
+          gameThumbnails[i].alt = `${g.gameTitle} Poster`;
+          i++;
+        }
+      }
     }
 
     let signedIn = req.session.user ? true : false;
@@ -34,7 +45,14 @@ router.route("/").get(async (req, res) => {
       games: gameThumbnails,
     });
   } catch (e) {
-    return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
+    return res
+      .status(500)
+      .render("error", {
+        signedIn: true,
+        pageTitle: "Error",
+        errorStatus: "500",
+        errorMsg: "500 Server Error",
+      });
   }
 });
 
