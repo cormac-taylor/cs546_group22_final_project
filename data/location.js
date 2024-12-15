@@ -11,32 +11,31 @@ const exportedMethods = {
         For testing Geoservices, use the locations in test.js 
     */
 
-    // async geocodeAddress(address){
-    //     address = validation.validateString(address);
+    async geocodeAddress(address){
+        address = validation.validateString(address);
 
-    //     const apiKey = 'F0B72CEE61C5594EB0ABF37B0F04A870';
-    //     const region = 'NA';
-    //     const url = `https://singlesearch.alk.com/${region}/api/search`;
+        const apiKey = 'F0B72CEE61C5594EB0ABF37B0F04A870';
+        const region = 'NA';
+        const url = `https://singlesearch.alk.com/${region}/api/search`;
     
-    //     const response = await axios.get(url, {
-    //         params: {
-    //             authToken: apiKey,
-    //             query: address,
-    //             maxResults: 1,
-    //         }
-    //     });
-    //     console.log(response.data.Locations);
+        let response = await axios.get(url, {
+            params: {
+                authToken: apiKey,
+                query: address,
+                maxResults: 1,
+            }
+        });
 
-    //     const locationData = response.data.Locations[0]
-    //     if (!locationData) throw `Trimble Geocoding Error.`
+        let locationData = response.data.Locations[0]
+        if (!locationData) throw `Trimble Geocoding Error.`
 
-    //     return locationData;
-    // },
+        return locationData;
+    },
 
 
     /* Takes the locationData returned from geocodeAddress and makes it MongoDB friendly */
     async makeGeoJSON(locationData){
-        if (!locationData || !locationData.Coords){
+        if (!locationData.Coords){
             throw `Error: Location could not be found.`
         }
         const location = {
