@@ -15,6 +15,19 @@ let serverErrorList = document.getElementById("server-list");
 let subButton = document.getElementById("subButton");
 
 if (updateForm) {
+  subButton.disabled = true;
+  if (attribute.value === "none") {
+    subButton.addEventListener("mouseover", (event) => {
+      event.preventDefault();
+      clientErrorList.innerHTML = "";
+      let li = document.createElement("li");
+      li.innerHTML = "Please select a field.";
+      clientErrorList.appendChild(li);
+      clientErrorList.hidden = false;
+      if (serverErrorList) serverErrorList.hidden = true;
+      return;
+    });
+  }
   attribute.addEventListener("change", (event) => {
     subButton.disabled = false;
     newValueInput.value = "";
@@ -89,7 +102,7 @@ if (updateForm) {
             }
 
             if (ajaxErrors.length > 0) {
-                $("#subButton").prop("disabled",true);
+              $("#subButton").prop("disabled", true);
               for (let e of ajaxErrors) {
                 let li = $("<li></li>").text(e);
                 $("#client-error-list").append(li);
@@ -168,7 +181,7 @@ if (updateForm) {
 
             if (ajaxErrors.length > 0) {
               for (let e of ajaxErrors) {
-                $("#subButton").prop("disabled",true);
+                $("#subButton").prop("disabled", true);
                 let li = $("<li></li>").text(e);
                 $("#client-error-list").append(li);
               }
