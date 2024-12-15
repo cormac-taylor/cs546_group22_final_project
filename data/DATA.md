@@ -2,7 +2,8 @@
     - Add Status to the Games Listing on the Dashboard
         (Games now have a borrowed field if owner approved the request, (false or userId) check this field and list the name of user)
     - Make the root page better (Add banner, image, etc)
-    
+    - Add list of games user has requested
+    - Consider turning the dashboard "getRequests" procedure into a function
 
 # Data API
 
