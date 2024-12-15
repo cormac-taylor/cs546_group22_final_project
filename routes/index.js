@@ -8,12 +8,14 @@ import dashboardRoutes from './dashboard.js'
 import requestRoutes from './request.js'
 import eventsRoutes from './events.js'
 import communityRoutes from './community.js'
+import apiRoutes from './api.js'
 
 import {static as staticDir} from 'express';
 
 const constructorMethod = (app) => {
   //   app.use('/example', exampleRoutes);
   app.use("/", homeRoutes);
+  app.use("/api", apiRoutes);
   app.use('/dashboard', dashboardRoutes);
   app.use("/manage", manageGameRoutes);
   app.use("/games", gameDetailRoutes);
