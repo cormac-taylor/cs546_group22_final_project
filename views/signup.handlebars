@@ -27,6 +27,11 @@
         </div>
 
         <div class="form-group">
+            <label for="location">Location:</label>
+            <input type="location" id="location" name="location" value="{{signup.location}}">
+        </div>
+
+        <div class="form-group">
             <label for="password">Password:</label>
             <input type="password" id="password" name="password">
         </div>
@@ -39,21 +44,19 @@
         <div class="form-group">
             <button type="submit" class="submit-button">Sign Up</button>
         </div>
-    {{#if hasErrors}}
-    <ul class="error-list" id="server-error-list">
-        {{#each errors}}
-        <li>
-            {{this}}
-        </li>
-        {{/each}}
-    </ul>
-    {{/if}}
-    <ul class="error-list" id="client-error-list" hidden></ul>
+        {{#if hasErrors}}
+        <ul class="error-list" id="server-error-list">
+            {{#each errors}}
+            <li>
+                {{this}}
+            </li>
+            {{/each}}
+        </ul>
+        {{/if}}
+        <ul class="error-list" id="client-error-list" hidden></ul>
     </form>
     <p>Already have an account? <a href="/signin">Sign in here</a>.</p>
-    <script
-      src="https://code.jquery.com/jquery-3.6.4.js"
-      integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E="
-      crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.js"
+        integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
     <script src="/public/js/signup.js" type="module"></script>
 </article>

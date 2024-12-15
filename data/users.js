@@ -74,24 +74,24 @@ export const createUser = async (
 
 export const isUniqueUsername = async (username) => {
   username = validateUsername(username);
-  
+
   const usersCollection = await users();
   const accountWithUsername = await usersCollection.findOne({
     username: username,
   });
 
-  return !accountWithUsername
+  return !accountWithUsername;
 };
 
 export const isUniqueEmail = async (email) => {
   email = validateEmail(email);
-  
+
   const usersCollection = await users();
   const accountWithEmail = await usersCollection.findOne({
     email: email,
   });
-  
-  return !accountWithEmail
+
+  return !accountWithEmail;
 };
 
 export const removeUser = async (id) => {
@@ -180,24 +180,29 @@ export const updateUser = async (id, updateObj) => {
     updatedGameReview.lastName = validateName(updateObj.lastName);
     updatedUserReview.lastName = validateName(updateObj.lastName);
   }
+  const user = await getUserById(id);
   if (updateObj.username) {
     const username = validateUsername(updateObj.username);
+    if (user.username === username) throw "That is your current username.";
+
     const existingUsername = await usersCollection.findOne({
       username: username,
+      _id: { $ne: new ObjectId(id) },
     });
-    if (existingUsername)
-      throw `Error: Sorry, username: ${username} is taken.`;
+    if (existingUsername) throw `Sorry, username: ${username} is taken.`;
     updatedUser.username = username;
     updatedGameReview.username = username;
     updatedUserReview.username = username;
   }
   if (updateObj.email) {
     const email = validateEmail(updateObj.email);
+    if (user.email === email) throw "That is your current email.";
+
     const existingEmail = await usersCollection.findOne({
       email: email,
+      _id: { $ne: new ObjectId(id) },
     });
-    if (existingEmail)
-      throw `Error: Sorry, email address: ${email} is taken.`;
+    if (existingEmail) throw `Sorry, email address: ${email} is taken.`;
     updatedUser.email = email;
   }
   if (updateObj.password) {

@@ -1,15 +1,16 @@
 <article class="profile-update-container">
     <h1>Update Profile</h1>
-    <form action="/dashboard/{{user.username}}/update" method="POST" class="profile-update-form">
+    <form action="/dashboard/{{user.username}}/update" method="POST" class="profile-update-form" id="profile-update-form">
         <div class="form-group">
             <label for="attribute">Choose an attribute to update:</label>
             <select id="attribute" name="attribute" onchange="showInputField()">
-                <option value="">Select an Attribute</option>
+                <option value="none" disabled selected>Select an Attribute</option>
                 <option value="firstName">First Name</option>
                 <option value="lastName">Last Name</option>
                 <option value="username">Username</option>
                 <option value="email">Email</option>
                 <option value="password">Password</option>
+                <option value="location">Location</option>
             </select>
         </div>
 
@@ -21,27 +22,29 @@
         <div class="form-group" id="passwordField" hidden>
             <label for="newPassword">New Password:</label>
             <input type="password" id="newPassword" name="newPassword">
+            <br>
+            <label for="confirmNewPassword">Confirm:</label>
+            <input type="password" id="confirmNewPassword" name="confirmNewPassword">
         </div>
 
         <div class="form-group">
             <button type="submit" class="submit-button">Update Profile</button>
         </div>
-        <br>
-        <a href="/dashboard" class="home-link">Dashboard</a>
     </form>
 
     {{#if hasErrors}}
-    <ul class="error-list">
+    <ul class="error-list" id="server-list">
         {{#each errors}}
         <li>{{this}}</li>
         {{/each}}
     </ul>
     {{/if}}
     {{#if success}}
-    <ul class="success-list">
+    <ul class="success-list" id="server-list">
         <li>Profile was successfully updated!</li>
     </ul>
     {{/if}}
+    <ul class="error-list" id="client-error-list"></ul>
 
 </article>
 
@@ -65,3 +68,8 @@
         }
     }
 </script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.4.js"
+      integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E="
+      crossorigin="anonymous"></script>
+    <script src="/public/js/updateProfile.js" type="module"></script>

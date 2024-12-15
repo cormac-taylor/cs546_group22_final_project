@@ -91,7 +91,7 @@ router.route("/addGame2").post(async (req,res) => {
             else {
                 gimg = "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
             }
-            await games.createGame(req.session.user.userId, user.location.geometry, xss(req.body.title), game.description._text, xss(req.body.cond), gimg) 
+            await games.createGame(req.session.user.userId, user.location, xss(req.body.title), game.description._text, xss(req.body.cond), gimg) 
             res.render("addGame", { signedIn: true, pageTitle: "Add Game", status2: "Game added! Add another or navigate back using the button below." });
         } catch (e) {
             return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
