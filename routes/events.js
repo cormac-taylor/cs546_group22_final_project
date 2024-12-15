@@ -60,67 +60,77 @@ router
     }
   })
   .post(async (req, res) => {
-    const createEventFormInfo = req.body;
-    let errors = [];
-    if (!req.session.user) {
-      res.redirect("/signin");
-      return;
-      // return res.status(401).send('You must be logged in to view this page.')
+    try{
+        const createEventFormInfo = req.body;
+        let errors = [];
+        if (!req.session.user) {
+          res.redirect("/signin");
+          return;
+          // return res.status(401).send('You must be logged in to view this page.')
+        }
+        let ownerID = req.session.user.userId;
+        let owner = await getUserById(ownerID)
+        // try {
+        //   createEventFormInfo.username = validation.validateUsername(
+        //     xss(createEventFormInfo.username)
+        //   );
+        // } catch (e) {
+        //   errors.push(`Username ${e}`);
+        // }
+    
+        // try {
+        //   createEventFormInfo.email = validation.validateEmail(
+        //     xss(createEventFormInfo.email)
+        //   );
+        // } catch (e) {
+        //   errors.push(`Email ${e}`);
+        // }
+        // try{
+        //     createEventFormInfo.location = validation.validateGeoJson(createEventFormInfo.location)
+        // }
+        // catch(e){
+        //     errors.push(`Location ${e}`)
+        // }
+        //console.log("yo")
+        if (!createEventFormInfo.eventName) throw "No event name given"
+        if (!createEventFormInfo.location) throw "No location given"
+        if (!createEventFormInfo.description) throw "No description given"
+        try {
+          createEventFormInfo.description = validation.validateString(
+            xss(createEventFormInfo.description)
+          );
+        } catch (e) {
+          errors.push(`Description ${e}`);
+        }
+    
+        const today = new Date()
+        const formattedToday = today.toISOString().split('T')[0];
+        // console.log(formattedToday)
+        // console.log(createEventFormInfo.Date)
+        if (formattedToday > createEventFormInfo.Date){
+            res.render("error", { errorStatus: 500, errorMsg: "You cannot create an Event for the past" });
+            return
+        }
+        let result = await addEvent(
+          ownerID,
+          owner.username,
+          xss(createEventFormInfo.eventName),
+          owner.email,
+          createEventFormInfo.location,
+          createEventFormInfo.description,
+          xss(createEventFormInfo.Date)
+        );
+        // let user = await getUserById(ownerID)
+        // user.eventsCreated.push(result.insertedId.toString())
+        // console.log(user)
+        // let updatecurrUser = await updateUser(ownerID, {eventsCreated: user.eventsCreated})
+        res.redirect("/events");
     }
-    let ownerID = req.session.user.userId;
-    let owner = await getUserById(ownerID)
-    // try {
-    //   createEventFormInfo.username = validation.validateUsername(
-    //     xss(createEventFormInfo.username)
-    //   );
-    // } catch (e) {
-    //   errors.push(`Username ${e}`);
-    // }
+    catch(e){
+        res.render("error", { errorStatus: 500, errorMsg: e });
 
-    // try {
-    //   createEventFormInfo.email = validation.validateEmail(
-    //     xss(createEventFormInfo.email)
-    //   );
-    // } catch (e) {
-    //   errors.push(`Email ${e}`);
-    // }
-    // try{
-    //     createEventFormInfo.location = validation.validateGeoJson(createEventFormInfo.location)
-    // }
-    // catch(e){
-    //     errors.push(`Location ${e}`)
-    // }
-    //console.log("yo")
-    try {
-      createEventFormInfo.description = validation.validateString(
-        xss(createEventFormInfo.description)
-      );
-    } catch (e) {
-      errors.push(`Description ${e}`);
     }
-
-    const today = new Date()
-    const formattedToday = today.toISOString().split('T')[0];
-    // console.log(formattedToday)
-    // console.log(createEventFormInfo.Date)
-    if (formattedToday > createEventFormInfo.Date){
-        res.render("error", { errorStatus: 500, errorMsg: "You cannot create an Event for the past" });
-        return
-    }
-    let result = await addEvent(
-      ownerID,
-      owner.username,
-      xss(createEventFormInfo.eventName),
-      owner.email,
-      createEventFormInfo.location,
-      createEventFormInfo.description,
-      xss(createEventFormInfo.Date)
-    );
-    // let user = await getUserById(ownerID)
-    // user.eventsCreated.push(result.insertedId.toString())
-    // console.log(user)
-    // let updatecurrUser = await updateUser(ownerID, {eventsCreated: user.eventsCreated})
-    res.redirect("/events");
+    
   });
 
 router
