@@ -1,5 +1,5 @@
 import {
-    validateEmail,
+  validateEmail,
   validateName,
   validatePassword,
   validateUsername,
@@ -15,6 +15,12 @@ let serverErrorList = document.getElementById("server-list");
 
 if (updateForm) {
   attribute.addEventListener("change", (event) => {
+    clientErrorList.innerHTML = "";
+    clientErrorList.hidden = true;
+    if (serverErrorList) {
+      serverErrorList.innerHTML = "";
+      serverErrorList.hidden = true;
+    }
     if (attribute.value === "firstName" || attribute.value === "lastName") {
       updateForm.addEventListener("submit", (event) => {
         const errors = [];
@@ -47,31 +53,14 @@ if (updateForm) {
         }
       });
     } else if (attribute.value === "username") {
-      updateForm.addEventListener("input", (event) => {
-        // const errors = [];
+      newValueInput.addEventListener("input", (event) => {
         const username = newValueInput.value;
 
         try {
           newValueInput.value = validateUsername(username);
         } catch (e) {
-        //   newValueInput.value = username.trim();
-        //   errors.push(`Username ${e}`);
-        return;
+          return;
         }
-
-        // if (errors.length > 0) {
-        //   event.preventDefault();
-
-        //   clientErrorList.innerHTML = "";
-        //   for (let e of errors) {
-        //     let li = document.createElement("li");
-        //     li.innerHTML = e;
-        //     clientErrorList.appendChild(li);
-        //   }
-        //   clientErrorList.hidden = false;
-        //   if (serverErrorList) serverErrorList.hidden = true;
-        //   return;
-        // }
 
         let requestConfig = {
           url: "/api/unique/username",
@@ -98,8 +87,10 @@ if (updateForm) {
                 let li = $("<li></li>").text(e);
                 $("#client-error-list").append(li);
               }
+              $("#client-error-list").show();
+            } else {
+              $("#client-error-list").hide();
             }
-            $("#client-error-list").show();
             $("#server-list").hide();
           });
         })(jQuery);
@@ -108,68 +99,128 @@ if (updateForm) {
         clientErrorList.hidden = true;
         if (serverErrorList) serverErrorList.hidden = false;
       });
+
+      updateForm.addEventListener("submit", (event) => {
+        const errors = [];
+        const username = newValueInput.value;
+
+        try {
+          newValueInput.value = validateUsername(username);
+        } catch (e) {
+          newValueInput.value = username.trim();
+          errors.push(`Username ${e}`);
+        }
+
+        if (errors.length > 0) {
+          event.preventDefault();
+          clientErrorList.innerHTML = "";
+          for (let e of errors) {
+            let li = document.createElement("li");
+            li.innerHTML = e;
+            clientErrorList.appendChild(li);
+          }
+          clientErrorList.hidden = false;
+          if (serverErrorList) serverErrorList.hidden = true;
+          return;
+        }
+
+        clientErrorList.innerHTML = "";
+        clientErrorList.hidden = true;
+        if (serverErrorList) serverErrorList.hidden = false;
+      });
     } else if (attribute.value === "email") {
-        updateForm.addEventListener("input", (event) => {
-          // const errors = [];
-          const email = newValueInput.value;
-  
-          try {
-            newValueInput.value = validateEmail(email);
-          } catch (e) {
+      newValueInput.addEventListener("input", (event) => {
+        // const errors = [];
+        const email = newValueInput.value;
+
+        try {
+          newValueInput.value = validateEmail(email);
+        } catch (e) {
           //   newValueInput.value = username.trim();
           //   errors.push(`Username ${e}`);
           return;
-          }
-  
-          // if (errors.length > 0) {
-          //   event.preventDefault();
-  
-          //   clientErrorList.innerHTML = "";
-          //   for (let e of errors) {
-          //     let li = document.createElement("li");
-          //     li.innerHTML = e;
-          //     clientErrorList.appendChild(li);
-          //   }
-          //   clientErrorList.hidden = false;
-          //   if (serverErrorList) serverErrorList.hidden = true;
-          //   return;
-          // }
-  
-          let requestConfig = {
-            url: "/api/unique/email",
-            method: "POST",
-            data: { email: email },
-          };
-  
-          (function ($) {
-            $.ajax(requestConfig).then(function (responseMessage) {
-              const ajaxErrors = [];
-              if (
-                responseMessage &&
-                responseMessage.isUniqueEmail !== undefined
-              ) {
-                if (!responseMessage.isUniqueEmail) {
-                  ajaxErrors.push("Email already taken.");
-                }
-              } else {
-                ajaxErrors.push("Could not check email availability.");
+        }
+
+        // if (errors.length > 0) {
+        //   event.preventDefault();
+
+        //   clientErrorList.innerHTML = "";
+        //   for (let e of errors) {
+        //     let li = document.createElement("li");
+        //     li.innerHTML = e;
+        //     clientErrorList.appendChild(li);
+        //   }
+        //   clientErrorList.hidden = false;
+        //   if (serverErrorList) serverErrorList.hidden = true;
+        //   return;
+        // }
+
+        let requestConfig = {
+          url: "/api/unique/email",
+          method: "POST",
+          data: { email: email },
+        };
+
+        (function ($) {
+          $.ajax(requestConfig).then(function (responseMessage) {
+            const ajaxErrors = [];
+            if (
+              responseMessage &&
+              responseMessage.isUniqueEmail !== undefined
+            ) {
+              if (!responseMessage.isUniqueEmail) {
+                ajaxErrors.push("Email already taken.");
               }
-  
-              if (ajaxErrors.length > 0) {
-                for (let e of ajaxErrors) {
-                  let li = $("<li></li>").text(e);
-                  $("#client-error-list").append(li);
-                }
+            } else {
+              ajaxErrors.push("Could not check email availability.");
+            }
+
+            if (ajaxErrors.length > 0) {
+              for (let e of ajaxErrors) {
+                let li = $("<li></li>").text(e);
+                $("#client-error-list").append(li);
               }
               $("#client-error-list").show();
-              $("#server-list").hide();
-            });
-          })(jQuery);
-  
+            } else {
+              $("#client-error-list").hide();
+            }
+            $("#server-list").hide();
+          });
+        })(jQuery);
+
+        clientErrorList.innerHTML = "";
+        clientErrorList.hidden = true;
+        if (serverErrorList) serverErrorList.hidden = false;
+      });
+
+      updateForm.addEventListener("submit", (event) => {
+        const errors = [];
+        const email = newValueInput.value;
+
+        try {
+          newValueInput.value = validateEmail(email);
+        } catch (e) {
+          newValueInput.value = email.trim();
+          errors.push(`Email ${e}`);
+        }
+
+        if (errors.length > 0) {
+          event.preventDefault();
           clientErrorList.innerHTML = "";
-          clientErrorList.hidden = true;
-          if (serverErrorList) serverErrorList.hidden = false;
-        });
+          for (let e of errors) {
+            let li = document.createElement("li");
+            li.innerHTML = e;
+            clientErrorList.appendChild(li);
+          }
+          clientErrorList.hidden = false;
+          if (serverErrorList) serverErrorList.hidden = true;
+          return;
+        }
+
+        clientErrorList.innerHTML = "";
+        clientErrorList.hidden = true;
+        if (serverErrorList) serverErrorList.hidden = false;
+      });
     } else if (attribute.value === "password") {
       updateForm.addEventListener("submit", (event) => {
         const errors = [];

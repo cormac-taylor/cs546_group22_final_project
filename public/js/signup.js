@@ -62,10 +62,12 @@ if (signUpForm) {
             let li = $("<li></li>").text(e);
             $("#client-error-list").append(li);
           }
+          $("#client-error-list").show();
+        } else {
+          $("#client-error-list").hide();
         }
-        $("#client-error-list").show();
-        $("#server-error-list").hide();
-      });
+        $("#server-list").hide();
+  });
     })(jQuery);
 
     return;
@@ -104,10 +106,12 @@ if (signUpForm) {
             let li = $("<li></li>").text(e);
             $("#client-error-list").append(li);
           }
+          $("#client-error-list").show();
+        } else {
+          $("#client-error-list").hide();
         }
-        $("#client-error-list").show();
-        $("#server-error-list").hide();
-      });
+        $("#server-list").hide();
+  });
     })(jQuery);
 
     return;
