@@ -1,2 +1,27 @@
 <h1>Delete Events Here</h1>
+<h2>Please Choose what events you would like to delete</h2>
 {{!-- Think here about how I want to do this --}}
+{{!-- The idea is that after I click the button I will delete the event from the database --}}
+<main>
+    {{#if events}}
+    <ol>
+      {{#each events}}
+        <li>
+          <strong>{{eventName}}</strong><br>
+          Location: {{location}}<br>
+          Description: {{description}}<br>
+          Contact: {{email}}
+        </li>
+        <form action="/events/deleteEvent" method="POST">
+            <input type="hidden" name="eventId" value="{{_id}}">
+            <button type="submit">Delete</button>
+        </form>
+      {{/each}}
+    </ol>
+  {{else}}
+    <p>You have no events.</p>
+  {{/if}}
+  <a href="/events">Events Homepage</a>
+</main>
+    
+

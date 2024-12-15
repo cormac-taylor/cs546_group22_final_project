@@ -3,6 +3,7 @@ import {usersData, locationData, gamesData} from '../data/index.js';
 import {utils} from '../utilities/utilityIndex.js'
 import * as validation from "../utilities/validation.js"
 import { games } from '../config/mongoCollections.js';
+import xss from "xss"
 
 const router = Router();
 
@@ -21,14 +22,14 @@ router
     .route('/viewrequest')
     .post(async (req, res) =>{
         if (!req.session.user){
-            return res.status(401).send('You must be logged in to view this page.')
+            return res.render("signin", { pageTitle: "Sign In" });
         }
         try{
             let userId = req.session.user.userId;
-            let reqId = validation.validateObjectID(req.body.reqUserId);
-            let gameId = validation.validateObjectID(req.body.reqGame);
+            let reqId = validation.validateObjectID(xss(req.body.reqUserId));
+            let gameId = validation.validateObjectID(xss(req.body.reqGame));
             let reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
-            let reqMsg = reqObj.message;
+            let reqMsg = reqObj.requests[0].message;
             let currUser = await usersData.getUserById(userId);
             let reqUser = await usersData.getUserById(reqId.toString());
             let reqGame = await gamesData.getGameById(gameId.toString());
@@ -40,8 +41,7 @@ router
                 reqMsg,
             });
         }catch(e){
-            //TODO: After creating an error page, present that with error instead
-            res.status(500).json({error: e});
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
         }
     });
 
@@ -49,24 +49,42 @@ router
     .route('/viewrequest/approve')
     .post(async (req, res) =>{
         if (!req.session.user){
-            return res.status(401).send('You must be logged in to view this page.')
+            return res.render("signin", { pageTitle: "Sign In" });
+        }
+        let userId;
+        let reqId;
+        let gameId;
+        let reqObj;
+        let reqMsg;
+        let approveStr;
+        let approveVal;
+        let currUser;
+        let reqUser;
+        let reqGame;
+        try{
+            userId = req.session.user.userId;
+            reqId = validation.validateObjectID(xss(req.body.reqUserId));
+            gameId = validation.validateObjectID(xss(req.body.reqGame));
+            reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
+            reqMsg = reqObj.requests[0].message;
+            approveStr = validation.validateString(xss(req.body.approve));
+            approveVal = ((str) => str === 'true')(approveStr);
+            currUser = await usersData.getUserById(userId);
+            reqUser = await usersData.getUserById(reqId.toString());
+            reqGame = await gamesData.getGameById(gameId.toString());
+        }catch(e){
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
         }
         try{
-            let userId = req.session.user.userId;
-            let reqId = validation.validateObjectID(req.body.reqUserId);
-            let gameId = validation.validateObjectID(req.body.reqGame);
-            let reqObj = await gamesData.returnRequest(gameId.toString(), reqId.toString());
-            let reqMsg = reqObj.message;
-            let approveStr = validation.validateString(req.body.approve);
-            let approveVal = ((str) => str === 'true')(approveStr);
-            let currUser = await usersData.getUserById(userId);
-            let reqUser = await usersData.getUserById(reqId.toString());
-            let reqGame = await gamesData.getGameById(gameId.toString());
             if (reqGame.ownerID.toString() !== userId) throw `Error: This game does not belong to you!`;
+        } catch(e) {
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "Error: This game does not belong to you!"});
+        }
+        try{
 
             /* Updates the game object by removing the request and setting game borrowed status accordingly */
             reqGame = await gamesData.handleRequest(gameId.toString(), reqId.toString(), approveVal);
-
+            
             res.render('viewRequest', {
                 pageTitle: 'View Game Request',
                 signedIn: true,
@@ -76,9 +94,8 @@ router
                 reqGame,
                 reqMsg,
             });
-        }catch(e){
-            //TODO: After creating an error page, present that with error instead
-            res.status(500).json({error: e});
+        } catch(e) {
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "Error: This game is already being borrowed"});
         }
     });
 
@@ -88,7 +105,7 @@ router
     .get(async (req, res) => {
         try{
             if (!req.session.user){
-                return res.status(401).send('You must be logged in to view this page.')
+                return res.render("signin", { pageTitle: "Sign In" });
             }
             let userId = req.session.user.userId;
             let currUser = await usersData.getUserById(userId);
@@ -115,8 +132,8 @@ router
                 }
             }
             // Ensure session name matches URL
-            if (req.params.username !== req.session.user.username){
-                return res.status(403).json({error: e});
+            if (xss(req.params.username) !== req.session.user.username){
+                return res.status(403).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "403", errorMsg: "You do not have access to view this page"});
             }
             res.render('dashboard', {
                 pageTitle: 'BokenBoards Dashboard',
@@ -128,8 +145,7 @@ router
                 requests: requests,
             });
         } catch(e){
-            //TODO: After creating an error page, present that with error instead
-            res.status(500).json({error: e});
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
         }
 });
 
@@ -138,14 +154,14 @@ router
     .get(async (req, res) => {
         try{
             if (!req.session.user){
-                return res.status(401).send('You must be logged in to view this page.')
+                return res.render("signin", { pageTitle: "Sign In" });
             }
             let userId = req.session.user.userId;
             let currUser = await usersData.getUserById(userId);
 
             // Ensure session name matches URL
-            if (req.params.username !== req.session.user.username){
-                return res.status(403).json({error: e});
+            if (xss(req.params.username) !== req.session.user.username){
+                return res.status(403).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "403", errorMsg: "You do not have access to view this page"});
             }
             res.render('updateProfile', {
                 pageTitle: 'Update Profile',
@@ -153,8 +169,7 @@ router
                 user: currUser
             });
         } catch(e){
-            //TODO: After creating an error page, present that with error instead
-            res.status(500).json({error: e});
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
         }
     })
     .post(async (req, res) =>{
@@ -163,58 +178,63 @@ router
         try{
             // Ensure there is a valid session for user
             if (!req.session.user){
-                return res.status(401).send('You must be logged in to view this page.')
+                return res.render("signin", { pageTitle: "Sign In" });
             }
             userId = req.session.user.userId;
             currUser = await usersData.getUserById(userId);
 
             // Ensure session name matches URL
-            if (req.params.username !== req.session.user.username){
-                return res.status(403).json({error: e});
+            if (xss(req.params.username) !== req.session.user.username){
+                render("error", {signedIn: true, pageTitle: "Error", errorStatus: "403", errorMsg: "You do not have access to view this page"});
             }
         } catch(e){
-            //TODO: After creating an error page, present that with error instead
-            res.status(500).json({error: e});
+            return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
         }
 
         /* Verification of user updated data */
         const updatedData = req.body;
         let errors = [];
-        if (updatedData.firstName){
+        if (xss(updatedData.firstName)){
             try{
-                updatedData.firstName = validation.validateName(updatedData.firstName)
+                updatedData.firstName = validation.validateName(xss(updatedData.firstName))
             }catch (e) {
                 errors.push(`First name ${e}`);
             }
         }
-        if (updatedData.lastName){
+        if (xss(updatedData.lastName)){
             try{
-                updatedData.lastName = validation.validateName(updatedData.lastName)
+                updatedData.lastName = validation.validateName(xss(updatedData.lastName))
             }catch (e) {
                 errors.push(`Last name ${e}`);
             }
         }
-        if (updatedData.username){
+        if (xss(updatedData.username)){
             try{
-                updatedData.username = validation.validateUsername(updatedData.username)
+                updatedData.username = validation.validateUsername(xss(updatedData.username))
             }catch (e) {
                 errors.push(`Username ${e}`);
             }
         }
-        if (updatedData.email){
+        if (xss(updatedData.email)){
             try{
-                updatedData.email = validation.validateEmail(updatedData.email);
+                updatedData.email = validation.validateEmail(xss(updatedData.email));
             }catch (e) {
                 errors.push(`Email ${e}`);
             }
         }
-        if (updatedData.password){
+        if (xss(updatedData.password)){
             try{
-                //TODO: Currently, there is no password validation (2 ints and 2 special chars should be required)
-                // Cormac added a password validation function but not to those specs (seems very strong)
-                updatedData.password = validation.validatePassword(updatedData.password);
+                updatedData.password = validation.validatePassword(xss(updatedData.password));
             }catch (e) {
                 errors.push(`Password ${e}`);
+            }
+        }
+        if (xss(updatedData.location)){
+            try{
+                let trimbleLoc = await locationData.geocodeAddress(xss(updatedData.location))
+                updatedData.location = await locationData.makeGeoJSON(trimbleLoc);
+            }catch (e) {
+                errors.push(`Location ${e}`);
             }
         }
         /* Error Display*/

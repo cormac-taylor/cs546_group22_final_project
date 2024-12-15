@@ -9,11 +9,21 @@
             {{name._text}}
             {{!-- button to select game, sends id of game back --}}
             {{!-- {{#if ../adding}} --}}
+                {{#if ../postGame}}
                 <form method="POST" action="/manage/addGame1">
                     <input type="hidden" name="gid" value={{ _attributes.objectid }}>
                     <input type="hidden" name="title" value="{{name._text}}">
                     <button type="submit">Post this Game</button>
                 </form>
+                {{/if}}
+                {{#if ../searchDiscover}}
+                <form method="POST" action="/games">
+                    <input type="hidden" name="gid" value={{ _attributes.objectid }}>
+                    <input type="hidden" name="searchTerm" value="{{name._text}}">
+                    <input type="hidden" name="sortBy" value="{{../sortBy}}">
+                    <button type="submit">Search for this Game</button>
+                </form>
+                {{/if}}
             {{!-- {{/if}} --}}
             {{!-- {{#if ../selecting}}
                 <form method="POST" action="/games/view">

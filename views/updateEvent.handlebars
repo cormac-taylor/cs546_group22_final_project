@@ -1,1 +1,23 @@
 <h1>Update Events Here</h1>
+{{!-- Use a drop down menu for the user to pick what they would like to change --}}
+<ul id="eventsOwnedByUser">
+    {{#if events}}
+    <ol>
+      {{#each events}}
+        <li>
+          <strong>{{eventName}}</strong><br>
+          Location: {{location}}<br>
+          Description: {{description}}<br>
+          Contact: {{email}}
+        </li>
+        <form action="/events/updateEvent" method="POST">
+            <input type="hidden" name="eventId" value="{{_id}}">
+            <button type="submit">Update</button>
+        </form>
+      {{/each}}
+    </ol>
+  {{else}}
+    <p>You have no events.</p>
+  {{/if}}
+  <a href="/events">Events Homepage</a>
+</ul>

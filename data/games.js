@@ -13,6 +13,7 @@ import {
 } from "../utilities/validation.js";
 import { removeGameReviewsByReviewedGameId } from "./gameReviews.js";
 import { getUserById } from "./users.js";
+import { ObjectId } from "mongodb";
 
 export const createGame = async (
   ownerID,
@@ -232,6 +233,10 @@ export const getRequestedGames = async (userId) =>{
 export const handleRequest = async (gameId, reqUserId, approval) =>{
     gameId = validateObjectID(gameId);
     reqUserId = validateObjectID(reqUserId);
+    let game = await getGameById(gameId.toString());
+    if(game.borrowed && approval) {
+      throw 'Error: Game is already borrowed'
+    }
     const gamesCollection = await games();
     let borrowed = false;
     /* If borrowed, enter the requesting userId. If not, leave field false */
@@ -278,9 +283,48 @@ export const returnRequest = async (gameId, reqUserId) => {
     return reqBody;
 };
 
-export const sortByClosestLocation = async (userLoc) => {
+export const getBorrowedGames = async (userId) => {
+  userId = validateObjectID(userId);
+  const gamesCollection = await games();
+
+  const borrowed = gamesCollection.find(
+    { borrowed: new ObjectId(userId) }
+  ).toArray();
+
+  return borrowed
+}
+
+export const returnGame = async (gameId) => {
+  gameId = validateObjectID(gameId);
+  const gamesCollection = await games();
+
+  const res = gamesCollection.updateOne(
+    { _id: new ObjectId(gameId) },
+    { $unset: {borrowed: "" } }
+  )
+  if(!res){
+    throw 'Could not return game'
+  }
+
+  return res
+}
+
+export const sortByClosestLocation = async (userLoc, userId, gameList) => {
   userLoc = validateGeoJson(userLoc);
-  let gameList = await getAllGames();
-  gameList.sort((a,b) => turf.distance(a.location.geometry, userLoc, {units: 'miles'}) - turf.distance(b.location.geometry, userLoc, {units: 'miles'}));
+  validateObjectID(userId);
+  if(!gameList) {gameList = await getAllGames()}
+  // let gameList = await getAllGames();
+  gameList = gameList.filter((game) => game.ownerID.toString() !== userId);
+  gameList.sort((a,b) => turf.distance(b.location.geometry, userLoc, {units: 'miles'}) - turf.distance(a.location.geometry, userLoc, {units: 'miles'}));
+  return gameList;
+}
+
+export const sortByRating = async (userLoc, userId, gameList) => {
+  userLoc = validateGeoJson(userLoc);
+  validateObjectID(userId);
+  if(!gameList) {gameList = await getAllGames()}
+  // let gameList = await getAllGames();
+  gameList = gameList.filter((game) => game.ownerID.toString() !== userId);
+  gameList.sort((a,b) => b.averageRating - a.averageRating);
   return gameList;
 }

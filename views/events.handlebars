@@ -1,9 +1,43 @@
 <h1>BokenBoards' Events</h1>
 
-<h2>Create a Meetup</h2>
+<h2>Meetup Options</h2>
 {{!-- Think about using a form w/ button here, it take like 2 seconds to replace (reason: code will look smooth and similar) --}}
 <button onclick="window.location.href= '/events/createEvent'"> Create Event</button>
 <button onclick="window.location.href= '/events/updateEvent'"> Update Event</button>
 <button onclick="window.location.href= '/events/deleteEvent'"> Delete Event</button>
+<h2>See Upcoming Events Below</h2>
+<div id="calendar"></div>
 
-{{!-- <form action=""></form> --}}
+  <header>
+    <h1>{{pageTitle}}</h1>
+  </header>
+
+  <main>
+    <div id="calendar"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const calendarEl = document.getElementById('calendar');
+
+      const eventsData = {{{events}}};
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay',
+        },
+        events: eventsData, 
+        eventClick: function (info) {
+          alert(`Event: ${info.event.title}\nDescription: ${info.event.extendedProps.description}`);
+        },
+      });
+
+      calendar.render();
+    });
+  </script>
+
+{{!-- same calender for people close by and also add a limit to the number of events a user can post --}}

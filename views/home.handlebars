@@ -1,12 +1,42 @@
-{{!-- home page --}}
-<h1>BokenBoards</h1>
-{{!-- I need a value to see if the user is signed in or not, I might have to look at the cookies to see if they are already
-signed in --}}
+<h1 id="homeTitle">BokenBoards</h1>
+<p id="homeWelcomeMessage">
+  Welcome to BokenBoards, your ultimate destination for all things board games!
+  Whether you're looking to share games with others, discover community events,
+  or explore insightful reviews, BokenBoards connects board game enthusiasts in
+  one vibrant hub. Dive into a growing network of gamers, find your next
+  favorite game, and join events that bring people together around the tabletop.
+  Let's make your board game experience unforgettable!
+</p>
 
-<div id="userOptions"></div>
+<h2 id="someGamesTitle">Some Games Other Gammers are Offering</h2>
+<div class="homeImage">
+  {{!-- TO DO: insert 5 games dynamiclly --}}
+  {{#each games}}
+    <a href="/games">
+    <img src="{{src}}" alt="{{alt}}" />
+    </a>
+  {{/each}}
+  {{!-- <a href="/games">
+    <img src="/public/images/bokenBoardsPoster.png" alt="BokenBoards Logo" />
+  </a>
+  <a href="/games">
+    <img src="/public/images/bokenBoardsPoster.png" alt="BokenBoards Logo" />
+  </a>
+  <a href="/games">
+    <img src="/public/images/bokenBoardsPoster.png" alt="BokenBoards Logo" />
+  </a>
+    <a href="/games">
+    <img src="/public/images/bokenBoardsPoster.png" alt="BokenBoards Logo" />
+  </a>
+  </a>
+    <a href="/games">
+    <img src="/public/images/bokenBoardsPoster.png" alt="BokenBoards Logo" />
+  </a> --}}
+</div>
 
-{{!-- Think about using a form w/ button here, it take liek 2 seconds to replace (reason: code will look smooth and similar) --}}
-{{!-- Check for the status, this will help me reviev information from other webpages like the information that Vraj wants to send to me --}}
-<button onclick="window.location.href= '/signin'">Sign In</button>
-<button onclick="window.location.href= '/signup'">Create Account</button>
-<button onclick="window.location.href= '/events'">See Events Near Me</button>
+<h2 id="eventTitle">Join or Host Events</h2>
+
+    <div class="banner">
+      <p>Find gaming meetups near you or host your own. RSVP to events and connect with like-minded players!</p>
+      <button class="btn btn-primary" onclick="window.location.href='/events'">Browse Events</button>
+    </div>

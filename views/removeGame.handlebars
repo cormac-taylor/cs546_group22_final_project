@@ -8,6 +8,7 @@
             <h3>{{gameTitle}}</h3>
             <p>Posted on {{datePosted}}</p>
             {{!-- button to select game, sends id of game back --}}
+            <img class="gameIMG" src="{{imgURL}}" alt="{{gameTitle}}">
             <form method="POST" action="/manage/removeGame">
                 <button name="gameID" value={{_id}}>Remove this Game</button>
             </form>

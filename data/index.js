@@ -1,5 +1,7 @@
 import {
   createUser,
+  isUniqueUsername,
+  isUniqueEmail,
   removeUser,
   getAllUsers,
   getUserById,
@@ -43,7 +45,7 @@ import {
   updateGameReview,
 } from "./gameReviews.js";
 
-import locationDataFunctions from './location.js'
+import locationDataFunctions from "./location.js";
 
 export const gameReviewsData = {
   createGameReview,
@@ -83,6 +85,8 @@ export const userReviewsData = {
 
 export const usersData = {
   createUser,
+  isUniqueUsername,
+  isUniqueEmail,
   removeUser,
   getAllUsers,
   getUserById,

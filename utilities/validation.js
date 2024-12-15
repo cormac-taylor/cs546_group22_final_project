@@ -9,8 +9,8 @@ const MIN_USERNAME_LEN = 5;
 const MAX_USERNAME_LEN = 10;
 const MIN_TITLE_LEN = 1;
 const MAX_TITLE_LEN = 64;
-const MIN_BODY_LEN = 16;
-const MAX_BODY_LEN = 2048;
+const MIN_BODY_LEN = 0;
+const MAX_BODY_LEN = Infinity;
 const MIN_RATING = 0;
 const MAX_RATING = 5;
 const MIN_PASSWORD_LEN = 8;
@@ -149,8 +149,12 @@ export const validatePassword = (password) => {
   const PASSWORD_REGEX =
     /^(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]+$/;
 
-  const res = validateStrOfLen(password, MIN_PASSWORD_LEN, Infinity);
+  const res = validateStrOfLen(regExEscape(password), MIN_PASSWORD_LEN, Infinity);
   if (!PASSWORD_REGEX.test(res))
-    throw "not strong enough. Include a uppercase, digit, and special character.";
+    throw "too weak. Include at least one of each: [A-Z], [0-9], and [@.#$!%*?&].";
   return res;
+};
+
+const regExEscape = (regEx) => {
+  return regEx.replace(/[-[\]{}()*+?.,\\^$|]/g, "\\$&");
 };

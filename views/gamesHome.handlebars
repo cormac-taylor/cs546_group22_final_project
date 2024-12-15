@@ -1,24 +1,37 @@
 <h1>Discover or Lookup Games</h1>
-<form action="/dashboard/{{user}}">
-    <button>Back to Dashboard</button>
+
+<form method="POST" action="/manage/apigamesearch">     
+    <label for="searchByTitle">Search for a game:</label>
+    <input type="hidden" name="searchDiscover" value="true">
+    <input type="text" name="searchByTitle" id="searchByTitle"/>
+    <br>
+    <label for="sortBy">Sort By:</label>
+    <select name="sortBy" id="sortBy">
+        <option value="closest">Closest to you</option>
+        <option value="rating">Highest Rating</option>
+    </select>
+    <input id="discoverSubmitButton" type="submit" />
 </form>
 
-{{!-- <form method="POST" action="/games">     
-    <label for="searchByTitle">Search for a game:</label>
-        <input type="text" name="searchByTitle" id="searchByTitle"/>
-        <input type="submit" />
-</form>  --}}
 
-<ol>
+{{#if gamesFound}}
+<ol id="gameSearchResults">
 {{#each games}}
-    <li>
-        <h2>{{gameTitle}}</h2>
-        <p>Posted in: {{location.properties.Address.City}}</p>
-    </li>
-    <form method="POST" action="/games/gameDetails">
-        <input type="hidden" name="gid" value={{_id}}>
-        <button type="submit">View Details</button>
-    </form>
-
+    <div>
+        <li>
+            <h2>{{gameTitle}}</h2>
+            <img class="searchResultImage" alt="{{gameTitle}}" src="{{imgURL}}">
+            <p>Posted in: {{location.properties.Address.City}}</p>
+        </li>
+        <form method="POST" action="/games/gameDetails">
+            <input type="hidden" name="gid" value={{_id}}>
+            <button type="submit">View Details</button>
+        </form>
+    </div>
 {{/each}}
 </ol>
+
+{{else}}
+    <h3>Sorry there are no postings for that game.</h3>
+    <a href="/games" class="games-link">See all Game Postings</a>
+{{/if}}

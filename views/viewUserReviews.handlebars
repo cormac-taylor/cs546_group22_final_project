@@ -1,0 +1,23 @@
+<h1>Reviews for: {{name}}</h1>
+<h2>Average rating: {{avgRating}}</h2>
+
+{{#if reviews}}
+{{#each reviews}}
+<div>
+    <h4>Posted by: {{username}}</h4>
+    <h4>Title: {{title}}</h4>
+    <h4>Rating: {{rating}}/5</h4>
+    <p>Reviewed on: {{date}}</p>
+    <p>{{body}}</p>
+</div>
+<br>
+{{/each}}
+{{else}}
+<h3>No reviews yet...</h3>
+{{/if}}
+
+
+
+<form action="/community/writeUserReview/{{uid}}">
+    <button>Write a Review for {{name}}</button>
+</form>
