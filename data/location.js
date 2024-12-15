@@ -1,5 +1,5 @@
 import {ObjectId} from 'mongodb';
-import {users} from "../config/mongoCollections.js";
+import {games, users} from "../config/mongoCollections.js";
 import axios from 'axios'
 import * as validation from '../utilities/validation.js';
 import {usersData} from '../data/index.js';
@@ -82,7 +82,7 @@ const exportedMethods = {
         );
         // Edgecase checking
         if (!user) throw `Error: User id ${id} not found.`;
-        if (!userLocation || !user.location.geometry) throw `Error: User ${user.username} has not provided location.`;
+        if (!user.location.geometry) throw `Error: User ${user.username} has not provided location.`;
 
         const userLocation = user.location.geometry;
         const distMeters = distance * 1609.34 //Convert Miles to Meters
@@ -95,6 +95,35 @@ const exportedMethods = {
         ).toArray();
 
         return nearbyUsers;
+    },
+
+        /* Returns array of games within distance(miles) from user.*/
+    async nearbyGames(id, distance){
+        id = validation.validateObjectID(id);
+        distance = validation.validateFloat(distance);
+
+        const usersCollection = await users();
+        await usersCollection.createIndex({'location.geometry': '2dsphere'});
+        const user = await usersCollection.findOne(
+            {_id: id}
+        );
+        // Edgecase checking
+        if (!user) throw `Error: User id ${id} not found.`;
+        if (!user.location.geometry) throw `Error: User ${user.username} has not provided location.`;
+
+        const userLocation = user.location.geometry;
+        const distMeters = distance * 1609.34 //Convert Miles to Meters
+
+        // Uses the loc geo index to find users within given radius. Returns array
+        const gamesCollection = await games();
+        await gamesCollection.createIndex({'location.geometry': '2dsphere'});
+        const nearbyGames = await gamesCollection.find(
+            {_id: {$ne: id}, 'location.geometry': {
+                $near: {$geometry: userLocation, $maxDistance: distMeters}
+            }}, {projection: {hashedPassword: 0}}
+        ).toArray();
+
+        return nearbyGames;
     },
 
     /* Returns a dummy location */
