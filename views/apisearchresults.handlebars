@@ -1,14 +1,15 @@
 <h1>Games Found</h1>
+<a id="backToSearch" href="/manage/addGame">Search for a Different Game</a>
+<br>
 <h2 id="searchQuery">Results for: '{{searchByTitle}}'</h2>
 
 <main>
     {{!-- list of each game found in api --}}
-    <ol>
+    <ol class="gameSearchResults">
         {{#each games}}
+        <div>
         <li id="gameList">
             {{name._text}}
-            {{!-- button to select game, sends id of game back --}}
-            {{!-- {{#if ../adding}} --}}
                 {{#if ../postGame}}
                 <form method="POST" action="/manage/addGame1">
                     <input type="hidden" name="gid" value={{ _attributes.objectid }}>
@@ -24,17 +25,9 @@
                     <button type="submit">Search for this Game</button>
                 </form>
                 {{/if}}
-            {{!-- {{/if}} --}}
-            {{!-- {{#if ../selecting}}
-                <form method="POST" action="/games/view">
-                    <input type="hidden" name="gid" value={{ _attributes.objectid }}>
-                    <input type="hidden" name="title" value="{{name._text}}">
-                    <button type="submit">Post this Game</button>
-                </form>
-            {{/if}} --}}
         </li>
+        </div>
         {{/each}}
     </ol>
 
-    <a id="backToSearch" href="/manage/addGame">Search for a Different Game</a>
 </main>

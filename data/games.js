@@ -300,7 +300,7 @@ export const returnGame = async (gameId) => {
 
   const res = gamesCollection.updateOne(
     { _id: new ObjectId(gameId) },
-    { $unset: {borrowed: "" } }
+    { $set: {borrowed: false } }
   )
   if(!res){
     throw 'Could not return game'
@@ -315,7 +315,7 @@ export const sortByClosestLocation = async (userLoc, userId, gameList) => {
   if(!gameList) {gameList = await getAllGames()}
   // let gameList = await getAllGames();
   gameList = gameList.filter((game) => game.ownerID.toString() !== userId);
-  gameList.sort((a,b) => turf.distance(b.location.geometry, userLoc, {units: 'miles'}) - turf.distance(a.location.geometry, userLoc, {units: 'miles'}));
+  gameList.sort((a,b) => turf.distance(a.location.geometry, userLoc, {units: 'miles'}) - turf.distance(b.location.geometry, userLoc, {units: 'miles'}));
   return gameList;
 }
 
