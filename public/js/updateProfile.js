@@ -231,7 +231,7 @@ if (updateForm) {
         try {
           newPasswordInput.value = validatePassword(password);
         } catch (e) {
-          newPasswordInput.value = password.trim();
+          newPasswordInput.value = "";
           invalidPassword = true;
           errors.push(`Password ${e}`);
         }
@@ -249,6 +249,7 @@ if (updateForm) {
 
         if (errors.length > 0) {
           event.preventDefault();
+          confirmNewPasswordInput.value = "";
 
           clientErrorList.innerHTML = "";
           for (let e of errors) {
