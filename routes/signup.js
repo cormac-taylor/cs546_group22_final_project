@@ -51,6 +51,13 @@ router
       errors.push(`Email ${e}`);
     }
     try {
+        userSignupData.location = validation.validateString(
+          xss(userSignupData.location)
+        );
+      } catch (e) {
+        errors.push(`Email ${e}`);
+      }
+    try {
       userSignupData.password = validation.validatePassword(xss(userSignupData.password))
     } catch (e) {
       errors.push(`Password ${e}`);
@@ -67,7 +74,8 @@ router
     }
 
     try {
-      let location = locationData.defaultLocation();
+        let trimbleLoc = await locationData.geocodeAddress(userSignupData.location);
+        let location = await locationData.makeGeoJSON(trimbleLoc);
       const { firstName, lastName, username, email, password } = userSignupData;
 
       let hashedPassword = await utils.hashPassword(password);
