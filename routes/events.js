@@ -321,30 +321,25 @@ router
         }
         const eventsCollection = await events()
         const event = await getEventById(req.params.id)
-        //const eventId = req.params.id;
         const user = req.session.user.userId
-        let vpedUsers = event[0].rsvpedUsers
-        vpedUsers.push(user)
-        const updateEventObject = {
-            rsvpedUsers: vpedUsers
-        }
+        
         if (!event){
             res.render("error", { errorStatus: 404, errorMsg: 'Event not found' });
             return
         }
-        if (event.rsvpedUsers && event.rsvpedUsers.includes(user)) {
+        if (event[0].rsvpedUsers && event[0].rsvpedUsers.includes(user)) {
+            console.log(event[0])
             res.render("eventDetails", {
               pageTitle: "Event Details",
-              eventName: event.name,
-              eventDescription: event.description,
-              contact: event.email,
-              message: "You have already RSVP'd to this event!"
+              message: `You have already RSVP'd to ${event[0].eventName}!`
             });
             return;
         }
-        const updateUser = await updateEvent(req.params.id, updateEventObject)
+        let vpedUsers = event[0].rsvpedUsers
+        vpedUsers.push(user)
+        const updateUser = await updateEvent(req.params.id, event[0])
         
-        res.redirect(`/events/eventDetails/${req.params.id}`);
+        res.render("eventDetails", {pageTitle: "Event Details", message: `You successfuly RSVPd for the ${event[0].eventName}!`});
         // res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id})
     }
     catch(e){

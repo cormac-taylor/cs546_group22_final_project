@@ -2,5 +2,11 @@
 <h2>{{eventName}}</h2>
 <h2>{{eventDescription}}</h2>
 <h2>{{contact}}</h2>
-<button onclick="window.location.href='/events/rsvp/{{{eventId}}}'">RSVP</button>
-<a href="/events">Back to events</a>
+<h2>{{message}}</h2>
+{{#if message}}
+  <a href="/events">Back to events</a>
+{{else}}
+  <button onclick="window.location.href='/events/rsvp/{{{eventId}}}'">RSVP</button>
+  <div></div>
+  <a href="/events">Back to events</a>
+{{/if}}
