@@ -17,30 +17,31 @@ let serverErrorList = document.getElementById("server-error-list");
 
 if (signUpForm) {
   usernameInput.addEventListener("input", (event) => {
-    const errors = [];
+    // const errors = [];
     const username = usernameInput.value;
 
     try {
       usernameInput.value = validateUsername(username);
     } catch (e) {
-      usernameInput.value = username.trim();
-      errors.push(`Username ${e}`);
-    }
-
-    clientErrorList.innerHTML = "";
-    if (errors.length > 0) {
-      for (let e of errors) {
-        let li = document.createElement("li");
-        li.innerHTML = e;
-        clientErrorList.appendChild(li);
-      }
-      clientErrorList.hidden = false;
-      if (serverErrorList) serverErrorList.hidden = true;
+      // usernameInput.value = username.trim();
+      // errors.push(`Username ${e}`);
       return;
     }
 
+    clientErrorList.innerHTML = "";
+    // if (errors.length > 0) {
+    //   for (let e of errors) {
+    //     let li = document.createElement("li");
+    //     li.innerHTML = e;
+    //     clientErrorList.appendChild(li);
+    //   }
+    //   clientErrorList.hidden = false;
+    //   if (serverErrorList) serverErrorList.hidden = true;
+    //   return;
+    // }
+
     let requestConfig = {
-      url: "/signup/unique/username",
+      url: "/api/unique/username",
       method: "POST",
       data: { username: username },
     };
@@ -61,10 +62,12 @@ if (signUpForm) {
             let li = $("<li></li>").text(e);
             $("#client-error-list").append(li);
           }
+          $("#client-error-list").show();
+        } else {
+          $("#client-error-list").hide();
         }
-        $("#client-error-list").show();
-        $("#server-error-list").hide();
-      });
+        $("#server-list").hide();
+  });
     })(jQuery);
 
     return;
@@ -82,7 +85,7 @@ if (signUpForm) {
     clientErrorList.innerHTML = "";
 
     let requestConfig = {
-      url: "/signup/unique/email",
+      url: "/api/unique/email",
       method: "POST",
       data: { email: email },
     };
@@ -103,10 +106,12 @@ if (signUpForm) {
             let li = $("<li></li>").text(e);
             $("#client-error-list").append(li);
           }
+          $("#client-error-list").show();
+        } else {
+          $("#client-error-list").hide();
         }
-        $("#client-error-list").show();
-        $("#server-error-list").hide();
-      });
+        $("#server-list").hide();
+  });
     })(jQuery);
 
     return;

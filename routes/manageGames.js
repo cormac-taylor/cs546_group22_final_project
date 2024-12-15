@@ -239,7 +239,7 @@ router.route("/borrowedGames").get(async (req,res) => {
     if(req.session.user){
         try {
             let borrowed = await games.getBorrowedGames(req.session.user.userId);
-            res.render("borrowed", {signedin: true, pageTitle: "Borrowed Games", games: borrowed});
+            res.render("borrowed", {signedIn: true, pageTitle: "Borrowed Games", games: borrowed});
         } catch(e) {
             return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
@@ -272,7 +272,7 @@ router.route("/returnBorrowed").post(async (req,res) => {
 
         try {
             let returned = await games.returnGame(xss(req.body.gid));
-            res.render("borrowed", {signedin: true, pageTitle: "Borrowed Games", returned: "Succesfully Returned!"});
+            res.render("borrowed", {signedIn: true, pageTitle: "Borrowed Games", returned: "Succesfully Returned!"});
         } catch(e) {
             return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
