@@ -55,7 +55,7 @@ router
           xss(userSignupData.location)
         );
       } catch (e) {
-        errors.push(`Email ${e}`);
+        errors.push(`Location ${e}`);
       }
     try {
       userSignupData.password = validation.validatePassword(xss(userSignupData.password))

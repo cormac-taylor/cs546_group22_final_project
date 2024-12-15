@@ -14,10 +14,15 @@ let passwordInput = document.getElementById("password");
 let confirmPasswordInput = document.getElementById("confirmPassword");
 let clientErrorList = document.getElementById("client-error-list");
 let serverErrorList = document.getElementById("server-error-list");
+let signupButton = document.getElementById("signupButton");
 
 if (signUpForm) {
+  // signUpForm.addEventListener("input", (event) => {
+  //   signupButton.disabled = false;
+  // })
   usernameInput.addEventListener("input", (event) => {
     // const errors = [];
+    signupButton.disabled = false;
     const username = usernameInput.value;
 
     try {
@@ -58,6 +63,7 @@ if (signUpForm) {
         }
 
         if (ajaxErrors.length > 0) {
+          $("#signupButton").prop("disabled",true);
           for (let e of ajaxErrors) {
             let li = $("<li></li>").text(e);
             $("#client-error-list").append(li);
@@ -72,6 +78,7 @@ if (signUpForm) {
   });
 
   emailInput.addEventListener("input", (event) => {
+    signupButton.disabled = false;
     const email = emailInput.value;
 
     try {
@@ -100,6 +107,7 @@ if (signUpForm) {
         }
 
         if (ajaxErrors.length > 0) {
+          $("#signupButton").prop("disabled",true);
           for (let e of ajaxErrors) {
             let li = $("<li></li>").text(e);
             $("#client-error-list").append(li);
