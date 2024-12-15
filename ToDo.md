@@ -32,7 +32,6 @@
 
 ### Missing Requirements
     - Full seed file
-    - Returning a request  -> (currently in-progress by Vraj)
 
 ### Requirements to test
     - input validation, site-wide
