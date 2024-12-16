@@ -308,13 +308,17 @@ router
   .route("/eventDetails/:id")
   .get(async (req, res) => {
     try{
+        let ownerID = req.session.user.userId;
         const event = await getEventById(req.params.id)
-    
+        let hasRSVPED = false
         if (!event){
             res.render("error", { errorStatus: 404, errorMsg: 'Event not found' });
             return
         }
-        res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id})
+        if (event[0].rsvpedUsers.includes(ownerID)){
+            hasRSVPED = true
+        }
+        res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id, hasRSVPED: hasRSVPED})
     }
     catch(e){
         res.render("error", { signedIn: true, pageTitle: "Error",  errorStatus: 500, errorMsg: e });
@@ -322,7 +326,7 @@ router
     
   })
 router
-  .route("/rsvp/:id")
+  .route("/rsvpAdd/:id")
   .get(async (req, res) => {
     try{
         if (!req.session.user) {
@@ -339,7 +343,7 @@ router
             return
         }
         if (event[0].rsvpedUsers && event[0].rsvpedUsers.includes(user)) {
-            console.log(event[0])
+            //console.log(event[0])
             res.render("eventDetails", {
               pageTitle: "Event Details",
               message: `You have already RSVP'd to ${event[0].eventName}!`
@@ -351,6 +355,40 @@ router
         const updateUser = await updateEvent(req.params.id, event[0])
         
         res.render("eventDetails", {pageTitle: "Event Details", message: `You successfuly RSVPd for the ${event[0].eventName}!`});
+        // res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id})
+    }
+    catch(e){
+        res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: e });
+    }
+    
+  })
+
+  router
+  .route("/rsvpRemove/:id")
+  .get(async (req, res) => {
+    try{
+        if (!req.session.user) {
+            res.redirect("/signin");
+            return;
+            // return res.status(401).send('You must be logged in to view this page.')
+        }
+        const eventsCollection = await events()
+        const event = await getEventById(req.params.id)
+        const user = req.session.user.userId
+        
+        if (!event){
+            res.render("error", { pageTitle: "Error", errorStatus: 404, errorMsg: 'Event not found' });
+            return
+        }
+        if (event[0].rsvpedUsers && event[0].rsvpedUsers.includes(user)) {
+            let indexOfUser = event[0].rsvpedUsers.indexOf(user)
+            if (indexOfUser > -1){
+                event[0].rsvpedUsers.splice(indexOfUser, 1)
+            }
+        }
+        const updateUser = await updateEvent(req.params.id, event[0])
+        
+        res.render("eventDetails", {pageTitle: "Event Details", message: `You successfuly removed your RSVP for the ${event[0].eventName}!`});
         // res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id})
     }
     catch(e){

@@ -6,7 +6,11 @@
 {{#if message}}
   <a href="/events">Back to events</a>
 {{else}}
-  <button onclick="window.location.href='/events/rsvp/{{{eventId}}}'">RSVP</button>
-  <div></div>
-  <a href="/events">Back to events</a>
+    {{#if hasRSVPED}}
+    <button onclick="window.location.href='/events/rsvpRemove/{{{eventId}}}'">Remove RSVP</button>
+    {{else}}
+    <button onclick="window.location.href='/events/rsvpAdd/{{{eventId}}}'">RSVP</button>
+    {{/if}}
+    <div></div>
+    <a href="/events">Back to events</a>
 {{/if}}
