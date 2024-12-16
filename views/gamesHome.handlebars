@@ -19,21 +19,21 @@
 
 
 {{#if gamesFound}}
+<div class="listDiv">
 <ol class="gameSearchResults">
 {{#each games}}
-    <div>
         <li>
             <h2>{{gameTitle}}</h2>
             <img class="searchResultImage" alt="{{gameTitle}}" src="{{imgURL}}">
             <p>Posted in: {{location.properties.Address.City}}</p>
+            <form method="POST" action="/games/gameDetails">
+                <input type="hidden" name="gid" value={{_id}}>
+                <button type="submit">View Details</button>
+            </form>
         </li>
-        <form method="POST" action="/games/gameDetails">
-            <input type="hidden" name="gid" value={{_id}}>
-            <button type="submit">View Details</button>
-        </form>
-    </div>
 {{/each}}
 </ol>
+</div>
 
 {{else}}
     <h3>Sorry there are no postings for that game.</h3>

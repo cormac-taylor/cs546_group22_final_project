@@ -1,10 +1,16 @@
 <article class="profile-update-container">
     <h1>Update Game Posting</h1>
+
+    <h2>Current Location Set to:</h2>
+    <p class="curCond">{{game.location.properties.Address.City}}</p>
+    <h2>Current Condition Set to:</h2>
+    <p class="curCond">{{game.condition}}</p>
+
     <form action="/manage/modifyGameUpdate" method="POST" class="profile-update-form" id="modGameForm">
         <div class="form-group">
             <label for="attribute">Choose an attribute to update:</label>
             <select id="attribute" name="attribute" onchange="showInputField()">
-                <option value="">Select a field</option>
+                <option>Select a field</option>
                 <option value="condition">Condition</option>
                 <option value="location">Location</option>
             </select>
@@ -17,7 +23,7 @@
 
         <div class = "form-group" id="conditionField" hidden>
                 <label for="newValue">Update the condition of your game:</label>
-                <select name="newValue" id="newCond" required="true" form="modGameForm">
+                <select name="newValue" id="newCond" form="modGameForm">
                     <option value="new">New</option>
                     <option value="like-new">Like-New</option>
                     <option value="used">Used</option>

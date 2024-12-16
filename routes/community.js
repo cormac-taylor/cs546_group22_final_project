@@ -111,6 +111,9 @@ router.route("/writeUserReview/:userId").post(async (req, res) => {
     try{
         review = await userReviews.createUserReview(req.session.user.userId, xss(req.params.userId), xss(req.body.reviewingTitle), xss(req.body.reviewingBody), parseInt(xss(req.body.reviewingRating)));
     } catch (e) {
+        if(e === "user review already exists!" || e === "user cannot review themselves!"){
+            return res.status(500).render("error", {signedIn: signedIn, pageTitle: "Error", errorStatus: "500", errorMsg: e});
+        }
         return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Could not Create Review"});
     }
     try{
@@ -188,9 +191,12 @@ router.route("/writeGameReview/:gameId").post(async (req, res) => {
     }
     try{
         review = await gameReviews.createGameReview(req.session.user.userId, xss(req.params.gameId), xss(req.body.reviewingTitle), xss(req.body.reviewingBody), parseInt(xss(req.body.reviewingRating)));
-        res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", gid: xss(req.params.gameId), backToGame: true});
+        res.render("writeReview", {signedIn: signedIn, pageTitle: "Write a Review", gid: xss(req.params.gameId), backToGame: true, success: true});
     } catch (e) {
-        return res.render("error", {signedIn: signedIn, pageTitle: "Error", errorStatus: "500", errorMsg: "Could not Create Review"});
+        if(e === "game review already exists!" || e === "owner cannot review their own game!"){
+            return res.status(500).render("error", {signedIn: signedIn, pageTitle: "Error", errorStatus: "500", errorMsg: e});
+        }
+        return res.status(500).render("error", {signedIn: signedIn, pageTitle: "Error", errorStatus: "500", errorMsg: "Could not Create Review"});
     }
 });
 

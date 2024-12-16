@@ -58,9 +58,12 @@ router.route("/").post(async (req, res) => {
     try {
         if(xss(req.body.sortDist)) {
             sortDist = validation.validateFloat(parseFloat(xss(req.body.sortDist)));
+            if(parseFloat(sortDist)) {
+                throw 'sortDist must be a valid number greater than 0'
+            }
         }
     } catch(e) {
-        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Please enter a valid number for the search radius"});
+        return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Please enter a valid number greater than 0 for the search radius"});
     }
     try {
         let g;
