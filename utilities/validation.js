@@ -224,8 +224,6 @@ const regExEscape = (regEx) => {
 };
 
 export const validateLocation = (location) => {
-  const CITY_REGEX = /^[a-zA-Z]{3,45}([ \-']{0,1}[a-zA-Z]{3,20}){0,3}$/;
-
   const loc = validateStrOfLen(location, MIN_LOCATION_LEN, MAX_LOCATION_LEN);
   let [city, state] = loc.split(",");
   if (!city || !state) throw "of invalid form.";
@@ -233,12 +231,17 @@ export const validateLocation = (location) => {
   city = city.trim();
   state = state.trim().toUpperCase();
 
-  if (!CITY_REGEX.test(city) || !validateStateCode(state))
+  if (!isValidCity || !isValidStateCode(state))
     throw "of invalid form.";
 
   return `${city}, ${state}`;
 };
 
-export const validateStateCode = (state) => {
+const isValidCity = (city) => {
+  const CITY_REGEX = /^[a-zA-Z]{3,45}([ \-']{0,1}[a-zA-Z]{3,20}){0,3}$/;
+  return CITY_REGEX.test(city)
+};
+
+const isValidStateCode = (state) => {
   return US_STATE_CODES.includes(state.trim().toUpperCase());
 };

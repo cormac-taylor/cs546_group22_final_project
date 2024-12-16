@@ -51,7 +51,7 @@ router
       errors.push(`Email ${e}`);
     }
     try {
-        userSignupData.location = validation.validateString(
+        userSignupData.location = validation.validateLocation(
           xss(userSignupData.location)
         );
       } catch (e) {

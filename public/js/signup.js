@@ -17,33 +17,17 @@ let serverErrorList = document.getElementById("server-error-list");
 let signupButton = document.getElementById("signupButton");
 
 if (signUpForm) {
-  // signUpForm.addEventListener("input", (event) => {
-  //   signupButton.disabled = false;
-  // })
   usernameInput.addEventListener("input", (event) => {
-    // const errors = [];
     signupButton.disabled = false;
     const username = usernameInput.value;
 
     try {
       usernameInput.value = validateUsername(username);
     } catch (e) {
-      // usernameInput.value = username.trim();
-      // errors.push(`Username ${e}`);
       return;
     }
 
     clientErrorList.innerHTML = "";
-    // if (errors.length > 0) {
-    //   for (let e of errors) {
-    //     let li = document.createElement("li");
-    //     li.innerHTML = e;
-    //     clientErrorList.appendChild(li);
-    //   }
-    //   clientErrorList.hidden = false;
-    //   if (serverErrorList) serverErrorList.hidden = true;
-    //   return;
-    // }
 
     let requestConfig = {
       url: "/api/unique/username",
@@ -120,28 +104,6 @@ if (signUpForm) {
 
     return;
   });
-
-  // passwordInput.addEventListener("input", (event) => {
-  //   const errors = [];
-  //   const password = passwordInput.value;
-
-  //   try {
-  //     passwordInput.value = validatePassword(password);
-  //   } catch (e) {
-  //     passwordInput.value = password.trim();
-  //     errors.push(`Password ${e}`);
-  //   }
-  //   clientErrorList.innerHTML = "";
-  //   if (errors.length > 0) {
-  //     for (let e of errors) {
-  //       let li = document.createElement("li");
-  //       li.innerHTML = e;
-  //       clientErrorList.appendChild(li);
-  //     }
-  //     clientErrorList.hidden = false;
-  //     if (serverErrorList) serverErrorList.hidden = true;
-  //   }
-  // });
 
   signUpForm.addEventListener("submit", (event) => {
     const errors = [];
