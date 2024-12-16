@@ -3,13 +3,15 @@ import {
   validatePassword,
   validateName,
   validateEmail,
+  validateLocation,
 } from "./client_validation.js";
 
 let signUpForm = document.getElementById("signup-form");
 let firstNameInput = document.getElementById("firstName");
 let lastNameInput = document.getElementById("lastName");
-let usernameInput = document.getElementById("username");
 let emailInput = document.getElementById("email");
+let locationInput = document.getElementById("location");
+let usernameInput = document.getElementById("username");
 let passwordInput = document.getElementById("password");
 let confirmPasswordInput = document.getElementById("confirmPassword");
 let clientErrorList = document.getElementById("client-error-list");
@@ -17,33 +19,17 @@ let serverErrorList = document.getElementById("server-error-list");
 let signupButton = document.getElementById("signupButton");
 
 if (signUpForm) {
-  // signUpForm.addEventListener("input", (event) => {
-  //   signupButton.disabled = false;
-  // })
   usernameInput.addEventListener("input", (event) => {
-    // const errors = [];
     signupButton.disabled = false;
     const username = usernameInput.value;
 
     try {
       usernameInput.value = validateUsername(username);
     } catch (e) {
-      // usernameInput.value = username.trim();
-      // errors.push(`Username ${e}`);
       return;
     }
 
     clientErrorList.innerHTML = "";
-    // if (errors.length > 0) {
-    //   for (let e of errors) {
-    //     let li = document.createElement("li");
-    //     li.innerHTML = e;
-    //     clientErrorList.appendChild(li);
-    //   }
-    //   clientErrorList.hidden = false;
-    //   if (serverErrorList) serverErrorList.hidden = true;
-    //   return;
-    // }
 
     let requestConfig = {
       url: "/api/unique/username",
@@ -63,7 +49,7 @@ if (signUpForm) {
         }
 
         if (ajaxErrors.length > 0) {
-          $("#signupButton").prop("disabled",true);
+          $("#signupButton").prop("disabled", true);
           for (let e of ajaxErrors) {
             let li = $("<li></li>").text(e);
             $("#client-error-list").append(li);
@@ -107,7 +93,7 @@ if (signUpForm) {
         }
 
         if (ajaxErrors.length > 0) {
-          $("#signupButton").prop("disabled",true);
+          $("#signupButton").prop("disabled", true);
           for (let e of ajaxErrors) {
             let li = $("<li></li>").text(e);
             $("#client-error-list").append(li);
@@ -121,34 +107,13 @@ if (signUpForm) {
     return;
   });
 
-  // passwordInput.addEventListener("input", (event) => {
-  //   const errors = [];
-  //   const password = passwordInput.value;
-
-  //   try {
-  //     passwordInput.value = validatePassword(password);
-  //   } catch (e) {
-  //     passwordInput.value = password.trim();
-  //     errors.push(`Password ${e}`);
-  //   }
-  //   clientErrorList.innerHTML = "";
-  //   if (errors.length > 0) {
-  //     for (let e of errors) {
-  //       let li = document.createElement("li");
-  //       li.innerHTML = e;
-  //       clientErrorList.appendChild(li);
-  //     }
-  //     clientErrorList.hidden = false;
-  //     if (serverErrorList) serverErrorList.hidden = true;
-  //   }
-  // });
-
   signUpForm.addEventListener("submit", (event) => {
     const errors = [];
     const firstName = firstNameInput.value;
     const lastName = lastNameInput.value;
-    const username = usernameInput.value;
     const email = emailInput.value;
+    const location = locationInput.value;
+    const username = usernameInput.value;
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
 
@@ -167,17 +132,24 @@ if (signUpForm) {
     }
 
     try {
-      usernameInput.value = validateUsername(username);
-    } catch (e) {
-      usernameInput.value = username.trim();
-      errors.push(`Username ${e}`);
-    }
-
-    try {
       emailInput.value = validateEmail(email);
     } catch (e) {
       emailInput.value = email.trim();
       errors.push(`Email ${e}`);
+    }
+
+    try {
+      locationInput.value = validateLocation(location);
+    } catch (e) {
+      locationInput.value = location.trim();
+      errors.push(`Location ${e}`);
+    }
+
+    try {
+      usernameInput.value = validateUsername(username);
+    } catch (e) {
+      usernameInput.value = username.trim();
+      errors.push(`Username ${e}`);
     }
 
     let invalidPassword = false;

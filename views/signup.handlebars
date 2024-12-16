@@ -3,44 +3,52 @@
 * I pledge my honor that I have abided by the Stevens Honor System
 --}}
 
-<article class="signup-container">
+<article class="signup-container sign-container">
     <h1>Sign Up</h1>
     <form action="/signup" method="POST" class="signup-form" id="signup-form">
-        <div class="form-group">
-            <label for="firstName">First Name:</label>
-            <input type="text" id="firstName" name="firstName" value="{{signup.firstName}}">
-        </div>
+        <div class="inputs">
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <br>
+                <input type="text" id="firstName" name="firstName" value="{{signup.firstName}}">
+            </div>
 
-        <div class="form-group">
-            <label for="lastName">Last Name:</label>
-            <input type="text" id="lastName" name="lastName" value="{{signup.lastName}}">
-        </div>
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <br>
+                <input type="text" id="lastName" name="lastName" value="{{signup.lastName}}">
+            </div>
 
-        <div class="form-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" value="{{signup.username}}">
-        </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <br>
+                <input type="email" id="email" name="email" value="{{signup.email}}">
+            </div>
 
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="{{signup.email}}">
-        </div>
+            <div class="form-group">
+                <label for="location">Location:<div class="note"><p>[city], [state code] | Ex: New York, NY</p></div></label>
+                <br>
+                <input type="text" id="location" name="location" value="{{signup.location}}">
+            </div>
 
-        <div class="form-group">
-            <label for="location">Location:</label>
-            <input type="location" id="location" name="location" value="{{signup.location}}">
-        </div>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <br>
+                <input type="text" id="username" name="username" value="{{signup.username}}">
+            </div>
 
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password">
-        </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <br>
+                <input type="password" id="password" name="password">
+            </div>
 
-        <div class="form-group">
-            <label for="confirmPassword">Confirm Password:</label>
-            <input type="password" id="confirmPassword" name="confirmPassword">
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password:</label>
+                <br>
+                <input type="password" id="confirmPassword" name="confirmPassword">
+            </div>
         </div>
-
         <div class="form-group">
             <button type="submit" class="submit-button" id="signupButton">Sign Up</button>
         </div>
