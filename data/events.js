@@ -12,7 +12,8 @@ export const addEvent = async (
     location,
     description,
     Date,
-    dateCreated
+    dateCreated,
+    rsvpedUsers
 ) => {
     // console.log("yo")
     // Trim all values
@@ -43,7 +44,7 @@ export const addEvent = async (
         description,
         Date,
         dateCreated,
-        rsvpedUsers: []
+        rsvpedUsers
     }
     // console.log(newEvent)
 
@@ -87,8 +88,10 @@ export const getEventsByOwnerId = async (
     ownerID
 ) => {
     ownerID = validateString(ownerID)
+    // console.log(ownerID)
     const eventsCollection = await events()
-    const eventList = await eventsCollection.find({ ownerID: ownerID }).toArray()
+    const eventList = await eventsCollection.find({ ownerID: new ObjectId(ownerID) }).toArray()
+    // console.log(eventList)
     return eventList
 }
 

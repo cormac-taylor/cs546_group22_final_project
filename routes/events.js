@@ -70,21 +70,7 @@ router
         }
         let ownerID = req.session.user.userId;
         let owner = await getUserById(ownerID)
-        // try {
-        //   createEventFormInfo.username = validation.validateUsername(
-        //     xss(createEventFormInfo.username)
-        //   );
-        // } catch (e) {
-        //   errors.push(`Username ${e}`);
-        // }
-    
-        // try {
-        //   createEventFormInfo.email = validation.validateEmail(
-        //     xss(createEventFormInfo.email)
-        //   );
-        // } catch (e) {
-        //   errors.push(`Email ${e}`);
-        // }
+        
         // try{
         //     createEventFormInfo.location = validation.validateGeoJson(createEventFormInfo.location)
         // }
@@ -92,9 +78,9 @@ router
         //     errors.push(`Location ${e}`)
         // }
         //console.log("yo")
-        if (!createEventFormInfo.eventName) throw "No event name given"
-        if (!createEventFormInfo.location) throw "No location given"
-        if (!createEventFormInfo.description) throw "No description given"
+        if (!createEventFormInfo.eventName.trim()) throw "No event name given"
+        if (!createEventFormInfo.location.trim()) throw "No location given"
+        if (!createEventFormInfo.description.trim()) throw "No description given"
         try {
           createEventFormInfo.description = validation.validateString(
             xss(createEventFormInfo.description)
@@ -129,7 +115,8 @@ router
           createEventFormInfo.location,
           createEventFormInfo.description,
           xss(createEventFormInfo.Date),
-          formattedToday
+          formattedToday,
+          [ownerID]
         );
         // let user = await getUserById(ownerID)
         // user.eventsCreated.push(result.insertedId.toString())
@@ -213,6 +200,12 @@ router
     email = xss(email);
     description = xss(description);
 
+    if (!eventId.trim()) throw "EventId was not given"
+    if (!eventName.trim()) throw "Event name was not given"
+    if (!email.trim()) throw "Email was not given"
+    if (!location.trim()) throw "Location was not given"
+    if (!description.trim()) throw "Description was not given"
+
     const updateFields = {};
     let event = await getEventById(eventId);
     try {
@@ -273,7 +266,7 @@ router
       // }
       const eventList = await getEventsByOwnerId(ownerID);
       let signedIn = req.session.user ? true : false;
-      // console.log(eventList)
+    //   console.log(eventList)
       res.render("deleteEvent", {
         pageTitle: "Delete Event",
         userId: req.session.user.userId,
@@ -291,6 +284,7 @@ router
     let ownerID = req.session.user.userId;
     try {
       const eventList = await getEventsByOwnerId(ownerID);
+    //   console.log(eventList)
       let signedIn = req.session.user ? true : false;
       res.render("deleteEvent", {
         pageTitle: "Delete Event",
