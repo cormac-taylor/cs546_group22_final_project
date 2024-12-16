@@ -283,7 +283,8 @@ router.route("/modifyGameUpdate").post(async (req,res) => {
             }
         }
         // TODO: allow user enetered location
-        if (xss(updatedData.location)){
+
+        if (xss(updatedData.location) || (xss(updatedData.location) === "" && updatedData.location === "")){
                 try{
                     updatedData.location = validation.validateLocation(xss(updatedData.location));
                     let trimbleLoc = await locationData.geocodeAddress(updatedData.location)
