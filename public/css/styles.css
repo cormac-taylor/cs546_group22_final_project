@@ -285,7 +285,7 @@ button:hover,
 }
 
 .note p {
-  font-size: 12;
+  font-size: 12px;
   font-style: italic;
   color: #a9a9a9;
   display: inline;
@@ -301,3 +301,14 @@ button:hover,
   margin-left: 20%;
   text-align: left;
 }
+ .gameStatus h3{
+    display: inline;
+ }
+ .gameStatus p{
+    display: inline;
+ }
+
+ .gameUpdateImg {
+    max-height: 300px;
+    width: auto;
+ }
