@@ -34,6 +34,7 @@ router.route("/viewrequest").post(async (req, res) => {
     let currUser = await usersData.getUserById(userId);
     let reqUser = await usersData.getUserById(reqId.toString());
     let reqGame = await gamesData.getGameById(gameId.toString());
+    reqUser.rating = reqUser.numReviews === 0 ? "No reviews" : reqUser.averageRating;
     res.render("viewRequest", {
       pageTitle: "View Game Request",
       signedIn: true,
@@ -293,15 +294,17 @@ router
         errors.push(`Password ${e}`);
       }
     }
-          if (xss(updatedData.location)){
-            try{
-                let trimbleLoc = await locationData.geocodeAddress(xss(updatedData.location))
-                updatedData.location = await locationData.makeGeoJSON(trimbleLoc);
-            }catch (e) {
-                errors.push(`Location ${e}`);
-            }
-        }
-
+    if (xss(updatedData.location)) {
+      try {
+        updatedData.location = validation.validateLocation(updatedData.location);
+        let trimbleLoc = await locationData.geocodeAddress(
+          xss(updatedData.location)
+        );
+        updatedData.location = await locationData.makeGeoJSON(trimbleLoc);
+      } catch (e) {
+        errors.push(`Location ${e}`);
+      }
+    }
 
     /* Error Display*/
     if (errors.length > 0) {
