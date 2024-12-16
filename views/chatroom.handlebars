@@ -1,0 +1,33 @@
+
+<h1>{{pageTitle}}</h1>
+<p>Welcome to the chatroom, {{username}}!</p>
+
+{{!-- Put an if case here --}}
+{{!-- <p>Chat history</p> --}}
+
+
+  <main>
+    <div>
+      
+      <!-- Chat Messages Section -->
+      {{#if messages.length}}
+        <div class="chat-messages">
+            {{#each messages}}
+            <div class="chat-message">
+                <strong>{{this.username}}:</strong> {{this.message}}
+            </div>
+            {{/each}}
+        </div>
+      {{else}}
+        <p>No messages yet. Be the first to send a message!</p>
+      {{/if}}
+      
+      <!-- Chat Input Section -->
+      <div class="chat-input">
+        <form action="/chatroom/sendMessage" method="POST">
+          <input type="text" name="message" id="message" placeholder="Type your message..." required>
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+  </main>

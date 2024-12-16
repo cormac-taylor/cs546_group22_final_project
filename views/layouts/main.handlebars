@@ -43,6 +43,9 @@
           <a href="/signin">Sign In</a>
           <a href="/signup">Sign Up</a>
         {{/if}}
+        {{#if signedIn}}
+        <a href="/chatroom">Chatroom</a>
+        {{/if}}
       </nav>
     </header>
     {{{body}}}

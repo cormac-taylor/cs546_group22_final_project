@@ -15,6 +15,7 @@ export const addEvent = async (
     dateCreated
 ) => {
     // console.log("yo")
+    // Trim all values
     if (!eventName) throw "No event name given"
     if (!location) throw "No location given"
     if (!description) throw "No description given"
@@ -24,6 +25,7 @@ export const addEvent = async (
     if (!Date) throw "No event date given"
     if (!dateCreated) throw "Created event not given"
 
+    ownerID = validateObjectID(ownerID)
     ownerUsername = validateString(ownerUsername)
     eventName = validateString(eventName)
     email = validateEmail(email)
