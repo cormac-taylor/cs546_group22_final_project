@@ -269,7 +269,7 @@ button:hover,
     padding-top: 10px;
 }
 
-.gameSearchResults div {
+/* .gameSearchResults div {
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -278,4 +278,53 @@ button:hover,
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     padding-left: 40px;
     margin-right: 40px;
+} */
+
+.gameSearchResults li {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding-left: 40px;
+    margin-right: 40px;
+    list-style-type: none;
+}
+
+.curCond {
+    font-weight: bold;
+    font-style: italic;
+    margin-top: 5px;
+    color: blue;
+    padding-left: 10px;
+}
+
+.gameTitle, .reviewPageHeader {
+    text-decoration: underline solid;
+}
+
+.successMsg {
+    color: green;
+}
+
+.reviewPageReviewer {
+    display: inline;
+    padding: 5px 5px 5px 5px;
+    border-style: dashed;
+}
+
+.reviewList {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding-left: 40px;
+    margin-right: 40px;
+}
+
+.reviewPageTitle {
+    margin-top: 10px;
 }

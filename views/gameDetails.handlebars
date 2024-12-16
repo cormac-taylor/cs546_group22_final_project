@@ -21,11 +21,11 @@
 <h2>Reviews:</h2>
 {{#if reviews}}
 {{#each reviews}}
-<div>
-    <h4>Posted by: {{username}}</h4>
-    <h4>Title: {{title}}</h4>
+<div class="reviewList">
+    <h3 class="reviewPageReviewer">Posted by: {{username}}</h3>
+    <h2 class="reviewPageTitle">Title: {{title}}</h2>
     <h4>Rating: {{rating}}/5</h4>
-    <p>Reviewed on: {{date}}</p>
+    <p><strong>Reviewed on:</strong> {{date}}</p>
     <p>{{body}}</p>
 
 </div>

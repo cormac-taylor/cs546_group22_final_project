@@ -5,10 +5,10 @@
 
 <main>
     {{!-- list of each game found in api --}}
+    <div class="listDiv">
     <ol class="gameSearchResults">
         {{#each games}}
-        <div>
-        <li id="gameList">
+        <li class="gameList">
             {{name._text}}
                 {{#if ../postGame}}
                 <form method="POST" action="/manage/addGame1">
@@ -27,8 +27,8 @@
                 </form>
                 {{/if}}
         </li>
-        </div>
         {{/each}}
     </ol>
+    </div>
 
 </main>

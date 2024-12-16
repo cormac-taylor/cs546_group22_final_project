@@ -332,11 +332,15 @@ export const sortByRating = async (userLoc, userId, gameList) => {
 
 export const filterByDistance = async (userLoc, userId, sortDist, gameList) => {
   sortDist = validateFloat(sortDist);
+  sortDist = parseFloat(sortDist);
+  if(sortDist <= 0) {
+    throw 'sortDist must be greater than 0'
+  }
   userLoc = validateGeoJson(userLoc);
   validateObjectID(userId);
   if(!gameList) {gameList = await getAllGames()}
   // let gameList = await getAllGames();
   gameList = gameList.filter((game) => game.ownerID.toString() !== userId);
-  gameList = gameList.filter((game) => turf.distance(game.location.geometry, userLoc, {units: 'miles'}) <= parseFloat(sortDist));
+  gameList = gameList.filter((game) => turf.distance(game.location.geometry, userLoc, {units: 'miles'}) <= sortDist);
   return gameList;
 }
