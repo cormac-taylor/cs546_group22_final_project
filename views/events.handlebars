@@ -6,12 +6,6 @@
 <button onclick="window.location.href= '/events/updateEvent'"> Update Event</button>
 <button onclick="window.location.href= '/events/deleteEvent'"> Delete Event</button>
 <h2>See Upcoming Events Below</h2>
-<div id="calendar"></div>
-
-  <header>
-    <h1>{{pageTitle}}</h1>
-  </header>
-
   <main>
     <div id="calendar"></div>
   </main>
@@ -35,7 +29,7 @@
         events: eventsData, 
         eventClick: function (info) {
           const eventId = info.event.id
-          console.log(`Redirecting to /eventDetails/${eventId}`)
+          //console.log(`Redirecting to /eventDetails/${eventId}`)
           window.location.href = `/events/eventDetails/${eventId}`
         },
       });

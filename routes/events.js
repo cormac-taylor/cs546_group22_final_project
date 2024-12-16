@@ -105,12 +105,22 @@ router
     
         const today = new Date()
         const formattedToday = today.toISOString().split('T')[0];
+        // let dateCreated = formattedToday
         // console.log(formattedToday)
         // console.log(createEventFormInfo.Date)
+        
         if (formattedToday > createEventFormInfo.Date){
-            res.render("error", { errorStatus: 500, errorMsg: "You cannot create an Event for the past" });
+            res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: "You cannot create an Event for the past" });
             return
         }
+        
+        // I need to check if todays date matches up with one of th edates of the events in the db
+
+        let ownerEvents = await getEventsByOwnerId(ownerID)
+        for (let event of ownerEvents){
+            if (event.dateCreated === formattedToday) throw 'You can only create one event per day. Try again tomorrow!'
+        }
+
         let result = await addEvent(
           ownerID,
           owner.username,
@@ -118,7 +128,8 @@ router
           owner.email,
           createEventFormInfo.location,
           createEventFormInfo.description,
-          xss(createEventFormInfo.Date)
+          xss(createEventFormInfo.Date),
+          formattedToday
         );
         // let user = await getUserById(ownerID)
         // user.eventsCreated.push(result.insertedId.toString())
@@ -127,7 +138,7 @@ router
         res.redirect("/events");
     }
     catch(e){
-        res.render("error", { errorStatus: 500, errorMsg: e });
+        res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: e });
 
     }
     
@@ -232,12 +243,12 @@ router
       });
     }
 
-    console.log(updateFields);
+    //console.log(updateFields);
     try {
       let userUpdate = await updateEvent(eventId, updateFields);
-      console.log(userUpdate);
+      //console.log(userUpdate);
     } catch (e) {
-      res.render("error", { errorStatus: 500, errorMsg: e });
+      res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: e });
     }
 
     //let ownerID = req.session.user.userId
@@ -288,7 +299,7 @@ router
         signedIn: signedIn
       });
     } catch (e) {
-      res.render("error", { errorStatus: 500, errorMsg: e });
+      res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: e });
     }
     // console.log(eventList)
   });
@@ -306,7 +317,7 @@ router
         res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id})
     }
     catch(e){
-        res.render("error", { errorStatus: 500, errorMsg: e });
+        res.render("error", { signedIn: true, pageTitle: "Error",  errorStatus: 500, errorMsg: e });
     }
     
   })
@@ -324,7 +335,7 @@ router
         const user = req.session.user.userId
         
         if (!event){
-            res.render("error", { errorStatus: 404, errorMsg: 'Event not found' });
+            res.render("error", { pageTitle: "Error", errorStatus: 404, errorMsg: 'Event not found' });
             return
         }
         if (event[0].rsvpedUsers && event[0].rsvpedUsers.includes(user)) {
@@ -343,7 +354,7 @@ router
         // res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id})
     }
     catch(e){
-        res.render("error", { errorStatus: 500, errorMsg: e });
+        res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: e });
     }
     
   })

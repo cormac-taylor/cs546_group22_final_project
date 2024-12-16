@@ -1,7 +1,10 @@
 <h1>Update Events Here</h1>
+<h2>Please Choose what event you would like to update</h2>
+{{!-- HTML Errors --}}
 {{!-- Use a drop down menu for the user to pick what they would like to change --}}
+{{#if events}}
 <ul id="eventsOwnedByUser">
-    {{#if events}}
+    
     <ol>
       {{#each events}}
         <li>
@@ -16,8 +19,8 @@
         </form>
       {{/each}}
     </ol>
-  {{else}}
-    <p>You have no events.</p>
-  {{/if}}
-  <a href="/events">Events Homepage</a>
 </ul>
+{{else}}
+    <p>You have no events.</p>
+{{/if}}
+  <a href="/events">Events Homepage</a>
