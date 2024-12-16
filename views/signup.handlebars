@@ -17,20 +17,21 @@
         </div>
 
         <div class="form-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" value="{{signup.username}}">
-        </div>
-
-        <div class="form-group">
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" value="{{signup.email}}">
         </div>
 
         <div class="form-group">
             <label for="location">Location:</label>
-            <input type="location" id="location" name="location" value="{{signup.location}}">
-            <p>Location should be of the following form: [city], [state code]</p>
-            <p>Example: New York, NY</p>
+            <input type="text" id="location" name="location" value="{{signup.location}}">
+            <div class="note">
+                <p>Location format: [city], [state code]<br>Ex: New York, NY</p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="{{signup.username}}">
         </div>
 
         <div class="form-group">

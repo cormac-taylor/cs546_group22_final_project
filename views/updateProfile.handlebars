@@ -7,16 +7,20 @@
                 <option value="none" disabled selected>Select a field</option>
                 <option value="firstName">First Name</option>
                 <option value="lastName">Last Name</option>
-                <option value="username">Username</option>
                 <option value="email">Email</option>
-                <option value="password">Password</option>
                 <option value="location">Location</option>
+                <option value="username">Username</option>
+                <option value="password">Password</option>
             </select>
         </div>
 
         <div class="form-group" id="valueField" hidden>
             <label for="newValue">New Value:</label>
             <input type="text" id="newValue" name="newValue">
+            <div class="note" id="locationNote" hidden>
+                <p>Location format: [city], [state code]<br>Ex: New York, NY</p>
+            </div>
+
         </div>
 
         <div class="form-group" id="passwordField" hidden>

@@ -14,7 +14,12 @@ router
         pageTitle: "Sign Up",
       });
     } catch (e) {
-      return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
+      return res.status(500).render("error", {
+        signedIn: true,
+        pageTitle: "Error",
+        errorStatus: "500",
+        errorMsg: "500 Server Error",
+      });
     }
   })
   .post(async (req, res) => {
@@ -37,13 +42,6 @@ router
       errors.push(`Last name ${e}`);
     }
     try {
-      userSignupData.username = validation.validateUsername(
-        xss(userSignupData.username)
-      );
-    } catch (e) {
-      errors.push(`Username ${e}`);
-    }
-    try {
       userSignupData.email = validation.validateEmail(
         xss(userSignupData.email)
       );
@@ -51,14 +49,24 @@ router
       errors.push(`Email ${e}`);
     }
     try {
-        userSignupData.location = validation.validateLocation(
-          xss(userSignupData.location)
-        );
-      } catch (e) {
-        errors.push(`Location ${e}`);
-      }
+      userSignupData.location = validation.validateLocation(
+        xss(userSignupData.location)
+      );
+    } catch (e) {
+      errors.push(`Location ${e}`);
+    }
+
     try {
-      userSignupData.password = validation.validatePassword(xss(userSignupData.password))
+      userSignupData.username = validation.validateUsername(
+        xss(userSignupData.username)
+      );
+    } catch (e) {
+      errors.push(`Username ${e}`);
+    }
+    try {
+      userSignupData.password = validation.validatePassword(
+        xss(userSignupData.password)
+      );
     } catch (e) {
       errors.push(`Password ${e}`);
     }
@@ -74,8 +82,10 @@ router
     }
 
     try {
-        let trimbleLoc = await locationData.geocodeAddress(userSignupData.location);
-        let location = await locationData.makeGeoJSON(trimbleLoc);
+      let trimbleLoc = await locationData.geocodeAddress(
+        userSignupData.location
+      );
+      let location = await locationData.makeGeoJSON(trimbleLoc);
       const { firstName, lastName, username, email, password } = userSignupData;
 
       let hashedPassword = await utils.hashPassword(password);

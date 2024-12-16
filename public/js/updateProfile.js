@@ -1,5 +1,6 @@
 import {
   validateEmail,
+  validateLocation,
   validateName,
   validatePassword,
   validateUsername,
@@ -8,27 +9,31 @@ import {
 let attribute = document.getElementById("attribute");
 let updateForm = document.getElementById("profile-update-form");
 let newValueInput = document.getElementById("newValue");
+let locationNote = document.getElementById("locationNote");
 let newPasswordInput = document.getElementById("newPassword");
 let confirmNewPasswordInput = document.getElementById("confirmNewPassword");
 let clientErrorList = document.getElementById("client-error-list");
 let serverErrorList = document.getElementById("server-list");
 let subButton = document.getElementById("subButton");
 
+const selectField = (event) => {
+  event.preventDefault();
+  clientErrorList.innerHTML = "";
+  let li = document.createElement("li");
+  li.innerHTML = "Please select a field.";
+  clientErrorList.appendChild(li);
+  clientErrorList.hidden = false;
+  if (serverErrorList) serverErrorList.hidden = true;
+  return;
+};
 if (updateForm) {
   subButton.disabled = true;
   if (attribute.value === "none") {
-    subButton.addEventListener("mouseover", (event) => {
-      event.preventDefault();
-      clientErrorList.innerHTML = "";
-      let li = document.createElement("li");
-      li.innerHTML = "Please select a field.";
-      clientErrorList.appendChild(li);
-      clientErrorList.hidden = false;
-      if (serverErrorList) serverErrorList.hidden = true;
-      return;
-    });
+    subButton.addEventListener("mouseover", selectField);
   }
   attribute.addEventListener("change", (event) => {
+    subButton.removeEventListener("mouseover", selectField);
+    locationNote.hidden = true;
     subButton.disabled = false;
     newValueInput.value = "";
     newPasswordInput.value = "";
@@ -36,8 +41,8 @@ if (updateForm) {
     clientErrorList.innerHTML = "";
     clientErrorList.hidden = true;
     if (serverErrorList) {
-      serverErrorList.innerHTML = "";
       serverErrorList.hidden = true;
+      serverErrorList.innerHTML = "";
     }
     if (attribute.value === "firstName" || attribute.value === "lastName") {
       updateForm.addEventListener("submit", (event) => {
@@ -51,6 +56,36 @@ if (updateForm) {
           const nameLabel =
             attribute.value === "firstName" ? "First name" : "Last name";
           errors.push(`${nameLabel} ${e}`);
+        }
+
+        if (errors.length > 0) {
+          event.preventDefault();
+
+          clientErrorList.innerHTML = "";
+          for (let e of errors) {
+            let li = document.createElement("li");
+            li.innerHTML = e;
+            clientErrorList.appendChild(li);
+          }
+          clientErrorList.hidden = false;
+          if (serverErrorList) serverErrorList.hidden = true;
+        } else {
+          clientErrorList.innerHTML = "";
+          clientErrorList.hidden = true;
+          if (serverErrorList) serverErrorList.hidden = false;
+        }
+      });
+    } else if (attribute.value === "location") {
+      locationNote.hidden = false;
+      updateForm.addEventListener("submit", (event) => {
+        const errors = [];
+        const location = newValueInput.value;
+
+        try {
+          newValueInput.value = validateLocation(location);
+        } catch (e) {
+          newValueInput.value = location.trim();
+          errors.push(`Location ${e}`);
         }
 
         if (errors.length > 0) {
