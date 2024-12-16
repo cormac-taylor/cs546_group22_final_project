@@ -38,13 +38,11 @@
         <a href="/games">Discover Games</a>
         <a href="/events">Events</a>
         {{#if signedIn}}
+          <a href="/chatroom">Chatroom</a>
           <a href="/logout">Log Out</a>
         {{else}}
           <a href="/signin">Sign In</a>
           <a href="/signup">Sign Up</a>
-        {{/if}}
-        {{#if signedIn}}
-        <a href="/chatroom">Chatroom</a>
         {{/if}}
       </nav>
     </header>
