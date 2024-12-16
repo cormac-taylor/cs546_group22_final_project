@@ -1,10 +1,14 @@
 <article class="profile-update-container">
-    <h1>Update Game Posting</h1>
-
-    <h2>Current Location Set to:</h2>
-    <p class="curCond">{{game.location.properties.Address.City}}</p>
-    <h2>Current Condition Set to:</h2>
-    <p class="curCond">{{game.condition}}</p>
+    <h1>Update {{game.gameTitle}} Post</h1>
+    <img class="gameUpdateImg" src="{{game.imgURL}}" alt="{{game.gameTitle}} Poster">
+    <div class="gameStatus">
+        <h3>Current Location:</h3>
+        <p>{{game.location.properties.Address.City}}</p>
+    </div>
+    <div class="gameStatus">
+        <h3>Current Condition:</h3>
+        <p>{{game.condition}}</p>
+    </div>
 
     <form action="/manage/modifyGameUpdate" method="POST" class="profile-update-form" id="modGameForm">
         <div class="form-group">
@@ -19,6 +23,10 @@
         <div class="form-group" id="valueField" hidden>
             <label for="newValue">New Location:</label>
             <input type="text" id="newValue" name="newValue">
+            <br>
+            <div class="note" id="locationNote" hidden>
+                <p>City, State Code | Ex: New York, NY</p>
+            </div>
         </div>
 
         <div class = "form-group" id="conditionField" hidden>

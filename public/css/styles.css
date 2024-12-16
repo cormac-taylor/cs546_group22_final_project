@@ -301,3 +301,14 @@ button:hover,
   margin-left: 20%;
   text-align: left;
 }
+ .gameStatus h3{
+    display: inline;
+ }
+ .gameStatus p{
+    display: inline;
+ }
+
+ .gameUpdateImg {
+    max-height: 300px;
+    width: auto;
+ }
