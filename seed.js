@@ -1509,9 +1509,59 @@ try {
  */
 try {
   const borrowedGame = await gamesData.handleRequest(
-    gameId.toString(),
-    reqId.toString(),
-    approveVal
+    g1._id.toString(),
+    u5._id.toString(),
+    true
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  const borrowedGame = await gamesData.handleRequest(
+    g2._id.toString(),
+    u1._id.toString(),
+    true
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  const borrowedGame = await gamesData.handleRequest(
+    g4._id.toString(),
+    u9._id.toString(),
+    true
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  const borrowedGame = await gamesData.handleRequest(
+    g12._id.toString(),
+    u9._id.toString(),
+    true
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  const borrowedGame = await gamesData.handleRequest(
+    g8._id.toString(),
+    u10._id.toString(),
+    true
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  const borrowedGame = await gamesData.handleRequest(
+    g14._id.toString(),
+    u3._id.toString(),
+    true
   );
 } catch (e) {
   console.log(e);
