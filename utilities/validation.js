@@ -14,6 +14,61 @@ const MAX_BODY_LEN = Infinity;
 const MIN_RATING = 0;
 const MAX_RATING = 5;
 const MIN_PASSWORD_LEN = 8;
+const MIN_LOCATION_LEN = 6;
+const MAX_LOCATION_LEN = 64;
+const US_STATE_CODES = [
+  "AL",
+  "AK",
+  "AZ",
+  "AR",
+  "CA",
+  "CO",
+  "CT",
+  "DE",
+  "FL",
+  "GA",
+  "HI",
+  "ID",
+  "IL",
+  "IN",
+  "IA",
+  "KS",
+  "KY",
+  "LA",
+  "ME",
+  "MD",
+  "MA",
+  "MI",
+  "MN",
+  "MS",
+  "MO",
+  "MT",
+  "NE",
+  "NV",
+  "NH",
+  "NJ",
+  "NM",
+  "NY",
+  "NC",
+  "ND",
+  "OH",
+  "OK",
+  "OR",
+  "PA",
+  "RI",
+  "SC",
+  "SD",
+  "TN",
+  "TX",
+  "UT",
+  "VT",
+  "VA",
+  "WA",
+  "WV",
+  "WI",
+  "WY",
+  "DC", // Included District of Columbia
+];
 
 export const validateBoolean = (bool) => {
   if (typeof bool !== "boolean") throw "must be a boolean!";
@@ -97,7 +152,11 @@ export const validateUsername = (username) => {
   // https://stackoverflow.com/questions/9628879/javascript-regex-username-validation
   const USERNAME_REGEX = /^[a-z0-9_\.]+$/;
 
-  const res = validateStrOfLen(username, MIN_USERNAME_LEN, MAX_USERNAME_LEN).toLowerCase();
+  const res = validateStrOfLen(
+    username,
+    MIN_USERNAME_LEN,
+    MAX_USERNAME_LEN
+  ).toLowerCase();
   if (!USERNAME_REGEX.test(res))
     throw `must be username (a-z, 0-9, _, or . and between ${MIN_USERNAME_LEN} and ${MAX_USERNAME_LEN} in length)!`;
   return res;
@@ -125,7 +184,8 @@ export const validateBody = (body) => {
 
 export const validateRating = (rating) => {
   const res = validateInteger(rating);
-  if (res < MIN_RATING || MAX_RATING < res) throw `must be between ${MIN_RATING} and ${MAX_RATING}!`;
+  if (res < MIN_RATING || MAX_RATING < res)
+    throw `must be between ${MIN_RATING} and ${MAX_RATING}!`;
   return res;
 };
 
@@ -149,7 +209,11 @@ export const validatePassword = (password) => {
   const PASSWORD_REGEX =
     /^(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]+$/;
 
-  const res = validateStrOfLen(regExEscape(password), MIN_PASSWORD_LEN, Infinity);
+  const res = validateStrOfLen(
+    regExEscape(password),
+    MIN_PASSWORD_LEN,
+    Infinity
+  );
   if (!PASSWORD_REGEX.test(res))
     throw "too weak. Include at least one of each: [A-Z], [0-9], and [@.#$!%*?&].";
   return res;
@@ -157,4 +221,24 @@ export const validatePassword = (password) => {
 
 const regExEscape = (regEx) => {
   return regEx.replace(/[-[\]{}()*+?.,\\^$|]/g, "\\$&");
+};
+
+export const validateLocation = (location) => {
+  const CITY_REGEX = /^[a-zA-Z]{3,45}([ \-']{0,1}[a-zA-Z]{3,20}){0,3}$/;
+
+  const loc = validateStrOfLen(location, MIN_LOCATION_LEN, MAX_LOCATION_LEN);
+  let [city, state] = loc.split(",");
+  if (!city || !state) throw "of invalid form.";
+
+  city = city.trim();
+  state = state.trim().toUpperCase();
+
+  if (!CITY_REGEX.test(city) || !validateStateCode(state))
+    throw "of invalid form.";
+
+  return `${city}, ${state}`;
+};
+
+export const validateStateCode = (state) => {
+  return US_STATE_CODES.includes(state.trim().toUpperCase());
 };
