@@ -14,7 +14,7 @@
         <div class="chat-messages">
             {{#each messages}}
             <div class="chat-message">
-                <strong>{{this.dateCreated}} {{this.username}}:</strong> {{this.message}}
+                <strong>{{this.username}} at {{this.dateCreated}}:</strong> {{this.message}}
             </div>
             {{/each}}
         </div>

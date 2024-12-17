@@ -6,6 +6,8 @@ import {
 } from "./data/index.js";
 import { dbConnection, closeConnection } from "./config/mongoConnection.js";
 import { utils } from "./utilities/utilityIndex.js";
+import { addMessage } from "./data/chatroom.js";
+import { addEvent } from "./data/events.js";
 
 //lets drop the database each time this is run
 const db = await dbConnection();
@@ -26,7 +28,7 @@ let gr39, gr40;
 let r1, r2, r3, r4, r5, r6, r7, r8, r9;
 let r10, r11, r12, r13, r14, r15, r16, r17, r18;
 
-let e1, e2, e3
+let e1, e2, e3;
 
 let password = await utils.hashPassword("Password1@");
 
@@ -1564,6 +1566,154 @@ try {
     g14._id.toString(),
     u3._id.toString(),
     true
+  );
+} catch (e) {
+  console.log(e);
+}
+
+// chat messages
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u1.username,
+    "Hey everyone! We're hosting a Catan tournament this Saturday at 5 PM at the community center. Beginners welcome—come join the fun!",
+    new Date().toGMTString()
+  );
+} catch (e) {
+  console.log(e);
+}
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u2.username,
+    "Looking for players! I’ve got Wingspan and snacks ready for tomorrow night at my place. DM if you’re interested!",
+    new Date().toGMTString()
+  );
+} catch (e) {
+  console.log(e);
+}
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u3.username,
+    "Game night alert! Meetup this Friday at 7 PM at the library. Bring your favorite game or try out Terraforming Mars with us!",
+    new Date().toGMTString()
+  );
+} catch (e) {
+  console.log(e);
+}
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u4.username,
+    "Does anyone have Carcassonne I could borrow? Planning a game night and would love to include it. Happy to pick it up and return it quickly!",
+    new Date().toGMTString()
+  );
+} catch (e) {
+  console.log(e);
+}
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u5.username,
+    "Who’s up for Ticket to Ride? We’re meeting at Joe’s Cafe on Thursday evening. Bring your strategic A-game!",
+    new Date().toGMTString()
+  );
+} catch (e) {
+  console.log(e);
+}
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u6.username,
+    "Big board game swap this Sunday! Bring your games to the park pavilion and trade with other enthusiasts. Starts at 2 PM!",
+    new Date().toGMTString()
+  );
+} catch (e) {
+  console.log(e);
+}
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u7.username,
+    "Looking for players for a Betrayal at House on the Hill session. We’ll be meeting at 6 PM Wednesday at my apartment. Let me know if you’re interested!",
+    new Date().toGMTString()
+  );
+} catch (e) {
+  console.log(e);
+}
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u8.username,
+    "Anyone interested in teaching Gloomhaven? I’ve heard great things and would love to learn. Maybe we can organize a session soon?",
+    new Date().toGMTString()
+  );
+} catch (e) {
+  console.log(e);
+}
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u9.username,
+    "Family-friendly board game day this Saturday! Join us at the rec center from 10 AM to 4 PM. Games for all ages will be provided!",
+    new Date().toGMTString()
+  );
+} catch (e) {
+  console.log(e);
+}
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u10.username,
+    "Quick question: Does anyone own Pandemic? My group is planning to play next week, and we’d love to borrow it. We’ll handle it with care!",
+    new Date().toGMTString()
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  e1 = await addEvent(
+    u1._id.toString(),
+    u1.username.toString(),
+    "Monopoly Meetup",
+    u1.email.toString(),
+    "New York, New York",
+    "Come to our meetup where we will play Monopoly",
+    "2024-12-25",
+    "2024-12-16",
+    [u1._id.toString()]
+  );
+} catch (e) {
+  console.log(e);
+}
+try {
+  e2 = await addEvent(
+    u2._id.toString(),
+    u2.username.toString(),
+    "Chess Tournament",
+    u2.email.toString(),
+    "San Francisco, California",
+    "Join us for an exciting chess tournament with prizes for the winners!",
+    "2024-12-19",
+    "2024-12-16",
+    [u2._id.toString()]
+  );
+} catch (e) {
+  console.log(e);
+}
+try {
+  e3 = await addEvent(
+    u3._id.toString(),
+    u3.username.toString(),
+    "Board Game Bonanza",
+    u3.email.toString(),
+    "Chicago, Illinois",
+    "A night filled with your favorite board games and snacks!",
+    "2024-12-22",
+    "2024-12-16",
+    [u3._id.toString()]
   );
 } catch (e) {
   console.log(e);

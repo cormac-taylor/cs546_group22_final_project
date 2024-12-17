@@ -65,7 +65,7 @@ router.route("/sendMessage").get(async (req, res) => {
         let user = await getUserById(ownerID)
         let username = user.username
         // res.render("chatroom", {pageTitle: "Chatroom", username: username})
-        const today = new Date().toLocaleString();
+        const today = new Date().toGMTString();
         let addMess = await addMessage(ownerID, username, messageDetails.message, today)
         const chatHistory = await getChatHistory()
         if (chatHistory){
@@ -77,7 +77,7 @@ router.route("/sendMessage").get(async (req, res) => {
         //console.log(chatHistory)
     }
     catch(e){
-        res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: e });
+        res.status(400).render("error", { signedIn: true, pageTitle: "Error", errorStatus: 400, errorMsg: e });
     }
     
 
