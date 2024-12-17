@@ -1,4 +1,10 @@
 # cs546_group22_final_project
+## Team
+- Cormac Taylor
+- Vraj Patel
+- Yash Yagnik
+- Marcel Casillo
+
 ## Abstract
 Team of 4 developers take on building a full stack web appliction to help connect folks in the board game community. 
 
