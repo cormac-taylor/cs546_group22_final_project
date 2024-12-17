@@ -19,3 +19,17 @@ Team of 4 developers take on building a full stack web appliction to help connec
 - Install packages: ```npm i```
 - Seed database: ```npm run seed```
 - Run server on [localhost:3000](http://localhost:3000/): ```npm start```
+
+## Seed user credentials
+    Username    | Password
+    ------------------------
+    j_doe       | Password1@
+    j_smith     | Password1@
+    alice_j     | Password1@
+    bob_b       | Password1@
+    charlie_w   | Password1@
+    d_taylor    | Password1@
+    edward_m    | Password1@
+    fio_gar     | Password1@
+    george      | Password1@
+    h_lee       | Password1@
