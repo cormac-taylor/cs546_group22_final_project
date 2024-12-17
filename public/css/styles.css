@@ -301,14 +301,33 @@ button:hover,
   margin-left: 20%;
   text-align: left;
 }
- .gameStatus h3{
-    display: inline;
- }
- .gameStatus p{
-    display: inline;
- }
+.gameStatus h3 {
+  display: inline;
+}
+.gameStatus p {
+  display: inline;
+}
 
- .gameUpdateImg {
-    max-height: 300px;
-    width: auto;
- }
+.gameUpdateImg {
+  max-height: 300px;
+  width: auto;
+}
+
+.reviewList {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.gameSearchResults li{
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  list-style-type: none;
+}

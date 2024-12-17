@@ -37,6 +37,9 @@ router.route("/:userId").get(async (req, res) => {
     }
     try{
         reviewList = await userReviews.getUserReviewsByReviewedUserId(xss(req.params.userId))
+        for(let i = 0; i < reviewList.length; i++){
+            reviewList[i].isMyReview = (reviewList[i].postingUser.toString() === req.session.user.userId)
+        }
         res.render("viewUserReviews", {signedIn: signedIn, pageTitle: "User Reviews", name: user.username, avgRating: user.averageRating, uid: user._id, reviews: reviewList});
     } catch (e) {
         return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});
@@ -197,6 +200,43 @@ router.route("/writeGameReview/:gameId").post(async (req, res) => {
             return res.status(500).render("error", {signedIn: signedIn, pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
         return res.status(500).render("error", {signedIn: signedIn, pageTitle: "Error", errorStatus: "500", errorMsg: "Could not Create Review"});
+    }
+});
+
+router.route("/deleteUserReview").post(async (req, res) => {
+    if(req.session.user){
+        let user;
+        let reviewList;
+        let poster;
+        try {
+            let deletedUserReview = await userReviews.removeUserReviewById(xss(req.body.rid));
+            // res.redirect("/games/gameDetails");
+        } catch (e) {
+            return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "Review Not Found"});
+        }
+        try {
+            user = await users.getUserById(xss(req.body.uid));
+        } catch (e) {
+            return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User Not Found"});
+        }
+        // try {
+        //     poster = await userData.getUserById(game.ownerID.toString());
+        // } catch (e) {
+        //     return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User Not Found"});
+        // }
+        try {
+            reviewList = await userReviews.getUserReviewsByReviewedUserId(xss(req.body.uid));
+            for(let i = 0; i < reviewList.length; i++){
+                reviewList[i].isMyReview = (reviewList[i].postingUser.toString() === req.session.user.userId)
+            }
+            // res.render("gameDetails", {signedIn: true, pageTitle: "Game Details", g: game, user: poster.username, reviews: reviewList});
+            res.render("viewUserReviews", {signedIn: true, pageTitle: "User Reviews", name: user.username, avgRating: user.averageRating, uid: user._id, reviews: reviewList});
+        } catch (e) {
+            return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
+        }
+    }
+    else {
+        res.render("signin", { pageTitle: "Boken Boards", status: "Sign in to see more!"})
     }
 });
 

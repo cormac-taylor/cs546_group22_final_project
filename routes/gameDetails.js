@@ -105,12 +105,50 @@ router.route("/gameDetails").post(async (req, res) => {
         }
         try {
             reviewList = await gameReviewData.getGameReviewsByReviewedGameId(xss(req.body.gid));
+            for(let i = 0; i < reviewList.length; i++){
+                reviewList[i].isMyReview = (reviewList[i].postingUser.toString() === req.session.user.userId)
+            }
         } catch (e) {
             return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }
         try {
             let postUser = await userData.getUserById(game.ownerID.toString());
             res.render("gameDetails", {signedIn: true, pageTitle: "Game Details", g: game, user: postUser.username, reviews: reviewList});
+        } catch (e) {
+            return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
+        }
+    }
+    else {
+        res.render("signin", { pageTitle: "Boken Boards", status: "Sign in to see more!"})
+    }
+});
+router.route("/gameDetails/deleteReview").post(async (req, res) => {
+    if(req.session.user){
+        let game;
+        let reviewList;
+        let poster;
+        try {
+            let deletedGameReview = await gameReviewData.removeGameReviewById(xss(req.body.rid));
+            // res.redirect("/games/gameDetails");
+        } catch (e) {
+            return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "Review Not Found"});
+        }
+        try {
+            game = await games.getGameById(xss(req.body.gid));
+        } catch (e) {
+            return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "Game Not Found"});
+        }
+        try {
+            poster = await userData.getUserById(game.ownerID.toString());
+        } catch (e) {
+            return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User Not Found"});
+        }
+        try {
+            reviewList = await gameReviewData.getGameReviewsByReviewedGameId(xss(req.body.gid));
+            for(let i = 0; i < reviewList.length; i++){
+                reviewList[i].isMyReview = (reviewList[i].postingUser.toString() === req.session.user.userId)
+            }
+            res.render("gameDetails", {signedIn: true, pageTitle: "Game Details", g: game, user: poster.username, reviews: reviewList});
         } catch (e) {
             return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: e});
         }

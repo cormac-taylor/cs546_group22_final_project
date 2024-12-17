@@ -10,5 +10,6 @@ Team of 4 developers take on building a full stack web appliction to help connec
 - Handlebars
 
 ## Starting running
+- Install packages: ```npm i```
 - Seed database: ```npm run seed```
 - Run server on [localhost:3000](http://localhost:3000/): ```npm start```

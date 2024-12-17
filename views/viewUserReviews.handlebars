@@ -9,6 +9,13 @@
     <h4>Rating: {{rating}}/5</h4>
     <p><strong>Reviewed on:</strong> {{date}}</p>
     <p>{{body}}</p>
+    {{#if isMyReview}}
+        <form action="/community/deleteUserReview" method="POST">
+            <input type="hidden" name="rid" value="{{_id}}">
+            <input type="hidden" name="uid" value={{../uid}}>
+            <button type="submit">Delete Review</button>
+        </form>
+    {{/if}}
 </div>
 <br>
 {{/each}}

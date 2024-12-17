@@ -32,9 +32,9 @@ const constructorMethod = (app) => {
     res.redirect('/')
   })
   
-  app.use("*", (_, res) => {
-    res.redirect("/");
-  });
+  // app.use("*", (_, res) => {
+  //   res.redirect("/");
+  // });
 };
 
 export default constructorMethod;

@@ -27,7 +27,13 @@
     <h4>Rating: {{rating}}/5</h4>
     <p><strong>Reviewed on:</strong> {{date}}</p>
     <p>{{body}}</p>
-
+    {{#if isMyReview}}
+        <form action="/games/gameDetails/deleteReview" method="POST">
+            <input type="hidden" name="rid" value="{{_id}}">
+            <input type="hidden" name="gid" value={{../g._id}}>
+            <button type="submit">Delete Review</button>
+        </form>
+    {{/if}}
 </div>
 
 {{/each}}
