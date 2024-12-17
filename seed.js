@@ -6,7 +6,6 @@ import {
 } from "./data/index.js";
 import { dbConnection, closeConnection } from "./config/mongoConnection.js";
 import { utils } from "./utilities/utilityIndex.js";
-import { addEvent } from "./data/events.js";
 
 //lets drop the database each time this is run
 const db = await dbConnection();
@@ -1569,54 +1568,5 @@ try {
 } catch (e) {
   console.log(e);
 }
-
-try {
-  e1 = await addEvent(
-    u1._id.toString(),
-    u1.username.toString(),
-    "Monopoly Meetup",
-    u1.email.toString(),
-    "New York, New York",
-    "Come to our meetup where we will play Monopoly",
-    "2024-12-25",
-    "2024-12-16",
-    [u1._id.toString()]
-  );
-} catch (e) {
-  console.log(e);
-}
-
-try {
-  e2 = await addEvent(
-    u2._id.toString(),
-    u2.username.toString(),
-    "Chess Tournament",
-    u2.email.toString(),
-    "San Francisco, California",
-    "Join us for an exciting chess tournament with prizes for the winners!",
-    "2024-12-19",
-    "2024-12-16",
-    [u2._id.toString()]
-  );
-} catch (e) {
-  console.log(e);
-}
-
-try {
-  e3 = await addEvent(
-    u3._id.toString(),
-    u3.username.toString(),
-    "Board Game Bonanza",
-    u3.email.toString(),
-    "Chicago, Illinois",
-    "A night filled with your favorite board games and snacks!",
-    "2024-12-22",
-    "2024-12-16",
-    [u3._id.toString()]
-  );
-} catch (e) {
-  console.log(e);
-}
-
 
 await closeConnection();

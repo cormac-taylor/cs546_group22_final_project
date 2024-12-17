@@ -65,7 +65,7 @@ router.route("/sendMessage").get(async (req, res) => {
         let user = await getUserById(ownerID)
         let username = user.username
         // res.render("chatroom", {pageTitle: "Chatroom", username: username})
-        const today = new Date()
+        const today = new Date().toLocaleString();
         let addMess = await addMessage(ownerID, username, messageDetails.message, today)
         const chatHistory = await getChatHistory()
         if (chatHistory){
