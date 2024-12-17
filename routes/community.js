@@ -186,7 +186,7 @@ router.route("/writeGameReview/:gameId").post(async (req, res) => {
         return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "Game not found"});
     }
     try{
-        validation.validateTitle(req.body.reviewingTitle)
+        validation.validateTitle(xss(req.body.reviewingTitle))
     } catch(e) {
         return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Title must be between 1 and 64 characters long"});
     }

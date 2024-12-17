@@ -94,8 +94,8 @@ router
         }
         
         try{
-            if (!createEventFormInfo.eventName.trim()) throw "No event name given"
-            if (!createEventFormInfo.description.trim()) throw "No description given"
+            if (!xss(createEventFormInfo.eventName).trim()) throw "No event name given"
+            if (!xss(createEventFormInfo.description).trim()) throw "No description given"
         }
         catch(e){
             return res.status(400).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "400", errorMsg: e});;
@@ -293,7 +293,7 @@ router
       }
       email = email.trim()
       if (email) {
-        updateFields.email = email;
+        updateFields.email = (email);
       } else {
         updateFields.email = event[0].email;
       }

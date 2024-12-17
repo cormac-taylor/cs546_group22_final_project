@@ -32,13 +32,13 @@
         {{#unless hasReqs}}
         <p>No active requests at this time.</p>
         {{/unless}}
-        <ul class="request-list">
+        <div class="request-list">
             {{#each requests}}
-            <ul class="requestEntry">
-                <li><strong>Username:</strong> {{reqUsername}}</li>
-                <li><strong>First Name:</strong> {{reqFirstName}}</li>
-                <li><strong>Last Name:</strong> {{reqLastName}}</li>
-                <li><strong>Message:</strong> {{reqUserMsg}}</li>
+            <div class="requestEntry">
+                <p><strong>Username:</strong> {{reqUsername}}</p>
+                <p><strong>First Name:</strong> {{reqFirstName}}</p>
+                <p><strong>Last Name:</strong> {{reqLastName}}</p>
+                <p><strong>Message:</strong> {{reqUserMsg}}</p>
                 <form method="POST" action="/dashboard/viewrequest">
                     <input type="hidden" name="reqUserId" value={{reqUserId}}>
                     <input type="hidden" name="reqGame" value="{{gameId}}">
@@ -46,8 +46,8 @@
                 </form>
                 <br>
                 <br>
-            </ul>
+            </div>
             {{/each}}
-        </ul>
+        </div>
     </div>
 </section>

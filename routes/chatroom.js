@@ -77,7 +77,7 @@ router.route("/sendMessage").get(async (req, res) => {
             // return res.status(401).send('You must be logged in to view this page.')
           }
         const messageDetails = req.body;
-        if (!messageDetails.message.trim()) throw "Message was empty!"
+        if (!xss(messageDetails.message).trim()) throw "Message was empty!"
         messageDetails.message = xss(messageDetails.message)
         let ownerID = req.session.user.userId;
         let user
