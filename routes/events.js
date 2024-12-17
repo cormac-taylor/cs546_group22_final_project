@@ -18,16 +18,23 @@ router.route("/").get(async (req, res) => {
   // Anyone can see this so no check for cookies
   //console.log("let me see events")
   try {
-    const eventsCollection = await events();
-    const allEvents = await eventsCollection.find({}).toArray();
-    const formattedEvents = allEvents.map((event) => ({
-      title: event.eventName,
-      start: event.Date,
-    //   end: event.endDate || null,
-      description: event.description || "",
-      id: event._id,
-      email: event.email
-    }));
+    let formattedEvents
+    try{
+        const eventsCollection = await events();
+        const allEvents = await eventsCollection.find({}).toArray();
+        formattedEvents = allEvents.map((event) => ({
+        title: event.eventName,
+        start: event.Date,
+        //   end: event.endDate || null,
+        description: event.description || "",
+        id: event._id,
+        email: event.email
+        }));
+    }
+    catch(e){
+        return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Events not found"});;
+    }
+    
     let signedIn = req.session.user ? true : false;
     res.render("events", {
       pageTitle: "Local Events",
@@ -35,7 +42,7 @@ router.route("/").get(async (req, res) => {
       signedIn: signedIn
     });
   } catch (e) {
-    return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});;
+    return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});;
   }
 });
 
@@ -56,7 +63,7 @@ router
         res.render("createEvent", { pageTitle: "Create Event", signedIn: signedIn });
       }
     } catch (e) {
-      return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
+      return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
   })
   .post(async (req, res) => {
@@ -64,30 +71,35 @@ router
         const createEventFormInfo = req.body;
         let errors = [];
         if (!req.session.user) {
-          res.redirect("/signin");
-          return;
+            return res.redirect("/signin");
           // return res.status(401).send('You must be logged in to view this page.')
         }
+        let owner
         let ownerID = req.session.user.userId;
-        let owner = await getUserById(ownerID)
+        try{
+            
+            owner = await getUserById(ownerID)
+        }
+        catch(e){
+            return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});;
+        }
+        
         
         try{
             createEventFormInfo.location = validation.validateLocation(createEventFormInfo.location)
         }
         catch(e){
-            res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: "Format has to be 'city, state' for location" });
-            return
+            return res.status(400).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "400", errorMsg: "Format has to be 'city, state' for location" });
+            
         }
-        // try{
-        //     createEventFormInfo.location = validation.validateGeoJson(createEventFormInfo.location)
-        // }
-        // catch(e){
-        //     errors.push(`Location ${e}`)
-        // }
-        //console.log("yo")
-        if (!createEventFormInfo.eventName.trim()) throw "No event name given"
-        // if (!createEventFormInfo.location.trim()) throw "No location given"
-        if (!createEventFormInfo.description.trim()) throw "No description given"
+        
+        try{
+            if (!createEventFormInfo.eventName.trim()) throw "No event name given"
+            if (!createEventFormInfo.description.trim()) throw "No description given"
+        }
+        catch(e){
+            return res.status(400).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "400", errorMsg: e});;
+        }
         try {
           createEventFormInfo.description = validation.validateString(
             xss(createEventFormInfo.description)
@@ -103,13 +115,21 @@ router
         // console.log(createEventFormInfo.Date)
         
         if (formattedToday > createEventFormInfo.Date){
-            res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: "You cannot create an Event for the past" });
-            return
+            return res.status(500).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "You cannot create an Event for the past" });
+            
         }
         
         // I need to check if todays date matches up with one of th edates of the events in the db
-
-        let ownerEvents = await getEventsByOwnerId(ownerID)
+        let ownerEvents
+        try{
+            ownerEvents = await getEventsByOwnerId(ownerID)
+        }
+        catch(e){
+            return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found"});;
+        }
+        if (!ownerEvents){
+            return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found" });
+        }
         for (let event of ownerEvents){
             if (event.dateCreated === formattedToday) throw 'You can only create one event per day. Try again tomorrow!'
         }
@@ -147,8 +167,18 @@ router
         return;
         //return res.status(401).send('You must be logged in to view this page.')
       }
+      
       let ownerID = req.session.user.userId;
-      const eventList = await getEventsByOwnerId(ownerID);
+      let eventList
+      try{
+        eventList = await getEventsByOwnerId(ownerID)
+      }
+      catch(e){
+        return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found"})
+      }
+      if (!eventList){
+        return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found" });
+    }
       let signedIn = req.session.user ? true : false;
       res.render("updateEvent", {
         pageTitle: "Update Event",
@@ -157,20 +187,36 @@ router
         signedIn: signedIn
       });
     } catch (e) {
-        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
   })
   .post(async (req, res) => {
-    let ownerID = req.session.user.userId;
-    const eventList = await getEventsByOwnerId(ownerID);
-    let signedIn = req.session.user ? true : false;
-    res.render("eventForm", {
-      pageTitle: "Update Event Form",
-      userId: req.session.user.userId,
-      events: eventList,
-      eventId: xss(req.body.eventId),
-      signedIn: signedIn
-    });
+    try{
+        let ownerID = req.session.user.userId;
+        let eventList = await getEventsByOwnerId(ownerID);
+        try{
+            eventList = await getEventsByOwnerId(ownerID);
+        }
+        catch(e){
+            return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found"})
+        }
+        if (!eventList){
+            return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found" });
+        }
+        
+        let signedIn = req.session.user ? true : false;
+        res.render("eventForm", {
+          pageTitle: "Update Event Form",
+          userId: req.session.user.userId,
+          events: eventList,
+          eventId: xss(req.body.eventId),
+          signedIn: signedIn
+        });
+    }
+    catch(e){
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
+    }
+    
   });
 
 router
@@ -183,7 +229,16 @@ router
         //return res.status(401).send('You must be logged in to view this page.')
       }
       let ownerID = req.session.user.userId;
-      const eventList = await getEventsByOwnerId(ownerID);
+      let eventList
+      try{
+        eventList = await getEventsByOwnerId(ownerID);
+      }
+      catch(e){
+        return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found"})
+      }
+      if (!eventList){
+        return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found" });
+    }
       let signedIn = req.session.user ? true : false;
       res.render("updateEvent", {
         pageTitle: "Update Event",
@@ -192,7 +247,7 @@ router
         signedIn: signedIn
       });
     } catch (e) {
-        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
   })
   .post(async (req, res) => {
@@ -207,14 +262,28 @@ router
     email = xss(email);
     description = xss(description);
 
-    if (!eventId.trim()) throw "EventId was not given"
-    if (!eventName.trim()) throw "Event name was not given"
-    if (!email.trim()) throw "Email was not given"
-    if (!location.trim()) throw "Location was not given"
-    if (!description.trim()) throw "Description was not given"
-
+    // try{
+    //     if (!eventId.trim()) throw "EventId was not given"
+    //     if (!eventName.trim()) throw "Event name was not given"
+    //     if (!email.trim()) throw "Email was not given"
+    //     if (!location.trim()) throw "Location was not given"
+    //     if (!description.trim()) throw "Description was not given"    
+    // }
+    // catch(e){
+    //     return res.status(400).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "400", errorMsg: e});;
+    // }
+    
     const updateFields = {};
-    let event = await getEventById(eventId);
+    let event
+    try{
+        event = await getEventById(eventId);
+    }
+    catch(e){
+        return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Event not found" });
+    }
+    if (!event){
+        return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Event not found" });
+    }
     try {
       if (eventName) {
         updateFields.eventName = eventName;
@@ -227,6 +296,13 @@ router
         updateFields.email = event[0].email;
       }
       if (location) {
+        try{
+            location = validation.validateLocation(location)
+        }
+        catch(e){
+            return res.status(400).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "400", errorMsg: "Format has to be 'city, state' for location" });
+            
+        }
         updateFields.location = location;
       } else {
         updateFields.location = event[0].location;
@@ -237,8 +313,8 @@ router
         updateFields.description = event[0].description;
       }
     } catch (e) {
-      res.render("error", {
-        errorStatus: 500,
+      res.status(400).render("error", {
+        errorStatus: "400",
         errorMsg: "There was a problem with the updating the event",
       });
     }
@@ -248,7 +324,7 @@ router
       let userUpdate = await updateEvent(eventId, updateFields);
       //console.log(userUpdate);
     } catch (e) {
-      res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: e });
+    return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found"})
     }
 
     //let ownerID = req.session.user.userId
@@ -271,7 +347,16 @@ router
       // catch(e){
       //     res.render("error", {errorStatus: 500, errorMsg:e})
       // }
-      const eventList = await getEventsByOwnerId(ownerID);
+      let eventList
+      try{
+        eventList = await getEventsByOwnerId(ownerID)
+      }
+      catch(e){
+        return res.status(404).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Events not found"});;
+      }
+      if (!eventList){
+        return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found" });
+    }
       let signedIn = req.session.user ? true : false;
     //   console.log(eventList)
       res.render("deleteEvent", {
@@ -281,27 +366,37 @@ router
         signedIn: signedIn,
       });
     } catch (e) {
-        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: "500 Server Error"});
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
     }
   })
 
   .post(async (req, res) => {
-    let deleted = await deleteEvent(xss(req.body.eventId));
+    try{
+        let deleted = await deleteEvent(xss(req.body.eventId));
+        let ownerID = req.session.user.userId;
+        let eventList
+        try {
+        eventList = await getEventsByOwnerId(ownerID);
+        //   console.log(eventList)
+        let signedIn = req.session.user ? true : false;
+        res.render("deleteEvent", {
+            pageTitle: "Delete Event",
+            userId: req.session.user.userId,
+            events: eventList,
+            signedIn: signedIn
+        });
+        } catch (e) {
+        return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found" });
+        }
+        if (!eventList){
+            return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found" });
+        }
 
-    let ownerID = req.session.user.userId;
-    try {
-      const eventList = await getEventsByOwnerId(ownerID);
-    //   console.log(eventList)
-      let signedIn = req.session.user ? true : false;
-      res.render("deleteEvent", {
-        pageTitle: "Delete Event",
-        userId: req.session.user.userId,
-        events: eventList,
-        signedIn: signedIn
-      });
-    } catch (e) {
-      res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: e });
     }
+    catch(e){
+        return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
+    }
+    
     // console.log(eventList)
   });
 
@@ -315,14 +410,20 @@ router
             // return res.status(401).send('You must be logged in to view this page.')
           }
         let ownerID = req.session.user.userId;
-        const event = await getEventById(req.params.id)
+        let event
+        try{
+            event = await getEventById(req.params.id)
+        }
+        catch(e){
+            return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Owner's Events not found" });
+        }
+        if (!event){
+            return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Events not found" });
+        }
+        
         let hasRSVPED = false
         let isOwner = false
         
-        if (!event){
-            res.render("error", { errorStatus: 404, errorMsg: 'Event not found' });
-            return
-        }
         if (event[0].rsvpedUsers.includes(ownerID)){
             hasRSVPED = true
         }
@@ -331,10 +432,10 @@ router
         }
         let location = event[0].location
         let RSVEDUsers = event[0].rsvpedUsers
-        res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id, hasRSVPED: hasRSVPED, location: location, isOwner: isOwner, RSVEDUsers: RSVEDUsers})
+        return res.render('eventDetails', {signedIn: true, pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id, hasRSVPED: hasRSVPED, location: location, isOwner: isOwner, RSVEDUsers: RSVEDUsers})
     }
     catch(e){
-        res.render("error", { signedIn: true, pageTitle: "Error",  errorStatus: 500, errorMsg: e });
+        return res.status(500).render("error", { signedIn: true, pageTitle: "Error",  errorStatus: "500", errorMsg: e });
     }
     
   })
@@ -352,8 +453,7 @@ router
         const user = req.session.user.userId
         
         if (!event){
-            res.render("error", { pageTitle: "Error", errorStatus: 404, errorMsg: 'Event not found' });
-            return
+            return res.render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: 'Event not found' });
         }
         if (event[0].rsvpedUsers && event[0].rsvpedUsers.includes(user)) {
             //console.log(event[0])
@@ -372,7 +472,7 @@ router
             isOwner = true
         }
         let RSVEDUsers = event[0].rsvpedUsers
-        res.render("eventDetails", {pageTitle: "Event Details", message: `You successfuly RSVPd for the ${event[0].eventName}!`, isOwner: isOwner, RSVEDUsers: RSVEDUsers});
+        res.render("eventDetails", {signedIn: true, pageTitle: "Event Details", message: `You successfuly RSVPd for the ${event[0].eventName}!`, isOwner: isOwner, RSVEDUsers: RSVEDUsers});
         // res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id})
     }
     catch(e){
@@ -391,11 +491,17 @@ router
             // return res.status(401).send('You must be logged in to view this page.')
         }
         const eventsCollection = await events()
-        const event = await getEventById(req.params.id)
+        let event
+        try{
+            event = await getEventById(req.params.id)
+        }
+        catch(e){
+            return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Event not found" });
+        }
         const user = req.session.user.userId
         
         if (!event){
-            res.render("error", { pageTitle: "Error", errorStatus: 404, errorMsg: 'Event not found' });
+            res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: 'Event not found' });
             return
         }
         if (event[0].rsvpedUsers && event[0].rsvpedUsers.includes(user)) {
@@ -406,11 +512,11 @@ router
         }
         const updateUser = await updateEvent(req.params.id, event[0])
         
-        res.render("eventDetails", {pageTitle: "Event Details", message: `You successfuly removed your RSVP for the ${event[0].eventName}!`});
+        res.render("eventDetails", {signedIn: true, pageTitle: "Event Details", message: `You successfuly removed your RSVP for the ${event[0].eventName}!`});
         // res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id})
     }
     catch(e){
-        res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: e });
+        return res.status(500).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e });
     }
     
   })
