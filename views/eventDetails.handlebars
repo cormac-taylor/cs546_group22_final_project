@@ -1,10 +1,27 @@
-<h1>Event Details</h1>
-<h2>{{eventName}}</h2>
-<h2>{{eventDescription}}</h2>
-<h2>{{contact}}</h2>
-<h2>{{message}}</h2>
+
 {{#if message}}
-  <a href="/events">Back to events</a>
+    <h2>Message: {{message}}</h2>
+    <div></div>
+{{else}}
+    <h1>Event Details</h1>
+    <h2>Event Name: {{eventName}}</h2>
+    <h2>Event Description: {{eventDescription}}</h2>
+    <h2>Contact Information: {{contact}}</h2>
+    <h2>Location: {{location}}</h2>
+{{/if}}
+
+
+{{#if isOwner}}
+    <h2>
+        RSVP'd Users: {{RSVEDUsers}}
+    </h2>
+    
+    <div></div>
+{{else}}
+    <div></div>
+{{/if}}
+
+{{#if message}}
 {{else}}
     {{#if hasRSVPED}}
     <button onclick="window.location.href='/events/rsvpRemove/{{{eventId}}}'">Remove RSVP</button>
@@ -12,5 +29,5 @@
     <button onclick="window.location.href='/events/rsvpAdd/{{{eventId}}}'">RSVP</button>
     {{/if}}
     <div></div>
-    <a href="/events">Back to events</a>
 {{/if}}
+<a href="/events">Back to events a</a>

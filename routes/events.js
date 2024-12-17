@@ -309,9 +309,16 @@ router
   .route("/eventDetails/:id")
   .get(async (req, res) => {
     try{
+        if (!req.session.user) {
+            res.redirect("/signin");
+            return;
+            // return res.status(401).send('You must be logged in to view this page.')
+          }
         let ownerID = req.session.user.userId;
         const event = await getEventById(req.params.id)
         let hasRSVPED = false
+        let isOwner = false
+        
         if (!event){
             res.render("error", { errorStatus: 404, errorMsg: 'Event not found' });
             return
@@ -319,7 +326,12 @@ router
         if (event[0].rsvpedUsers.includes(ownerID)){
             hasRSVPED = true
         }
-        res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id, hasRSVPED: hasRSVPED})
+        if (event[0].ownerID.toString() === ownerID){
+            isOwner = true
+        }
+        let location = event[0].location
+        let RSVEDUsers = event[0].rsvpedUsers
+        res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id, hasRSVPED: hasRSVPED, location: location, isOwner: isOwner, RSVEDUsers: RSVEDUsers})
     }
     catch(e){
         res.render("error", { signedIn: true, pageTitle: "Error",  errorStatus: 500, errorMsg: e });
@@ -354,8 +366,13 @@ router
         let vpedUsers = event[0].rsvpedUsers
         vpedUsers.push(user)
         const updateUser = await updateEvent(req.params.id, event[0])
-        
-        res.render("eventDetails", {pageTitle: "Event Details", message: `You successfuly RSVPd for the ${event[0].eventName}!`});
+        let isOwner = false
+        let ownerID = req.session.user.userId;
+        if (event[0].ownerID.toString() === ownerID){
+            isOwner = true
+        }
+        let RSVEDUsers = event[0].rsvpedUsers
+        res.render("eventDetails", {pageTitle: "Event Details", message: `You successfuly RSVPd for the ${event[0].eventName}!`, isOwner: isOwner, RSVEDUsers: RSVEDUsers});
         // res.render('eventDetails', {pageTitle: "Event Details", eventName: event[0].eventName, eventDescription: event[0].description, contact: event[0].email, eventId: req.params.id})
     }
     catch(e){
