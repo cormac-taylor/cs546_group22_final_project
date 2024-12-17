@@ -71,6 +71,13 @@ router
         let ownerID = req.session.user.userId;
         let owner = await getUserById(ownerID)
         
+        try{
+            createEventFormInfo.location = validation.validateLocation(createEventFormInfo.location)
+        }
+        catch(e){
+            res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: "Format has to be 'city, state' for location" });
+            return
+        }
         // try{
         //     createEventFormInfo.location = validation.validateGeoJson(createEventFormInfo.location)
         // }
@@ -79,7 +86,7 @@ router
         // }
         //console.log("yo")
         if (!createEventFormInfo.eventName.trim()) throw "No event name given"
-        if (!createEventFormInfo.location.trim()) throw "No location given"
+        // if (!createEventFormInfo.location.trim()) throw "No location given"
         if (!createEventFormInfo.description.trim()) throw "No description given"
         try {
           createEventFormInfo.description = validation.validateString(
