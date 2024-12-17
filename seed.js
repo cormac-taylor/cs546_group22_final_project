@@ -6,6 +6,7 @@ import {
 } from "./data/index.js";
 import { dbConnection, closeConnection } from "./config/mongoConnection.js";
 import { utils } from "./utilities/utilityIndex.js";
+import { addMessage } from "./data/chatroom.js";
 
 //lets drop the database each time this is run
 const db = await dbConnection();
@@ -1566,5 +1567,116 @@ try {
 } catch (e) {
   console.log(e);
 }
+
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u1.username,
+    "Hey everyone! We're hosting a Catan tournament this Saturday at 5 PM at the community center. Beginners welcome—come join the fun!",
+    new Date()
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u2.username,
+    "Looking for players! I’ve got Wingspan and snacks ready for tomorrow night at my place. DM if you’re interested!",
+    new Date()
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u3.username,
+    "Game night alert! Meetup this Friday at 7 PM at the library. Bring your favorite game or try out Terraforming Mars with us!",
+    new Date()
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u4.username,
+    "Does anyone have Carcassonne I could borrow? Planning a game night and would love to include it. Happy to pick it up and return it quickly!",
+    new Date()
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u5.username,
+    "Who’s up for Ticket to Ride? We’re meeting at Joe’s Cafe on Thursday evening. Bring your strategic A-game!",
+    new Date()
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u6.username,
+    "Big board game swap this Sunday! Bring your games to the park pavilion and trade with other enthusiasts. Starts at 2 PM!",
+    new Date()
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u7.username,
+    "Looking for players for a Betrayal at House on the Hill session. We’ll be meeting at 6 PM Wednesday at my apartment. Let me know if you’re interested!",
+    new Date()
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u8.username,
+    "Anyone interested in teaching Gloomhaven? I’ve heard great things and would love to learn. Maybe we can organize a session soon?",
+    new Date()
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u9.username,
+    "Family-friendly board game day this Saturday! Join us at the rec center from 10 AM to 4 PM. Games for all ages will be provided!",
+    new Date()
+  );
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  let addMess = await addMessage(
+    "67608915dcbd925df200e37c",
+    u10.username,
+    "Quick question: Does anyone own Pandemic? My group is planning to play next week, and we’d love to borrow it. We’ll handle it with care!",
+    new Date()
+  );
+} catch (e) {
+  console.log(e);
+}
+
 
 await closeConnection();
