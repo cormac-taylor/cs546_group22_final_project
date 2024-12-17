@@ -126,7 +126,6 @@ router.route("/writeUserReview/:userId").post(async (req, res) => {
     }
     try{
         reviewList = await userReviews.getUserReviewsByReviewedUserId(xss(req.params.userId))
-        reviewList = await userReviews.getUserReviewsByReviewedUserId(xss(req.params.userId))
         for(let i = 0; i < reviewList.length; i++){
             reviewList[i].isMyReview = (reviewList[i].postingUser.toString() === req.session.user.userId)
         }
