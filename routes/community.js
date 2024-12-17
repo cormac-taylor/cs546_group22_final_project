@@ -120,7 +120,16 @@ router.route("/writeUserReview/:userId").post(async (req, res) => {
         return res.status(500).render("error", {pageTitle: "Error", errorStatus: "500", errorMsg: "Could not Create Review"});
     }
     try{
+        user = await users.getUserById(xss(req.params.userId));
+    } catch (e) {
+        return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});
+    }
+    try{
         reviewList = await userReviews.getUserReviewsByReviewedUserId(xss(req.params.userId))
+        reviewList = await userReviews.getUserReviewsByReviewedUserId(xss(req.params.userId))
+        for(let i = 0; i < reviewList.length; i++){
+            reviewList[i].isMyReview = (reviewList[i].postingUser.toString() === req.session.user.userId)
+        }
         res.render("viewUserReviews", {signedIn: signedIn, pageTitle: "User Reviews", name: user.username, avgRating: user.averageRating, uid: user._id, reviews: reviewList});
     } catch (e) {
         return res.status(404).render("error", {pageTitle: "Error", errorStatus: "404", errorMsg: "User not found"});
