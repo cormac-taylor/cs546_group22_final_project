@@ -11,11 +11,11 @@
           Location: {{location}}<br>
           Description: {{description}}<br>
           Contact: {{email}}
-        </li>
-        <form action="/events/deleteEvent" method="POST">
+          <form action="/events/deleteEvent" method="POST">
             <input type="hidden" name="eventId" value="{{_id}}">
             <button type="submit">Delete</button>
-        </form>
+          </form>
+        </li>   
       {{/each}}
     </ol>
   {{else}}

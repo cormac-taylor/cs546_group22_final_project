@@ -60,7 +60,7 @@ router
       } else {
         let ownerID = req.session.user.userId;
         let signedIn = req.session.user ? true : false;
-        res.render("createEvent", { pageTitle: "Create Event", signedIn: signedIn });
+        res.render("createEvent", { signedIn: true, pageTitle: "Create Event" });
       }
     } catch (e) {
       return res.status(500).render("error", {signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e});
@@ -152,7 +152,7 @@ router
         res.redirect("/events");
     }
     catch(e){
-        res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: 500, errorMsg: e });
+        res.render("error", { signedIn: true, pageTitle: "Error", errorStatus: "500", errorMsg: e });
 
     }
     
@@ -193,7 +193,7 @@ router
   .post(async (req, res) => {
     try{
         let ownerID = req.session.user.userId;
-        let eventList = await getEventsByOwnerId(ownerID);
+        let eventList
         try{
             eventList = await getEventsByOwnerId(ownerID);
         }
@@ -449,7 +449,13 @@ router
             // return res.status(401).send('You must be logged in to view this page.')
         }
         const eventsCollection = await events()
-        const event = await getEventById(req.params.id)
+        let event
+        try{
+            event = await getEventById(req.params.id)
+        }
+        catch(e){
+            return res.render("error", {signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: 'Event not found' });
+        }
         const user = req.session.user.userId
         
         if (!event){

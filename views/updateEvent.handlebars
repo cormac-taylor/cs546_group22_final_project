@@ -2,25 +2,25 @@
 <h2>Please Choose what event you would like to update</h2>
 {{!-- HTML Errors --}}
 {{!-- Use a drop down menu for the user to pick what they would like to change --}}
-{{#if events}}
-<ul id="eventsOwnedByUser">
-    
-    <ol>
+<main>
+  {{#if events}}
+  <ol id="eventsOwnedByUser">
       {{#each events}}
-        <li>
-          <strong>{{eventName}}</strong><br>
-          Location: {{location}}<br>
-          Description: {{description}}<br>
-          Contact: {{email}}
-        </li>
+      <li>
+        <strong>{{eventName}}</strong><br>
+        Location: {{location}}<br>
+        Description: {{description}}<br>
+        Contact: {{email}}
         <form action="/events/updateEvent" method="POST">
             <input type="hidden" name="eventId" value="{{_id}}">
             <button type="submit">Update</button>
         </form>
+      </li>
       {{/each}}
-    </ol>
-</ul>
-{{else}}
-    <p>You have no events.</p>
-{{/if}}
-  <a href="/events">Events Homepage</a>
+  </ol>
+  {{else}}
+      <p>You have no events.</p>
+  {{/if}}
+    <a href="/events">Events Homepage</a>
+</main>
+
