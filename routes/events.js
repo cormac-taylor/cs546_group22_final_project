@@ -285,11 +285,13 @@ router
         return res.status(404).render("error", { signedIn: true, pageTitle: "Error", errorStatus: "404", errorMsg: "Event not found" });
     }
     try {
+        eventName =  eventName.trim()
       if (eventName) {
         updateFields.eventName = eventName;
       } else {
         updateFields.eventName = event[0].eventName;
       }
+      email = email.trim()
       if (email) {
         updateFields.email = email;
       } else {
@@ -307,6 +309,7 @@ router
       } else {
         updateFields.location = event[0].location;
       }
+      description = description.trim()
       if (description) {
         updateFields.description = description;
       } else {
